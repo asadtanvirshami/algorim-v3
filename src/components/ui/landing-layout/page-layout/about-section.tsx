@@ -1,3 +1,6 @@
+/* eslint-disable react/no-unescaped-entities */
+
+
 const WhoWeAreSection = () => {
   return (
     <div className="w-full space-y-6 max-w-5xl px-4 mx-auto text-center md:text-left">

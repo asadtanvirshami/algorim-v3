@@ -1,4 +1,3 @@
-import Container from "@/components/ui/container";
 import WhoWeAreSection from "@/components/ui/landing-layout/page-layout/about-section";
 import CeoSaying from "@/components/ui/landing-layout/page-layout/ceo-saying";
 import { ContactInfo } from "@/components/ui/landing-layout/page-layout/contact-info";
@@ -52,7 +51,6 @@ const Landing = () => {
       </div>
       <div className="w-full">
         <div className="space-y-26 mt-12 font-[family-name:var(--font-redhat)] p-4">
-          
           <section id="who-we-are">
             <WhoWeAreSection />
           </section>
@@ -60,26 +58,26 @@ const Landing = () => {
           <ValueSection />
           <WhySection />
           <StrategySection />
-          
+
           <section id="testimonials">
             <TestimonalSection />
           </section>
-          
+
           <CeoSaying />
-          
+
           <section id="services">
             <ServicesSection />
           </section>
-          
+
           <IndustriesSection />
           <QuotesSection />
           <FAQsSection />
           <NewsLetterSection />
-          
+
           <section id="inquiry">
             <ContactForm />
           </section>
-          
+
           <ContactInfo />
         </div>
       </div>

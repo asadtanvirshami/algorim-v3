@@ -135,7 +135,9 @@ const Header = () => {
               variant={"outline"}
               className="flex items-center cursor-pointer shimmer-btn !border dark:text-white dark:bg-black"
             >
-              <Link href="https://calendly.com/algorim"> Let's connect </Link>
+              <Link href="https://calendly.com/algorim">
+                {"Let's connect"}{" "}
+              </Link>
               <ArrowRight />
             </Button>
             <ModeToggle />
@@ -212,7 +214,7 @@ const Header = () => {
             onClick={() => setIsOpen(false)}
             className="text-sm font-medium"
           >
-            Let's Connect
+            {"Let's Connect"}
           </Button>
           {/* Add more mobile links here if needed */}
         </div>
