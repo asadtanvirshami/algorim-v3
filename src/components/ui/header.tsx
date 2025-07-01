@@ -32,16 +32,24 @@ const Header = () => {
           <div>
             <div className="flex h-5 items-center space-x-4 text-sm  font-[family-name:var(--font-redhat)]">
               {/* LinkedIn */}
-              <Link href={"/"}>LinkedIn</Link>
+              <Link href={"https://www.linkedin.com/company/algorim-io/"}>
+                LinkedIn
+              </Link>
               <Separator orientation="vertical" />
-              {/* LinkedIn */}
-              <Link href={"/"}>Facebook</Link>
+              {/* Facebook */}
+              <Link
+                href={"https://www.facebook.com/profile.php?id=61568140792184#"}
+              >
+                Facebook
+              </Link>
               {/* Instagram */}
               <Separator orientation="vertical" />
-              <Link href={"/"}>Instagram</Link>
-              {/* Twitter */}
+              <Link href={"https://www.instagram.com/algorim.io/"}>
+                Instagram
+              </Link>
+              {/* Twitter
               <Separator orientation="vertical" />
-              <Link href={"/"}>Twitter</Link>
+              <Link href={"/"}>Twitter</Link> */}
             </div>
           </div>
         </div>
@@ -174,7 +182,7 @@ const Header = () => {
       {/* Mobile Menu */}
       <div
         className={`overflow-hidden md:hidden transition-all duration-200 ease-in-out ${
-          isOpen ? "max-h-[200px] py-2" : "max-h-0 py-0"
+          isOpen ? "max-h-[300px] py-2" : "max-h-0 py-0"
         }`}
       >
         <div className="px-4 flex flex-col gap-3">
@@ -209,12 +217,13 @@ const Header = () => {
           >
             INQUIRY
           </Button>
+
           <Button
             variant="default"
             onClick={() => setIsOpen(false)}
             className="text-sm font-medium"
           >
-            {"Let's Connect"}
+            Let's Connect
           </Button>
           {/* Add more mobile links here if needed */}
         </div>

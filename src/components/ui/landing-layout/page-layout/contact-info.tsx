@@ -1,6 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
 
-
 import React from "react";
 import { Separator } from "../../separator";
 import Link from "next/link";
@@ -14,16 +13,24 @@ export const ContactInfo = () => {
           <div>
             <div className="flex h-5 items-center space-x-4 text-sm  font-[family-name:var(--font-redhat)]">
               {/* LinkedIn */}
-              <Link href={"/"}>LinkedIn</Link>
+              <Link href={"https://www.linkedin.com/company/algorim-io/"}>
+                LinkedIn
+              </Link>
               <Separator orientation="vertical" />
-              {/* LinkedIn */}
-              <Link href={"/"}>Facebook</Link>
+              {/* Facebook */}
+              <Link
+                href={"https://www.facebook.com/profile.php?id=61568140792184#"}
+              >
+                Facebook
+              </Link>
               {/* Instagram */}
               <Separator orientation="vertical" />
-              <Link href={"/"}>Instagram</Link>
-              {/* Twitter */}
+              <Link href={"https://www.instagram.com/algorim.io/"}>
+                Instagram
+              </Link>
+              {/* Twitter
               <Separator orientation="vertical" />
-              <Link href={"/"}>Twitter</Link>
+              <Link href={"/"}>Twitter</Link> */}
             </div>
             <h1 className="w-[20rem] text-xl font-semibold text-justify hyphens-auto mt-12">
               Let's begin a conversation about your needs. Email our team at

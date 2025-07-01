@@ -2,6 +2,11 @@ import Image from "next/image";
 import React from "react";
 
 import ceo from "../../../../../public/assets/ceo/ceo.png";
+import LinkedIn from "../../../../../public/assets/socials/in.png";
+
+import { Button } from "../../button";
+import Link from "next/link";
+import { SquareArrowOutUpRight } from "lucide-react";
 
 const CeoSaying = () => {
   return (
@@ -28,7 +33,9 @@ const CeoSaying = () => {
               journey we are all excited to take together.
             </blockquote>
             <div className="text-right">
-              <p className="font-semibold text-lg text-gray-600">-Asad Tanvir Shami</p>
+              <p className="font-semibold text-lg text-gray-600">
+                -Asad Tanvir Shami
+              </p>
               <p className="text-md text-gray-600">-CEO, Algorim</p>
             </div>
           </div>
@@ -52,6 +59,22 @@ const CeoSaying = () => {
               human capital required to accelerate strategic objectives and
               deliver exceptional results.
             </p>
+          </div>
+        </div>
+        <div className="w-full flex justify-center">
+          <div>
+            <Button
+              variant={"ghost"}
+              className="shimmer-btn border bg-card"
+              size={"lg"}
+            >
+              <Link
+                className="flex items-center gap-4"
+                href={"https://www.linkedin.com/in/asadtanvirshami/"}
+              >
+                Connect with Asad <SquareArrowOutUpRight />
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
