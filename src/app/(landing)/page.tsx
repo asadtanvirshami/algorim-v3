@@ -24,7 +24,7 @@ const Landing = () => {
         url="https://algorimsoft.com"
         image="https://algorimsoft.com/og-image.jpg"
       />
-      <div className="relative isolate overflow-hidden w-full h-full  font-[family-name:var(--font-redhat)] ">
+      <div className="relative mt-32 isolate overflow-hidden w-full h-full  font-[family-name:var(--font-redhat)] ">
         <svg
           className="absolute inset-0 -z-10 h-full w-full stroke-gray-100 [mask-image:radial-gradient(100%_100%_at_center,white,transparent)]"
           aria-hidden="true"
