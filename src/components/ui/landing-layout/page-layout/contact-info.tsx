@@ -40,8 +40,9 @@ export const ContactInfo = () => {
         </div>
         <div className="flex-col flex mt-12">
           <ul>
-            <h1>Address</h1>
-            <ul>Block J, North Nazimabad, Karachi, Pakistan.</ul>
+            <h1>Location</h1>
+            <ul>Karachi, Pakistan.</ul>
+            <ul>Dubai, UAE.</ul>
           </ul>
         </div>
         <div className="flex-col flex mt-12">
