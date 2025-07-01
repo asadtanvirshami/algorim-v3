@@ -59,7 +59,7 @@ const Header = () => {
           <div>
             <div className="flex h-5 items-center space-x-4 text-sm  font-[family-name:var(--font-redhat)]">
               {/* Cell */}
-              <h2>+92 301 1234567</h2>
+              <h2>+92 336 1818434</h2>
               {/* Email */}
               <Separator orientation="vertical" />
               <h2>info@algorimsoft.com</h2>
