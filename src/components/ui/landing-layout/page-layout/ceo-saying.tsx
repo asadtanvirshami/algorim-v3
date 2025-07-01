@@ -2,7 +2,6 @@ import Image from "next/image";
 import React from "react";
 
 import ceo from "../../../../../public/assets/ceo/ceo.png";
-import LinkedIn from "../../../../../public/assets/socials/in.png";
 
 import { Button } from "../../button";
 import Link from "next/link";
