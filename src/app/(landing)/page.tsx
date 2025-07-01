@@ -24,7 +24,7 @@ const Landing = () => {
         url="https://algorimsoft.com"
         image="https://algorimsoft.com/og-image.jpg"
       />
-      <div className="relative mt-32 isolate overflow-hidden w-full h-full  font-[family-name:var(--font-redhat)] ">
+      <div className="relative isolate overflow-hidden w-full h-full  font-[family-name:var(--font-redhat)] ">
         <svg
           className="absolute inset-0 -z-10 h-full w-full stroke-gray-100 [mask-image:radial-gradient(100%_100%_at_center,white,transparent)]"
           aria-hidden="true"
@@ -54,7 +54,7 @@ const Landing = () => {
           />
         </svg>
 
-        <div className="mx-auto h-full mt-12  justify-center items-center align-middle max-w-7xl  sm:pb-32 lg:flex lg:py-30 lg:px-8">
+        <div className="mx-auto h-full mt-32  justify-center items-center align-middle max-w-7xl  sm:pb-32 lg:flex lg:py-30 lg:px-8">
           <HeroSection />
         </div>
         <div className="w-full">
