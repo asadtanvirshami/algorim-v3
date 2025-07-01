@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { ThemeProvider } from "@/components/theme-provider/provider";
 import Header from "../header";
@@ -17,7 +19,7 @@ export default function MainLayout({
     >
       <Header />
       {children}
-      <Footer/>
+      <Footer />
     </ThemeProvider>
   );
 }

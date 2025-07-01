@@ -8,12 +8,12 @@ const WhySection = () => {
       {" "}
       {/* WHY CHOOSE US*/}
       <div className="space-y-6 gap-5 items-center grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl  fade-up font-bold text-balance">
+        <span className="text-4xl md:text-5xl lg:text-6xl  fade-up font-bold text-balance">
           Choose Wisely With
           <h1 className="font-[family-name:var(--font-revamped)]  text-5xl md:text-7xl lg:text-7xl">
             Algorim
           </h1>
-        </h1>
+        </span>
         <div className="space-y-3 text-left">
           <ul className="fade-up">
             <p className="text-xl font-bold">

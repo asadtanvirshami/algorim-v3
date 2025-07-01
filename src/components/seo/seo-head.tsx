@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-import icon from "@/public/favicon.ico";
+import icon from "../../app/favicon.ico";
 
 interface SEOProps {
   title: string;
