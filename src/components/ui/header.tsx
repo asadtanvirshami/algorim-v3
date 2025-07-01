@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { ModeToggle } from "../theme-provider/toggle-button";
 import {
@@ -15,9 +15,13 @@ import {
 import { Separator } from "./separator";
 import { Button } from "./button";
 import { ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
   const scrollToSection = (id: string) => {
     const section = document.getElementById(id);
     if (section) {
@@ -25,8 +29,27 @@ const Header = () => {
       setIsOpen(false); // Close mobile menu if open
     }
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      setIsVisible(currentScrollY < lastScrollY || currentScrollY < 10);
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
   return (
-    <header className="w-full bg-background -b sticky top-0 z-50">
+    <header
+      className={cn(
+        "fixed top-0 z-50 w-full transition-transform duration-300",
+        isVisible ? "translate-y-0" : "-translate-y-full",
+        "bg-black/30 backdrop-blur-md  shadow-sm"
+      )}
+    >
       {/* Headline Banner*/}
       <div className="max-w-screen-xl hidden lg:flex xl:flex mx-auto justify-between items-center px-4 py-2">
         {/* Socials*/}
@@ -92,8 +115,7 @@ const Header = () => {
                   className={navigationMenuTriggerStyle()}
                 >
                   <Button
-                    variant={"ghost"}
-                    type="button"
+                    className="bg-transparent shadow-none hover:shadow-none focus:bg-transparent dark:text-white hover:bg-transparent cursor-pointer"
                     onClick={() => scrollToSection("testimonials")}
                   >
                     TESTIMONIALS
@@ -104,7 +126,7 @@ const Header = () => {
                   className={navigationMenuTriggerStyle()}
                 >
                   <Button
-                    variant={"ghost"}
+                    className="bg-transparent shadow-none hover:shadow-none focus:bg-transparent dark:text-white hover:bg-transparent cursor-pointer"
                     type="button"
                     onClick={() => scrollToSection("who-we-are")}
                   >
@@ -116,7 +138,7 @@ const Header = () => {
                   className={navigationMenuTriggerStyle()}
                 >
                   <Button
-                    variant={"ghost"}
+                    className="bg-transparent shadow-none hover:shadow-none focus:bg-transparent dark:text-white hover:bg-transparent cursor-pointer"
                     onClick={() => scrollToSection("services")}
                     type="button"
                   >
@@ -128,7 +150,7 @@ const Header = () => {
                   className={navigationMenuTriggerStyle()}
                 >
                   <Button
-                    variant={"ghost"}
+                    className="bg-transparent shadow-none hover:shadow-none focus:bg-transparent dark:text-white hover:bg-transparent cursor-pointer"
                     type="button"
                     onClick={() => scrollToSection("inquiry")}
                   >

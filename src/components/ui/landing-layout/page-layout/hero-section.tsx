@@ -18,7 +18,7 @@ const HeroSection = () => {
       <div className="mt-8">
         <Button
           size={"lg"}
-          className="px-8 py-3 text-lg font-semibold text-white bg-gradient-to-tr from-blue-500 to-sky-500 rounded-lg shadow-lg hover:scale-105 transform transition-transform duration-300 ease-in-out"
+          className="px-8 py-3 text-lg font-semibold dark:text-black text-white  dark:bg-white rounded-lg shadow-lg hover:scale-105 transform transition-transform duration-300 ease-in-out"
         >
           <Link href="https://calendly.com/algorim">Get Free Consultation</Link>
           <ArrowUpRightIcon />

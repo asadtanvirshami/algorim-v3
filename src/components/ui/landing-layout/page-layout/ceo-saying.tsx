@@ -64,7 +64,7 @@ const CeoSaying = () => {
           <div>
             <Button
               variant={"ghost"}
-              className="shimmer-btn border bg-card"
+              className="shimmer-btn border bg-card dark:text-white hover:bg-sky-600 dark:hover:bg-sky-500 hover:text-white border-none dark:bg-black"
               size={"lg"}
             >
               <Link
