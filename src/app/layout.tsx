@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Red_Hat_Display } from "next/font/google";
 import "./globals.css";
+import ReactLenis from "lenis/react";
 import localFont from "next/font/local";
 
 const revamped = localFont({
@@ -29,7 +30,18 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${revamped.variable} ${redhat.variable} antialiased`}>
-        {children}
+        <ReactLenis
+          root
+          options={{
+            lerp: 0.08, // smoothing (0–1)
+            duration: 1.2, // approximate duration of scroll
+            syncTouch: true, // ✅ works in new Lenis instead of smoothTouch
+            wheelMultiplier: 1,
+            gestureOrientation: "vertical",
+          }}
+        >
+          {children}
+        </ReactLenis>
       </body>
     </html>
   );

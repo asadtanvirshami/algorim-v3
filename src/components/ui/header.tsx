@@ -16,6 +16,7 @@ import { Separator } from "./separator";
 import { Button } from "./button";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import GlassSurface from "../GlassSurface";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -163,15 +164,12 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            <Button
-              variant={"outline"}
-              className="flex items-center cursor-pointer shimmer-btn !border dark:text-white dark:bg-black"
-            >
+            <GlassSurface className="flex items-center cursor-pointer !h-10 shimmer-btn !border dark:text-white dark:bg-black">
               <Link href="https://calendly.com/algorim">
                 {"Let's connect"}{" "}
               </Link>
               <ArrowRight />
-            </Button>
+            </GlassSurface>
             <ModeToggle />
           </div>
         </div>
