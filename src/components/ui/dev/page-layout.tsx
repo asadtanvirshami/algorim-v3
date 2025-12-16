@@ -1,17 +1,16 @@
 // DevLayout.tsx
 "use client";
 
-import React, { useLayoutEffect, useRef, useEffect } from "react";
+import React, {
+  useLayoutEffect,
+  useRef,
+  useEffect,
+  useCallback,
+  useState,
+} from "react";
 import { useLenis } from "lenis/react";
 import { Card } from "../card";
 import dynamic from "next/dynamic";
-
-const World = dynamic(() => import("../../ui/globe").then((m) => m.World), {
-  ssr: false,
-  loading: () => (
-    <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-br from-neutral-200 via-neutral-100 to-neutral-300 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-700" />
-  ),
-});
 
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -30,6 +29,13 @@ import {
 import HeroOverlay from "../landing-layout/page-layout/sections/hero_overlay";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const World = dynamic(() => import("../../ui/globe").then((m) => m.World), {
+  ssr: false,
+  loading: () => (
+    <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-br from-neutral-200 via-neutral-100 to-neutral-300 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-700" />
+  ),
+});
 
 const cardsData = [
   {
@@ -518,6 +524,156 @@ const globeArcs = [
   },
 ];
 
+type FooterLink = {
+  label: string;
+  href: string;
+  external?: boolean;
+};
+
+type FooterColumn = {
+  title: string;
+  links: FooterLink[];
+};
+
+type ContactItem = {
+  country: string;
+  phone: string;
+};
+
+const FOOTER_CONTACTS: ContactItem[] = [
+  { country: "Andorra", phone: "+371 665 320" },
+  { country: "United Arab Emirates", phone: "+971 50 697 5307" },
+  { country: "Spain", phone: "+34 635 110 145" },
+  { country: "Pakistan", phone: "+92 331 2051939" },
+  { country: "United States", phone: "+1 707-657-5347" },
+];
+
+// Helper: keep tel: clean
+const toTel = (phone: string) => phone.replace(/[^\d+]/g, "");
+
+const FOOTER_LINKS: FooterColumn[] = [
+  {
+    title: "Services",
+    links: [
+      { label: "Branding", href: "#services" },
+      { label: "Engineering", href: "#services" },
+      { label: "AI Automation", href: "#services" },
+      { label: "Cyber Security", href: "#services" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "#who-heading" },
+      { label: "Process", href: "#process-kicker" },
+      { label: "Contact", href: "mailto:business@algorimsoft.com" },
+    ],
+  },
+  {
+    title: "Social",
+    links: [
+      {
+        label: "LinkedIn",
+        href: "https://www.linkedin.com/company/algorim-io",
+        external: true,
+      },
+      {
+        label: "Instagram",
+        href: "https://www.instagram.com/algorim.io",
+        external: true,
+      },
+      // {
+      //   label: "X / Twitter",
+      //   href: "https://twitter.com/algorim",
+      //   external: true,
+      // },
+      // { label: "GitHub", href: "https://github.com/algorim", external: true },
+      // {
+      //   label: "Dribbble",
+      //   href: "https://dribbble.com/algorim",
+      //   external: true,
+      // },
+    ],
+  },
+  // {
+  //   title: "Legal",
+  //   links: [
+  //     { label: "Privacy", href: "/privacy" },
+  //     { label: "Terms", href: "/terms" },
+  //     { label: "Security", href: "/security" },
+  //     { label: "Cookies", href: "/cookies" },
+  //   ],
+  // },
+];
+
+type PortfolioProject = {
+  id: string;
+  title: string;
+  subtitle: string;
+  year: string;
+  tags: string[];
+  results: string[];
+  href?: string;
+  status?: "LIVE" | "SOON" | any;
+};
+
+const PORTFOLIO: PortfolioProject[] = [
+  {
+    id: "case-001",
+    title: "n0hacks.com",
+    subtitle: "Cybersecurity services — offensive + defensive operations.",
+    year: "2025",
+    tags: ["Pentesting", "Red Team", "Cloud", "Incident Response"],
+    results: [
+      "High-trust security offering",
+      "Premium positioning + clarity",
+      "Security-first delivery system",
+    ],
+    href: "https://n0hacks.com",
+    status: "LIVE",
+  },
+  {
+    id: "case-002",
+    title: "tradingbacktesting.com",
+    subtitle: "Trading research + backtesting workflows and analytics.",
+    year: "2024",
+    tags: ["FinTech", "Backtesting", "Data", "Performance"],
+    results: [
+      "Faster strategy iteration",
+      "Better simulation UX",
+      "Built for signal + speed",
+    ],
+    href: "https://tradingbacktesting.com",
+    status: "LIVE",
+  },
+  {
+    id: "case-003",
+    title: "Internal AI Systems",
+    subtitle: "Agents + automation wired into real ops.",
+    year: "2025",
+    tags: ["Agents", "RAG", "Automation", "Evaluation"],
+    results: [
+      "Reduced manual ops",
+      "Reliable workflows",
+      "Production-safe agent loops",
+    ],
+    status: "LIVE",
+  },
+  {
+    id: "case-004",
+    title: "Launching our product soon",
+    subtitle: "A new platform we’re shipping — built for scale & defense.",
+    year: "2025",
+    tags: ["Product", "SaaS", "Security-first", "Stealth"],
+    results: [
+      "Built from first principles",
+      "Hardening baked into architecture",
+      "Designed to scale globally",
+    ],
+    status: "SOON",
+  },
+];
+
 const DevLayout: React.FC = () => {
   const lenis = useLenis();
 
@@ -532,650 +688,1043 @@ const DevLayout: React.FC = () => {
   const giantASectionRef = useRef<HTMLElement | null>(null);
   const giantARef = useRef<HTMLDivElement | null>(null);
   const worldSectionRef = useRef<HTMLElement | null>(null);
+  const footerSectionRef = useRef<HTMLElement | null>(null);
+  const portfolioSectionRef = useRef<HTMLElement | null>(null);
 
-  // Preload the globe before user reaches the section
+  const ctaSectionRef = useRef<HTMLElement | null>(null);
+
+  const [activeProjectId, setActiveProjectId] = useState(PORTFOLIO[0]?.id);
+  const activeProject =
+    PORTFOLIO.find((p) => p.id === activeProjectId) ?? PORTFOLIO[0];
+
   useEffect(() => {
     (World as any)?.preload?.();
   }, []);
+
+  const handleAnchorClick = useCallback(
+    (
+      e: React.MouseEvent<HTMLAnchorElement>,
+      href: string,
+      external?: boolean
+    ) => {
+      if (external) return;
+      if (!href.startsWith("#")) return;
+
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target && lenis) {
+        lenis.scrollTo(target, { offset: -40 });
+      }
+    },
+    [lenis]
+  );
 
   useLayoutEffect(() => {
     if (!layoutRef.current) return;
 
     const ctx = gsap.context(() => {
-      if (lenis) {
-        lenis.on("scroll", ScrollTrigger.update);
-      }
+      const mm: any = gsap.matchMedia();
 
-      // ========= HERO pinned =========
-      if (heroScrollRef.current) {
-        const tlHero = gsap.timeline({
-          scrollTrigger: {
-            trigger: heroScrollRef.current,
-            start: "top top",
-            end: "+=160%",
-            scrub: 1.1,
-            pin: true,
-          },
+      mm.add("(min-width: 768px)", () => {
+        if (lenis) lenis.on("scroll", ScrollTrigger.update);
+
+        // HERO pinned
+        if (heroScrollRef.current) {
+          const tlHero = gsap.timeline({
+            scrollTrigger: {
+              trigger: heroScrollRef.current,
+              start: "top top",
+              end: "+=160%",
+              scrub: 1.1,
+              pin: true,
+            },
+          });
+
+          gsap.set(".hero-overlay", { yPercent: 100 });
+          gsap.set(".hero-word", { opacity: 0, scale: 0.75, y: 40 });
+
+          tlHero
+            .to(".hero-overlay", {
+              yPercent: 0,
+              backgroundColor: "rgba(0,0,0,1)",
+              duration: 1.1,
+              ease: "power3.out",
+            })
+            .to(
+              ".hero-word",
+              {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                duration: 1,
+                ease: "power3.out",
+              },
+              "-=0.6"
+            )
+            .to(
+              ".hero-word",
+              {
+                scale: 1.06,
+                y: -10,
+                filter:
+                  "drop-shadow(0px 0px 25px rgba(255,255,255,0.45)) drop-shadow(0px 20px 60px rgba(0,0,0,0.85))",
+                duration: 1.3,
+                ease: "power2.inOut",
+              },
+              "+=0.2"
+            );
+        }
+
+        // OUR PROCESS pinned
+        if (pinnedSectionRef.current) {
+          const section = pinnedSectionRef.current;
+          const lineFill = section.querySelector(
+            ".process-line-fill"
+          ) as HTMLElement | null;
+
+          const labels = gsap.utils.toArray<HTMLElement>(".process-step-label");
+          const cards = gsap.utils.toArray<HTMLElement>(".process-card-inner");
+
+          if (cards.length) {
+            const totalSteps = cards.length;
+
+            cards.forEach((card, index) => {
+              gsap.set(card, {
+                opacity: index === 0 ? 1 : 0,
+                scale: index === 0 ? 1 : 0.94,
+                y: index === 0 ? 0 : 18,
+              });
+            });
+
+            if (lineFill) {
+              gsap.set(lineFill, { scaleY: 0, transformOrigin: "top center" });
+            }
+
+            gsap.set(labels, { opacity: 0.4 });
+            if (labels[0]) gsap.set(labels[0], { opacity: 1 });
+
+            gsap.from(
+              [
+                "#process-kicker",
+                "#process-title",
+                "#process-sub",
+                ".process-cards-window",
+              ],
+              {
+                opacity: 0,
+                y: 24,
+                duration: 0.8,
+                ease: "power3.out",
+                stagger: 0.08,
+                scrollTrigger: { trigger: section, start: "top 80%" },
+              }
+            );
+
+            ScrollTrigger.create({
+              trigger: section,
+              start: "top top",
+              end: "+=" + totalSteps * 160 + "%",
+              scrub: 1.1,
+              pin: true,
+              snap:
+                totalSteps > 1
+                  ? {
+                      snapTo: (value) => {
+                        const seg = 1 / (totalSteps - 1);
+                        return Math.round(value / seg) * seg;
+                      },
+                      duration: 0.35,
+                      ease: "power1.out",
+                    }
+                  : false,
+              onUpdate: (self) => {
+                const progress = self.progress;
+                const activeIndex = Math.round(progress * (totalSteps - 1));
+
+                cards.forEach((card, index) => {
+                  const isActive = index === activeIndex;
+                  gsap.to(card, {
+                    opacity: isActive ? 1 : 0,
+                    scale: isActive ? 1 : 0.94,
+                    y: isActive ? 0 : 18,
+                    duration: 0.25,
+                    ease: "power2.out",
+                    overwrite: "auto",
+                  });
+                });
+
+                if (lineFill) {
+                  gsap.to(lineFill, {
+                    scaleY: progress,
+                    duration: 0.2,
+                    ease: "power2.out",
+                    overwrite: "auto",
+                  });
+                }
+
+                labels.forEach((label, index) => {
+                  gsap.to(label, {
+                    opacity: index === activeIndex ? 1 : 0.4,
+                    duration: 0.2,
+                    ease: "power2.out",
+                    overwrite: "auto",
+                  });
+                });
+              },
+            });
+          }
+        }
+
+        // Generic fades
+        gsap.utils.toArray<HTMLElement>(".fade-section").forEach((section) => {
+          gsap.from(section, {
+            opacity: 0,
+            y: 60,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              toggleActions: "play none none reverse",
+            },
+          });
         });
 
-        gsap.set(".hero-overlay", { yPercent: 100 });
-        gsap.set(".hero-word", { opacity: 0, scale: 0.75, y: 40 });
-
-        tlHero
-          .to(".hero-overlay", {
-            yPercent: 0,
-            backgroundColor: "rgba(0,0,0,1)",
-            duration: 1.1,
-            ease: "power3.out",
-          })
-          .to(
-            ".hero-word",
-            {
-              opacity: 1,
-              scale: 1,
-              y: 0,
-              duration: 1,
-              ease: "power3.out",
-            },
-            "-=0.6"
-          )
-          .to(
-            ".hero-word",
-            {
-              scale: 1.06,
-              y: -10,
-              filter:
-                "drop-shadow(0px 0px 25px rgba(255,255,255,0.45)) drop-shadow(0px 20px 60px rgba(0,0,0,0.85))",
-              duration: 1.3,
-              ease: "power2.inOut",
-            },
-            "+=0.2"
-          );
-      }
-
-      // ========= OUR PROCESS – pinned =========
-      if (pinnedSectionRef.current) {
-        const section = pinnedSectionRef.current;
-        const lineFill = section.querySelector(
-          ".process-line-fill"
-        ) as HTMLElement | null;
-        const labels = gsap.utils.toArray<HTMLElement>(".process-step-label");
-        const cards = gsap.utils.toArray<HTMLElement>(".process-card-inner");
-
-        if (cards.length) {
-          const totalSteps = cards.length;
+        // WHO WE ARE stack
+        if (whoSectionRef.current) {
+          const cards = gsap.utils.toArray<HTMLElement>(".who-card");
 
           cards.forEach((card, index) => {
             gsap.set(card, {
-              opacity: index === 0 ? 1 : 0,
-              scale: index === 0 ? 1 : 0.9,
-            });
-          });
-
-          if (lineFill) {
-            gsap.set(lineFill, {
-              scaleY: 0,
-              transformOrigin: "top center",
-            });
-          }
-
-          gsap.set(labels, { opacity: 0.45 });
-          if (labels[0]) {
-            gsap.set(labels[0], { opacity: 1 });
-          }
-
-          gsap.from(
-            [
-              "#process-kicker",
-              "#process-title",
-              "#process-sub",
-              ".process-cards-window",
-            ],
-            {
               opacity: 0,
-              y: 24,
-              duration: 0.8,
-              ease: "power3.out",
-              stagger: 0.08,
-              scrollTrigger: {
-                trigger: section,
-                start: "top 80%",
-              },
-            }
-          );
+              x: 220,
+              y: 220,
+              scale: 0.96,
+              rotateX: -4,
+              rotateY: 4,
+              transformPerspective: 1200,
+              zIndex: index + 1,
+            });
+          });
 
-          ScrollTrigger.create({
-            trigger: section,
-            start: "top top",
-            end: "+=" + totalSteps * 160 + "%",
-            scrub: 1.1,
-            pin: true,
-            snap:
-              totalSteps > 1
-                ? {
-                    snapTo: (value) => {
-                      const seg = 1 / (totalSteps - 1);
-                      return Math.round(value / seg) * seg;
-                    },
-                    duration: 0.35,
-                    ease: "power1.out",
-                  }
-                : false,
-            onUpdate: (self) => {
-              const progress = self.progress;
-              const activeIndex = Math.round(progress * (totalSteps - 1));
-
-              cards.forEach((card, index) => {
-                const isActive = index === activeIndex;
-                gsap.to(card, {
-                  opacity: isActive ? 1 : 0,
-                  scale: isActive ? 1 : 0.9,
-                  duration: 0.25,
-                  ease: "power2.out",
-                  overwrite: "auto",
-                });
-              });
-
-              if (lineFill) {
-                gsap.to(lineFill, {
-                  scaleY: progress,
-                  duration: 0.2,
-                  ease: "power2.out",
-                  overwrite: "auto",
-                });
-              }
-
-              labels.forEach((label, index) => {
-                gsap.to(label, {
-                  opacity: index === activeIndex ? 1 : 0.45,
-                  duration: 0.2,
-                  ease: "power2.out",
-                  overwrite: "auto",
-                });
-              });
+          const tlWho = gsap.timeline({
+            scrollTrigger: {
+              trigger: whoSectionRef.current,
+              start: "top top",
+              end: "+=350%",
+              scrub: 1.15,
+              pin: true,
             },
           });
-        }
-      }
 
-      // ========= generic fades =========
-      gsap.utils.toArray<HTMLElement>(".fade-section").forEach((section) => {
-        gsap.from(section, {
-          opacity: 0,
-          y: 60,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
-        });
-      });
-
-      // ========= WHO WE ARE stack =========
-      if (whoSectionRef.current) {
-        const cards = gsap.utils.toArray<HTMLElement>(".who-card");
-
-        cards.forEach((card, index) => {
-          gsap.set(card, {
+          tlWho.from("#who-heading", {
             opacity: 0,
-            x: 220,
-            y: 220,
-            scale: 0.96,
-            rotateX: -4,
-            rotateY: 4,
-            transformPerspective: 1200,
-            zIndex: index + 1,
+            y: 40,
+            duration: 0.9,
+            ease: "power3.out",
           });
-        });
 
-        const tlWho = gsap.timeline({
-          scrollTrigger: {
-            trigger: whoSectionRef.current,
-            start: "top top",
-            end: "+=350%",
-            scrub: 1.15,
-            pin: true,
-          },
-        });
+          cards.forEach((card, index) => {
+            const offset = index * 32;
+            const iconEl = card.querySelector(
+              ".who-icon"
+            ) as HTMLElement | null;
 
-        tlWho.from("#who-heading", {
-          opacity: 0,
-          y: 40,
-          duration: 0.9,
-          ease: "power3.out",
-        });
-
-        cards.forEach((card, index) => {
-          const offset = index * 32;
-          const iconEl = card.querySelector(".who-icon") as HTMLElement | null;
-
-          tlWho.to(
-            card,
-            {
-              opacity: 1,
-              x: -offset,
-              y: -offset,
-              scale: 1,
-              rotateX: 0,
-              rotateY: 0,
-              duration: 1,
-              ease: "power2.out",
-            },
-            index === 0 ? "+=0.4" : ">-=0.25"
-          );
-
-          if (iconEl) {
-            tlWho.fromTo(
-              iconEl,
-              { y: 16, opacity: 0, scale: 0.85 },
+            tlWho.to(
+              card,
               {
-                y: 0,
                 opacity: 1,
+                x: -offset,
+                y: -offset,
                 scale: 1,
-                duration: 0.6,
+                rotateX: 0,
+                rotateY: 0,
+                duration: 1,
                 ease: "power2.out",
               },
-              "<+0.1"
+              index === 0 ? "+=0.4" : ">-=0.25"
             );
-          }
-        });
-      }
 
-      // ========= CREATIVITY vs TECHNICALITY =========
-      if (creativityTechSectionRef.current) {
-        const tlCT = gsap.timeline({
-          scrollTrigger: {
-            trigger: creativityTechSectionRef.current,
-            start: "top top",
-            end: "+=200%",
-            scrub: 1.1,
-            pin: true,
-            anticipatePin: 1,
-          },
-        });
-
-        gsap.set(".creativity-icon", {
-          scale: 0.7,
-          opacity: 0,
-          x: -40,
-          y: -40,
-        });
-        gsap.set(".technicality-icon", {
-          scale: 0.7,
-          opacity: 0,
-          x: 40,
-          y: 40,
-        });
-        gsap.set("#creativity-word", { opacity: 0, y: 40 });
-        gsap.set("#technicality-word", { opacity: 0, y: -40 });
-
-        tlCT
-          .to(
-            [".creativity-icon", ".technicality-icon"],
-            {
-              scale: 1,
-              opacity: 1,
-              x: 0,
-              y: 0,
-              duration: 1,
-              ease: "power3.out",
-              stagger: 0.1,
-            },
-            0
-          )
-          .to(
-            "#creativity-word",
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.8,
-              ease: "power3.out",
-            },
-            "-=0.3"
-          )
-          .to(
-            "#technicality-word",
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.8,
-              ease: "power3.out",
-            },
-            "-=0.5"
-          );
-      }
-
-      // ========= WORLD – Global footprint (pinned text + globe shell) =========
-      if (worldSectionRef.current) {
-        const section = worldSectionRef.current;
-        const globeShell = section.querySelector(
-          ".world-globe-shell"
-        ) as HTMLElement | null;
-
-        gsap.set(["#world-kicker", "#world-title", "#world-copy"], {
-          opacity: 0,
-          y: 30,
-        });
-        gsap.set(".world-stat", { opacity: 0, y: 20 });
-
-        if (globeShell) {
-          gsap.set(globeShell, {
-            opacity: 0,
-            y: 80,
-            scale: 0.85,
-            rotateX: -10,
-            rotateY: 18,
-            transformStyle: "preserve-3d",
-            transformOrigin: "50% 50%",
-          });
-        }
-
-        const tlWorld = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: "+=220%",
-            scrub: 1.1,
-            pin: true,
-            anticipatePin: 1,
-          },
-        });
-
-        tlWorld
-          .to(
-            "#world-kicker",
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.6,
-              ease: "power3.out",
-            },
-            0
-          )
-          .to(
-            "#world-title",
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.7,
-              ease: "power3.out",
-            },
-            0.05
-          )
-          .to(
-            "#world-copy",
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.7,
-              ease: "power3.out",
-            },
-            0.1
-          )
-          .to(
-            ".world-stat",
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.6,
-              ease: "power3.out",
-              stagger: 0.12,
-            },
-            0.25
-          );
-
-        if (globeShell) {
-          tlWorld.to(
-            globeShell,
-            {
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              rotateX: 0,
-              rotateY: 0,
-              duration: 1.2,
-              ease: "power3.out",
-            },
-            0.2
-          );
-        }
-      }
-
-      // ========= SERVICES – horizontal deck =========
-      const servicesSection = servicesHorizontalSectionRef.current;
-      const servicesTrack = servicesTrackRef.current;
-
-      if (servicesSection && servicesTrack) {
-        const cards = gsap.utils.toArray<HTMLElement>(".service-card-h");
-
-        const getScrollDistance = () =>
-          Math.max(servicesTrack.scrollWidth - servicesSection.clientWidth, 0);
-
-        const horizontalTween = gsap.to(servicesTrack, {
-          x: () => -getScrollDistance(),
-          ease: "none",
-          scrollTrigger: {
-            trigger: servicesSection,
-            start: "top top",
-            end: () => `+=${getScrollDistance() + window.innerWidth}`,
-            scrub: 1,
-            pin: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        gsap.to(".service-icon", {
-          y: -4,
-          repeat: -1,
-          yoyo: true,
-          duration: 2.2,
-          ease: "sine.inOut",
-        });
-
-        cards.forEach((card, index) => {
-          const direction = index % 2 === 0 ? -1 : 1;
-          const iconEl = card.querySelector(
-            ".service-icon"
-          ) as HTMLElement | null;
-
-          gsap.set(card, {
-            opacity: 0,
-            y: 80,
-            rotateY: 10 * direction,
-            scale: 0.9,
-          });
-          if (iconEl) {
-            gsap.set(iconEl, { y: 20, opacity: 0, scale: 0.7 });
-          }
-
-          ScrollTrigger.create({
-            trigger: card,
-            containerAnimation: horizontalTween,
-            start: "left 90%",
-            end: "left 30%",
-            onEnter: () => {
-              gsap.to(card, {
-                opacity: 1,
-                y: 0,
-                rotateY: 0,
-                scale: 1,
-                duration: 0.9,
-                ease: "power3.out",
-              });
-              if (iconEl) {
-                gsap.to(iconEl, {
+            if (iconEl) {
+              tlWho.fromTo(
+                iconEl,
+                { y: 16, opacity: 0, scale: 0.85 },
+                {
                   y: 0,
                   opacity: 1,
                   scale: 1,
                   duration: 0.6,
                   ease: "power2.out",
-                });
-              }
-            },
-            onLeaveBack: () => {
-              gsap.to(card, {
-                opacity: 0,
-                y: 80,
-                rotateY: 10 * direction,
-                scale: 0.9,
-                duration: 0.5,
-                ease: "power2.in",
-              });
-              if (iconEl) {
-                gsap.to(iconEl, {
-                  y: 20,
-                  opacity: 0,
-                  scale: 0.7,
-                  duration: 0.4,
-                  ease: "power2.in",
-                });
-              }
+                },
+                "<+0.1"
+              );
+            }
+          });
+        }
+
+        // CREATIVITY vs TECHNICALITY (ORANGE — pinned cinematic)
+        if (creativityTechSectionRef.current) {
+          const section = creativityTechSectionRef.current;
+
+          const tlCT = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: "+=220%",
+              scrub: 1.1,
+              pin: true,
+              anticipatePin: 1,
             },
           });
-        });
 
-        const endCard = servicesSection.querySelector(
-          ".services-end-card"
-        ) as HTMLElement | null;
+          // initial states
+          gsap.set(".ct-card", {
+            opacity: 0,
+            y: 40,
+            scale: 0.98,
+            filter: "blur(6px)",
+          });
+          gsap.set(".ct-divider", { scaleY: 0, transformOrigin: "top" });
 
-        if (endCard) {
-          gsap.set(endCard, { opacity: 0, y: 60, scale: 0.95 });
+          gsap.set(
+            [
+              ".ct-kicker-left",
+              ".ct-title-left",
+              ".ct-copy-left",
+              ".ct-chip-left",
+              ".ct-kicker-right",
+              ".ct-title-right",
+              ".ct-copy-right",
+              ".ct-chip-right",
+            ],
+            { opacity: 0, y: 18 }
+          );
 
-          ScrollTrigger.create({
-            trigger: endCard,
-            containerAnimation: horizontalTween,
-            start: "left 90%",
-            end: "left 30%",
-            onEnter: () => {
-              gsap.to(endCard, {
+          gsap.set(".ct-icon-left", {
+            opacity: 0,
+            scale: 0.85,
+            x: -10,
+            y: -10,
+          });
+          gsap.set(".ct-icon-right", { opacity: 0, scale: 0.85, x: 10, y: 10 });
+
+          gsap.set(".ct-glow-a", { x: -60, y: -40, scale: 0.9, opacity: 0.6 });
+          gsap.set(".ct-glow-b", { x: 60, y: 40, scale: 0.9, opacity: 0.55 });
+
+          tlCT
+            // bring in the glass card
+            .to(".ct-card", {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              filter: "blur(0px)",
+              duration: 1.0,
+              ease: "power3.out",
+            })
+            // icons pop
+            .to(
+              [".ct-icon-left", ".ct-icon-right"],
+              {
+                opacity: 1,
+                scale: 1,
+                x: 0,
+                y: 0,
+                duration: 0.8,
+                ease: "power3.out",
+                stagger: 0.12,
+              },
+              "-=0.55"
+            )
+            // left content
+            .to(
+              [
+                ".ct-kicker-left",
+                ".ct-title-left",
+                ".ct-copy-left",
+                ".ct-chip-left",
+              ],
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.7,
+                ease: "power3.out",
+                stagger: 0.08,
+              },
+              "-=0.45"
+            )
+            // divider reveal
+            .to(
+              ".ct-divider",
+              { scaleY: 1, duration: 0.7, ease: "power2.out" },
+              "-=0.55"
+            )
+            // right content
+            .to(
+              [
+                ".ct-kicker-right",
+                ".ct-title-right",
+                ".ct-copy-right",
+                ".ct-chip-right",
+              ],
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.7,
+                ease: "power3.out",
+                stagger: 0.08,
+              },
+              "-=0.5"
+            )
+            // cinematic “living” motion through the pinned scroll
+            .to(
+              ".ct-glow-a",
+              {
+                x: 30,
+                y: 10,
+                scale: 1.08,
+                opacity: 0.85,
+                duration: 1.4,
+                ease: "sine.inOut",
+              },
+              0.2
+            )
+            .to(
+              ".ct-glow-b",
+              {
+                x: -30,
+                y: -10,
+                scale: 1.1,
+                opacity: 0.8,
+                duration: 1.4,
+                ease: "sine.inOut",
+              },
+              0.2
+            )
+            // micro parallax of icons
+            .to(
+              ".ct-icon-left",
+              { y: -6, duration: 1.2, ease: "sine.inOut" },
+              0.4
+            )
+            .to(
+              ".ct-icon-right",
+              { y: 6, duration: 1.2, ease: "sine.inOut" },
+              0.4
+            );
+        }
+
+        // WORLD section
+        if (worldSectionRef.current) {
+          const section = worldSectionRef.current;
+          const globeShell = section.querySelector(
+            ".world-globe-shell"
+          ) as HTMLElement | null;
+
+          gsap.set(["#world-kicker", "#world-title", "#world-copy"], {
+            opacity: 0,
+            y: 30,
+          });
+          gsap.set(".world-stat", { opacity: 0, y: 20 });
+
+          if (globeShell) {
+            gsap.set(globeShell, {
+              opacity: 0,
+              y: 80,
+              scale: 0.85,
+              rotateX: -10,
+              rotateY: 18,
+              transformStyle: "preserve-3d",
+              transformOrigin: "50% 50%",
+            });
+          }
+
+          const tlWorld = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: "+=220%",
+              scrub: 1.1,
+              pin: true,
+              anticipatePin: 1,
+            },
+          });
+
+          tlWorld
+            .to(
+              "#world-kicker",
+              { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+              0
+            )
+            .to(
+              "#world-title",
+              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+              0.05
+            )
+            .to(
+              "#world-copy",
+              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+              0.1
+            )
+            .to(
+              ".world-stat",
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                ease: "power3.out",
+                stagger: 0.12,
+              },
+              0.25
+            );
+
+          if (globeShell) {
+            tlWorld.to(
+              globeShell,
+              {
                 opacity: 1,
                 y: 0,
                 scale: 1,
-                duration: 0.9,
+                rotateX: 0,
+                rotateY: 0,
+                duration: 1.2,
                 ease: "power3.out",
-              });
+              },
+              0.2
+            );
+          }
+        }
+
+        // SERVICES horizontal
+        const servicesSection = servicesHorizontalSectionRef.current;
+        const servicesTrack = servicesTrackRef.current;
+
+        if (servicesSection && servicesTrack) {
+          const cards = gsap.utils.toArray<HTMLElement>(".service-card-h");
+
+          const getScrollDistance = () => {
+            const raw = servicesTrack.scrollWidth - servicesSection.clientWidth;
+            return raw > 0 ? raw + 64 : 0;
+          };
+
+          const horizontalTween = gsap.to(servicesTrack, {
+            x: () => -getScrollDistance(),
+            ease: "none",
+            scrollTrigger: {
+              trigger: servicesSection,
+              start: "top top",
+              end: () => `+=${getScrollDistance()}`,
+              scrub: 1,
+              pin: true,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
             },
           });
+
+          gsap.to(".service-icon", {
+            y: -4,
+            repeat: -1,
+            yoyo: true,
+            duration: 2.2,
+            ease: "sine.inOut",
+          });
+
+          cards.forEach((card, index) => {
+            const direction = index % 2 === 0 ? -1 : 1;
+            const iconEl = card.querySelector(
+              ".service-icon"
+            ) as HTMLElement | null;
+
+            gsap.set(card, {
+              opacity: 0,
+              y: 80,
+              rotateY: 10 * direction,
+              scale: 0.9,
+            });
+            if (iconEl) gsap.set(iconEl, { y: 20, opacity: 0, scale: 0.7 });
+
+            ScrollTrigger.create({
+              trigger: card,
+              containerAnimation: horizontalTween,
+              start: "left 90%",
+              end: "left 30%",
+              onEnter: () => {
+                gsap.to(card, {
+                  opacity: 1,
+                  y: 0,
+                  rotateY: 0,
+                  scale: 1,
+                  duration: 0.9,
+                  ease: "power3.out",
+                });
+                if (iconEl)
+                  gsap.to(iconEl, {
+                    y: 0,
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.6,
+                    ease: "power2.out",
+                  });
+              },
+              onLeaveBack: () => {
+                gsap.to(card, {
+                  opacity: 0,
+                  y: 80,
+                  rotateY: 10 * direction,
+                  scale: 0.9,
+                  duration: 0.5,
+                  ease: "power2.in",
+                });
+                if (iconEl)
+                  gsap.to(iconEl, {
+                    y: 20,
+                    opacity: 0,
+                    scale: 0.7,
+                    duration: 0.4,
+                    ease: "power2.in",
+                  });
+              },
+            });
+          });
         }
-      }
+        // ======== CTA section (scroll reveal + sheen) ========
+        if (ctaSectionRef.current) {
+          const section = ctaSectionRef.current;
 
-      // ========= Brand color circles pinned =========
-      if (brandCirclesSectionRef.current) {
-        const circles = gsap.utils.toArray<HTMLElement>(
-          ".brand-circle-wrapper"
-        );
+          gsap.set("[data-cta-card]", { y: 40, autoAlpha: 0, scale: 0.985 });
+          gsap.set(
+            [
+              "[data-cta-kicker]",
+              "[data-cta-title]",
+              "[data-cta-subtitle]",
+              "[data-cta-actions]",
+            ],
+            { y: 18, autoAlpha: 0 }
+          );
+          gsap.set("[data-cta-sheen]", { xPercent: -120, autoAlpha: 0 });
+          gsap.set("[data-cta-glow]", { autoAlpha: 0 });
 
-        const tlBrand = gsap.timeline({
-          scrollTrigger: {
-            trigger: brandCirclesSectionRef.current,
-            start: "top top",
-            end: "+=320%",
-            scrub: 1.1,
-            pin: true,
-          },
-        });
+          const tlCTA = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: "top 75%",
+              end: "bottom 35%",
+              scrub: 1,
+              anticipatePin: 1,
+            },
+          });
 
-        tlBrand.from("#brand-circles-heading", {
-          opacity: 0,
-          y: 40,
-          duration: 0.9,
-          ease: "power3.out",
-        });
+          tlCTA
+            .to("[data-cta-card]", {
+              y: 0,
+              autoAlpha: 1,
+              scale: 1,
+              duration: 1,
+              ease: "power3.out",
+            })
+            .to(
+              ["[data-cta-kicker]", "[data-cta-title]", "[data-cta-subtitle]"],
+              {
+                y: 0,
+                autoAlpha: 1,
+                duration: 0.8,
+                ease: "power3.out",
+                stagger: 0.08,
+              },
+              0.08
+            )
+            .to(
+              "[data-cta-actions]",
+              {
+                y: 0,
+                autoAlpha: 1,
+                duration: 0.8,
+                ease: "power3.out",
+              },
+              0.18
+            )
+            // sheen / scanner sweep while entering
+            .to(
+              "[data-cta-sheen]",
+              {
+                xPercent: 120,
+                autoAlpha: 1,
+                duration: 1.2,
+                ease: "none",
+              },
+              0.1
+            );
 
-        circles.forEach((circle, index) => {
+          // glow appears when in view (clean, premium)
+          ScrollTrigger.create({
+            trigger: section,
+            start: "top 55%",
+            onEnter: () =>
+              gsap.to("[data-cta-glow]", {
+                autoAlpha: 1,
+                duration: 0.7,
+                ease: "power2.out",
+              }),
+            onLeaveBack: () =>
+              gsap.to("[data-cta-glow]", {
+                autoAlpha: 0,
+                duration: 0.25,
+                ease: "power2.out",
+              }),
+          });
+        }
+
+        // ======== PORTFOLIO — Cyber Command Center (pinned) ========
+        if (portfolioSectionRef.current) {
+          const section = portfolioSectionRef.current;
+
+          const items = gsap.utils.toArray<HTMLElement>(
+            "[data-portfolio-item]"
+          );
+          const panels = gsap.utils.toArray<HTMLElement>(
+            "[data-portfolio-panel]"
+          );
+
+          const scan = section.querySelector(
+            ".portfolio-scan"
+          ) as HTMLElement | null;
+          const glow = section.querySelector(
+            ".portfolio-glow"
+          ) as HTMLElement | null;
+          const needle = section.querySelector(
+            ".portfolio-needle"
+          ) as HTMLElement | null;
+
+          // init
+          gsap.set([items, panels], { willChange: "transform,opacity,filter" });
+          gsap.set(panels, { autoAlpha: 0, y: 18, filter: "blur(6px)" });
+          gsap.set(items, { autoAlpha: 0, x: -16 });
+
+          if (scan) gsap.set(scan, { y: -80, autoAlpha: 0 });
+          if (glow) gsap.set(glow, { autoAlpha: 0, scale: 0.92 });
+          if (needle)
+            gsap.set(needle, { scaleY: 0.1, transformOrigin: "top center" });
+
+          const total = Math.max(1, panels.length);
+
+          // helper: activate one case
+          const activate = (activeIndex: number) => {
+            items.forEach((el, i) => {
+              el.setAttribute(
+                "data-active",
+                i === activeIndex ? "true" : "false"
+              );
+              gsap.to(el, {
+                autoAlpha: 1,
+                x: 0,
+                duration: 0.25,
+                ease: "power2.out",
+                overwrite: "auto",
+              });
+
+              gsap.to(el, {
+                opacity: i === activeIndex ? 1 : 0.55,
+                duration: 0.2,
+                ease: "power2.out",
+                overwrite: "auto",
+              });
+            });
+
+            panels.forEach((p, i) => {
+              const on = i === activeIndex;
+              gsap.to(p, {
+                autoAlpha: on ? 1 : 0,
+                y: on ? 0 : 18,
+                filter: on ? "blur(0px)" : "blur(6px)",
+                duration: on ? 0.35 : 0.25,
+                ease: "power2.out",
+                overwrite: "auto",
+              });
+            });
+          };
+
+          // first active
+          activate(0);
+
+          // entrance
+          gsap.fromTo(
+            section.querySelectorAll(
+              ".portfolio-kicker, .portfolio-title, .portfolio-sub"
+            ),
+            { autoAlpha: 0, y: 18 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.7,
+              ease: "power3.out",
+              stagger: 0.08,
+              scrollTrigger: { trigger: section, start: "top 80%" },
+            }
+          );
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: `+=${total * 140}%`,
+              scrub: 1.1,
+              pin: true,
+              anticipatePin: 1,
+              snap:
+                total > 1
+                  ? {
+                      snapTo: (value) => {
+                        const seg = 1 / (total - 1);
+                        return Math.round(value / seg) * seg;
+                      },
+                      duration: 0.35,
+                      ease: "power2.out",
+                    }
+                  : false,
+              onUpdate: (self) => {
+                const idx = Math.round(self.progress * (total - 1));
+                activate(idx);
+
+                // needle moves down with progress
+                if (needle) {
+                  gsap.to(needle, {
+                    scaleY: 0.12 + self.progress * 0.88,
+                    duration: 0.2,
+                    ease: "power2.out",
+                    overwrite: "auto",
+                  });
+                }
+
+                // scanline pulses
+                if (scan) {
+                  gsap.to(scan, {
+                    autoAlpha: 1,
+                    y: -60 + self.progress * 260,
+                    duration: 0.25,
+                    ease: "none",
+                    overwrite: "auto",
+                  });
+                }
+              },
+            },
+          });
+
+          if (glow) {
+            tl.to(
+              glow,
+              { autoAlpha: 1, scale: 1, duration: 0.8, ease: "power3.out" },
+              0
+            );
+          }
+
+          // subtle radar rotation (independent)
+          gsap.to(section.querySelectorAll(".portfolio-radar"), {
+            rotate: 360,
+            duration: 26,
+            ease: "none",
+            repeat: -1,
+          });
+        }
+
+        // Brand circles (desktop only)
+        if (brandCirclesSectionRef.current) {
+          const circles = gsap.utils.toArray<HTMLElement>(
+            ".brand-circle-wrapper"
+          );
+
+          const tlBrand = gsap.timeline({
+            scrollTrigger: {
+              trigger: brandCirclesSectionRef.current,
+              start: "top top",
+              end: "+=320%",
+              scrub: 1.1,
+              pin: true,
+            },
+          });
+
+          // Aa — soft cinematic entrance
+          tlBrand.from(".brand-aa", {
+            opacity: 0,
+            y: 24,
+            scale: 0.96,
+            filter: "blur(6px)",
+            duration: 1,
+            ease: "power3.out",
+          });
+
+          // Heading
           tlBrand.from(
-            circle,
+            "#brand-circles-heading > :not(.brand-aa)",
             {
               opacity: 0,
-              scale: 0.5,
               y: 40,
-              filter: "blur(10px)",
+              duration: 0.9,
+              ease: "power3.out",
+              stagger: 0.08,
+            },
+            "-=0.4"
+          );
+
+          // Cards
+          circles.forEach((circle, index) => {
+            tlBrand.from(
+              circle,
+              {
+                opacity: 0,
+                scale: 0.92,
+                y: 30,
+                filter: "blur(8px)",
+                duration: 0.8,
+                ease: "power3.out",
+              },
+              index === 0 ? "+=0.2" : "-=0.45"
+            );
+          });
+
+          // Quote
+          tlBrand.from(
+            "#brand-quote",
+            {
+              opacity: 0,
+              y: 30,
               duration: 0.9,
               ease: "power3.out",
             },
-            index === 0 ? "+=0.4" : "+=0.5"
+            "+=0.2"
           );
-        });
 
-        tlBrand.from(
-          "#brand-quote",
-          {
-            opacity: 0,
-            y: 40,
-            duration: 1,
-            ease: "power3.out",
-          },
-          "+=0.6"
-        );
+          // Subtle living system pulse (kept light)
+          gsap.to(".brand-circle", {
+            scale: 1.03,
+            repeat: -1,
+            yoyo: true,
+            duration: 3,
+            ease: "sine.inOut",
+            stagger: { each: 0.4, from: "center" },
+          });
+        }
 
-        gsap.to(".brand-circle", {
-          scale: 1.04,
-          repeat: -1,
-          yoyo: true,
-          duration: 2.5,
-          ease: "sine.inOut",
-          stagger: { each: 0.3, from: "center" },
-        });
-      }
+        // Giant A zoom
+        if (giantASectionRef.current && giantARef.current) {
+          const zoomTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: giantASectionRef.current,
+              start: "top top",
+              end: "+=200%",
+              scrub: 1.2,
+              pin: true,
+              anticipatePin: 1,
+            },
+          });
 
-      // ========= Giant A zoom =========
-      if (giantASectionRef.current && giantARef.current) {
-        const zoomTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: giantASectionRef.current,
-            start: "top top",
-            end: "+=200%",
-            scrub: 1.2,
-            pin: true,
-            anticipatePin: 1,
-          },
-        });
+          zoomTl.fromTo(
+            giantARef.current,
+            {
+              scale: 1,
+              opacity: 0.9,
+              filter:
+                "drop-shadow(0 0 8px rgba(255,255,255,0.25)) drop-shadow(0 0 24px rgba(255,255,255,0.12))",
+            },
+            {
+              scale: 8,
+              opacity: 0,
+              filter:
+                "drop-shadow(0 0 40px rgba(255,255,255,0.8)) drop-shadow(0 0 110px rgba(255,255,255,0.45))",
+              ease: "power2.inOut",
+            }
+          );
+        }
 
-        zoomTl.fromTo(
-          giantARef.current,
-          {
-            scale: 1,
-            opacity: 0.9,
-            filter:
-              "drop-shadow(0 0 8px rgba(255,255,255,0.25)) drop-shadow(0 0 24px rgba(255,255,255,0.12))",
-          },
-          {
-            scale: 8,
-            opacity: 0,
-            filter:
-              "drop-shadow(0 0 40px rgba(255,255,255,0.8)) drop-shadow(0 0 110px rgba(255,255,255,0.45))",
-            ease: "power2.inOut",
-          }
-        );
-      }
+        // FOOTER pinned reveal
+        if (footerSectionRef.current) {
+          const section = footerSectionRef.current;
 
-      ScrollTrigger.refresh();
+          gsap.set(
+            [".footer-head", ".footer-cta", ".footer-grid", ".footer-bottom"],
+            { opacity: 0, y: 26 }
+          );
+          gsap.set(".footer-glow", { opacity: 0, scale: 0.9, y: 40 });
+
+          const tlFooter = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: "+=170%",
+              scrub: 1.1,
+              pin: true,
+              anticipatePin: 1,
+            },
+          });
+
+          tlFooter
+            .to(".footer-glow", {
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              duration: 1,
+              ease: "power3.out",
+            })
+            .to(
+              ".footer-head",
+              { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+              0.05
+            )
+            .to(
+              ".footer-cta",
+              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+              0.18
+            )
+            .to(
+              ".footer-grid",
+              { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+              0.28
+            )
+            .to(
+              ".footer-bottom",
+              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+              0.45
+            )
+            .to(
+              ".footer-glow",
+              { y: -60, duration: 1.2, ease: "sine.inOut" },
+              0.2
+            );
+
+          gsap.to(".footer-dot", {
+            scale: 1.25,
+            repeat: -1,
+            yoyo: true,
+            duration: 1.2,
+            ease: "sine.inOut",
+          });
+        }
+
+        ScrollTrigger.refresh();
+
+        return () => {
+          if (lenis) lenis.off("scroll", ScrollTrigger.update);
+        };
+      });
     }, layoutRef);
 
-    return () => {
-      ctx.revert();
-    };
+    return () => ctx.revert();
   }, [lenis]);
 
   return (
     <div className="relative min-h-screen bg-white text-black dark:bg-black dark:text-white">
-      {/* Global radial gradient background (applies to all sections) */}
-      <div
-        className="
-          pointer-events-none fixed inset-0 -z-10
-          bg-[radial-gradient(circle_at_10%_0,rgba(15,23,42,0.08),transparent_55%),radial-gradient(circle_at_90%_100%,rgba(15,23,42,0.12),transparent_55%)]
-          dark:bg-[radial-gradient(circle_at_10%_0,rgba(255,255,255,0.06),transparent_55%),radial-gradient(circle_at_90%_100%,rgba(255,255,255,0.05),transparent_55%)]
-        "
-      />
+      {/* GLOBAL ATMOSPHERE */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-orange-400/15 blur-[150px]" />
+        <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-amber-300/10 blur-[170px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/5 dark:to-black/40" />
+      </div>
 
-      <main ref={layoutRef} className="relative">
-        {/* Section 0 – Hero + ALGORIM overlay */}
+      <main
+        ref={layoutRef}
+        className="relative font-[family-name:var(--font-redhat)]"
+      >
         <HeroOverlay heroScrollRef={heroScrollRef} />
 
-        {/* Section 0.5 – Intro / bridge */}
+        {/* Intro */}
         <section className="fade-section relative min-h-[60vh] flex items-center justify-center">
           <div className="max-w-2xl px-6 text-center space-y-4 relative z-10">
             <p className="text-sm uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
@@ -1188,7 +1737,7 @@ const DevLayout: React.FC = () => {
           </div>
         </section>
 
-        {/* Section 1 – Pinned process */}
+        {/* Process */}
         <section
           ref={pinnedSectionRef}
           className="relative min-h-screen flex items-center justify-center overflow-hidden"
@@ -1221,7 +1770,7 @@ const DevLayout: React.FC = () => {
 
               <div className="hidden md:flex items-stretch gap-4">
                 <div className="relative w-[3px] rounded-full bg-neutral-200 dark:bg-white/5 overflow-hidden">
-                  <div className="process-line-fill absolute inset-0 bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-500 dark:from-white dark:via-white dark:to-white/60" />
+                  <div className="process-line-fill absolute inset-0 bg-gradient-to-b from-orange-900 via-orange-900 to-orange-500 " />
                 </div>
                 <div className="flex flex-col justify-between py-1 text-xs space-y-4">
                   <span className="process-step-label text-neutral-500 dark:text-neutral-500">
@@ -1245,10 +1794,15 @@ const DevLayout: React.FC = () => {
                     className="absolute inset-0 flex items-center justify-center"
                   >
                     <Card className="process-card-inner w-full relative rounded-2xl border border-black/10 dark:border-white/12 bg-white/70 dark:bg-white/[0.03] backdrop-blur-lg px-5 py-5 md:px-6 md:py-6 shadow-[0_22px_70px_rgba(0,0,0,0.18)] dark:shadow-[0_22px_70px_rgba(0,0,0,0.85)] overflow-hidden">
+                      <div className="pointer-events-none absolute inset-0 -z-10">
+                        <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-orange-500/25 blur-3xl" />
+                        <div className="absolute -bottom-20 -right-16 h-48 w-48 rounded-full bg-orange-400/20 blur-3xl" />
+                      </div>
+
                       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/20 to-transparent dark:via-white/50 opacity-60" />
 
-                      <div className="inline-flex items-center gap-2 rounded-full border border-black/10 dark:border-white/25 bg-black/5 dark:bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-neutral-800 dark:text-neutral-100 mb-3">
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-black dark:bg-white text-white dark:text-black text-[10px] font-semibold">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300 mb-3 shadow-[0_0_18px_rgba(249,115,22,0.35)]">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-black text-[10px] font-semibold shadow-[0_0_12px_rgba(249,115,22,0.9)]">
                           {String(index + 1).padStart(2, "0")}
                         </span>
                         {index === 0 && "Discover"}
@@ -1256,9 +1810,10 @@ const DevLayout: React.FC = () => {
                         {index === 2 && "Ship & Iterate"}
                       </div>
 
-                      <h3 className="text-lg md:text-xl font-semibold">
+                      <h3 className="text-lg md:text-xl font-semibold text-orange-600 dark:text-orange-300 drop-shadow-[0_0_14px_rgba(249,115,22,0.6)]">
                         {step.title}
                       </h3>
+
                       <p className="text-sm text-neutral-700 dark:text-neutral-200 mt-2">
                         {step.description}
                       </p>
@@ -1266,30 +1821,30 @@ const DevLayout: React.FC = () => {
                       <div className="mt-4 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
                         {index === 0 && (
                           <>
-                            <span className="px-2 py-1 rounded-full border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
+                            <span className="px-2 py-1 rounded-full border border-orange-500/30 bg-orange-500/10">
                               Audit
                             </span>
-                            <span className="px-2 py-1 rounded-full border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
+                            <span className="px-2 py-1 rounded-full border border-orange-500/30 bg-orange-500/10">
                               Strategy
                             </span>
                           </>
                         )}
                         {index === 1 && (
                           <>
-                            <span className="px-2 py-1 rounded-full border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
+                            <span className="px-2 py-1 rounded-full border border-orange-500/30 bg-orange-500/10">
                               Systems
                             </span>
-                            <span className="px-2 py-1 rounded-full border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
+                            <span className="px-2 py-1 rounded-full border border-orange-500/30 bg-orange-500/10">
                               Prototypes
                             </span>
                           </>
                         )}
                         {index === 2 && (
                           <>
-                            <span className="px-2 py-1 rounded-full border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
+                            <span className="px-2 py-1 rounded-full border border-orange-500/30 bg-orange-500/10">
                               Launch
                             </span>
-                            <span className="px-2 py-1 rounded-full border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
+                            <span className="px-2 py-1 rounded-full border border-orange-500/30 bg-orange-500/10">
                               Feedback loop
                             </span>
                           </>
@@ -1299,14 +1854,11 @@ const DevLayout: React.FC = () => {
                   </div>
                 ))}
               </div>
-
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-background via-background/90 to-transparent" />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background via-background/90 to-transparent" />
             </div>
           </div>
         </section>
 
-        {/* Section 2 – WHO WE ARE */}
+        {/* WHO WE ARE */}
         <section
           ref={whoSectionRef}
           className="relative min-h-screen overflow-hidden py-16 md:py-24"
@@ -1320,41 +1872,128 @@ const DevLayout: React.FC = () => {
                 return (
                   <Card
                     key={card.id}
-                    className="who-card absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                               w-[88vw] sm:w-[70vw] md:w-[460px]
-                               h-[60vh] md:h-[65vh]
-                               bg-white text-black
-                               border border-neutral-200 rounded-2xl
-                               shadow-[0_22px_60px_rgba(0,0,0,0.18)]
-                               overflow-hidden flex flex-col justify-between
-                               will-change-transform"
+                    className="
+    who-card group absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+    w-[88vw] sm:w-[70vw] md:w-[460px]
+    h-[60vh] md:h-[65vh]
+    overflow-hidden flex flex-col justify-between
+    will-change-transform
+
+    bg-white/70 text-black backdrop-blur-xl
+    dark:bg-neutral-950/70 dark:text-white
+
+    border border-black/10 dark:border-white/10
+    shadow-[0_22px_60px_rgba(0,0,0,0.18)]
+    dark:shadow-[0_22px_60px_rgba(0,0,0,0.85)]
+
+    rounded-none
+  "
                   >
+                    {/* ===== cyber atmosphere + subtle grid ===== */}
+                    <div className="pointer-events-none absolute inset-0 -z-10">
+                      <div
+                        className="absolute inset-0 opacity-[0.18] dark:opacity-[0.12]"
+                        style={{
+                          backgroundImage: `
+          linear-gradient(to right, rgba(249,115,22,0.12) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(249,115,22,0.10) 1px, transparent 1px)
+        `,
+                          backgroundSize: "34px 34px",
+                          maskImage:
+                            "radial-gradient(circle at 30% 20%, black 0%, black 45%, transparent 75%)",
+                          WebkitMaskImage:
+                            "radial-gradient(circle at 30% 20%, black 0%, black 45%, transparent 75%)",
+                        }}
+                      />
+                      <div className="absolute -top-28 -left-28 h-72 w-72 rounded-full bg-orange-400/10 blur-3xl" />
+                      <div className="absolute -bottom-32 -right-32 h-80 w-80 rounded-full bg-amber-300/10 blur-3xl" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/5 dark:to-black/35" />
+                    </div>
+
+                    {/* ===== sharp “arrow” frame (corners + notches) ===== */}
+                    <div className="pointer-events-none absolute inset-0">
+                      {/* top line */}
+                      <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent" />
+                      {/* bottom line */}
+                      <div className="absolute left-8 right-8 bottom-0 h-px bg-gradient-to-r from-transparent via-orange-500/25 to-transparent" />
+                      {/* left line */}
+                      <div className="absolute top-8 bottom-8 left-0 w-px bg-gradient-to-b from-transparent via-orange-500/20 to-transparent" />
+                      {/* right line */}
+                      <div className="absolute top-8 bottom-8 right-0 w-px bg-gradient-to-b from-transparent via-orange-500/20 to-transparent" />
+
+                      {/* corner arrows (L shapes) */}
+                      <span className="absolute left-3 top-3 h-6 w-6 border-l border-t border-orange-500/40" />
+                      <span className="absolute right-3 top-3 h-6 w-6 border-r border-t border-orange-500/35" />
+                      <span className="absolute left-3 bottom-3 h-6 w-6 border-l border-b border-orange-500/30" />
+                      <span className="absolute right-3 bottom-3 h-6 w-6 border-r border-b border-orange-500/30" />
+
+                      {/* “arrow” notches */}
+                      <span className="absolute left-0 top-10 h-0 w-0 border-y-[10px] border-y-transparent border-r-[12px] border-r-orange-500/20" />
+                      <span className="absolute right-0 bottom-10 h-0 w-0 border-y-[10px] border-y-transparent border-l-[12px] border-l-orange-500/18" />
+                    </div>
+
+                    {/* ===== LARGE NUMBER (more cyber) ===== */}
                     <div className="pointer-events-none absolute top-5 left-6 select-none">
-                      <span className="text-[52px] sm:text-[64px] md:text-[72px] font-extrabold tracking-tight text-neutral-200">
+                      <span
+                        className="
+        text-[52px] sm:text-[64px] md:text-[72px]
+        font-extrabold tracking-tight
+        text-neutral-300/70 dark:text-neutral-800/80
+      "
+                      >
                         {number}
                       </span>
                     </div>
 
+                    {/* ===== HEADER ===== */}
                     <div className="relative z-10 flex items-start justify-between px-6 pt-6">
                       <div className="mt-2">
-                        <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-500">
+                        <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-500 dark:text-neutral-400">
                           {card.title}
                         </p>
                         {card.subtitle && (
-                          <h3 className="text-lg md:text-xl font-semibold mt-1">
+                          <h3 className="text-lg md:text-xl font-semibold mt-1 text-neutral-900 dark:text-neutral-100">
                             {card.subtitle}
                           </h3>
                         )}
+                        {/* tiny status chip */}
+                        <div className="mt-3 inline-flex items-center gap-2 rounded-none border border-orange-500/25 bg-orange-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                          <span className="h-1.5 w-1.5 rounded-full bg-orange-400 shadow-[0_0_14px_rgba(249,115,22,0.7)]" />
+                          classified brief
+                        </div>
                       </div>
-                      <div className="who-icon flex h-9 w-9 items-center justify-center rounded-full border border-neutral-300 bg-white shadow-[0_0_18px_rgba(0,0,0,0.25)]">
-                        <Icon className="h-5 w-5 text-black" />
+
+                      {/* ICON (square + sharp) */}
+                      <div
+                        className="
+        who-icon flex h-10 w-10 items-center justify-center
+        rounded-none
+        border border-orange-500/25
+        bg-orange-500/10
+        shadow-[0_0_22px_rgba(249,115,22,0.25)]
+        transition-transform duration-300
+        group-hover:scale-[1.06]
+      "
+                      >
+                        <Icon className="h-5 w-5 text-orange-500 drop-shadow-[0_0_10px_rgba(249,115,22,0.85)]" />
                       </div>
                     </div>
 
-                    <div className="relative z-10 px-6 pb-6 space-y-3 text-sm md:text-base text-neutral-800 mt-4">
+                    {/* ===== BODY ===== */}
+                    <div className="relative z-10 px-6 pb-6 space-y-3 text-sm md:text-base text-neutral-800 dark:text-neutral-200 mt-4">
                       {card.body.map((paragraph, idx) => (
-                        <p key={idx}>{paragraph}</p>
+                        <p key={idx} className="leading-relaxed">
+                          {paragraph}
+                        </p>
                       ))}
+                    </div>
+
+                    {/* ===== bottom “arrow” action hint ===== */}
+                    <div className="pointer-events-none absolute bottom-0 left-0 right-0">
+                      <div className="mx-6 mb-5 flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-neutral-500 dark:text-neutral-500">
+                        <span>scroll to decrypt</span>
+                        <span className="text-orange-500/70">⟶</span>
+                      </div>
                     </div>
                   </Card>
                 );
@@ -1379,59 +2018,154 @@ const DevLayout: React.FC = () => {
           </div>
         </section>
 
-        {/* Section 2.5 – Creativity & Technicality */}
+        {/* Creativity & Technicality (ORANGE) */}
+        {/* Creativity & Technicality (ORANGE) */}
         <section
           ref={creativityTechSectionRef}
           className="relative min-h-screen overflow-hidden"
         >
+          {/* atmosphere */}
+          <div className="pointer-events-none absolute inset-0 -z-10">
+            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-orange-400/18 blur-[150px]" />
+            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-amber-300/14 blur-[170px]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/35 dark:to-black/70" />
+          </div>
+
           <div className="max-w-6xl mx-auto px-6 h-full flex items-center justify-center relative z-10">
-            <div className="relative w-full h-[70vh] md:h-[80vh]">
-              <div className="creativity-icon absolute top-6 left-4 sm:top-10 sm:left-10 flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/20 backdrop-blur-md shadow-[0_0_40px_rgba(0,0,0,0.2)] dark:shadow-[0_0_40px_rgba(0,0,0,0.7)]">
-                <Palette className="h-6 w-6 text-black dark:text-white" />
-              </div>
+            <div className="ct-shell relative w-full h-[72vh] md:h-[80vh]">
+              {/* MAIN GLASS CARD */}
+              <div
+                className="
+          ct-card relative w-full h-full
+          rounded-[36px]
+          border border-white/10
+          bg-white/[0.05]
+          backdrop-blur-2xl
+          shadow-[0_30px_110px_rgba(0,0,0,0.65)]
+          overflow-hidden
 
-              <div className="technicality-icon absolute bottom-6 right-4 sm:bottom-10 sm:right-10 flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/20 backdrop-blur-md shadow-[0_0_40px_rgba(0,0,0,0.2)] dark:shadow-[0_0_40px_rgba(0,0,0,0.7)]">
-                <Code2 className="h-6 w-6 text-black dark:text-white" />
-              </div>
+          flex flex-col md:flex-row
+        "
+              >
+                {/* inner grid */}
+                <div
+                  className="
+            pointer-events-none absolute inset-0 opacity-[0.14]
+            [background-image:
+              linear-gradient(to_right,rgba(249,115,22,0.18)_1px,transparent_1px),
+              linear-gradient(to_bottom,rgba(249,115,22,0.14)_1px,transparent_1px)]
+            [background-size:46px_46px]
+          "
+                />
 
-              <div className="absolute top-[18%] left-0 sm:left-[6%]">
-                <p className="text-xs uppercase tracking-[0.3em] text-neutral-500 mb-2">
-                  Creativity
-                </p>
-                <h2
-                  id="creativity-word"
-                  className="text-4xl sm:text-5xl md:text-6xl font-semibold bg-gradient-to-r from-emerald-400 via-sky-400 to-purple-400 bg-clip-text text-transparent"
-                >
-                  Creativity
-                </h2>
-                <p className="mt-3 max-w-sm text-sm md:text-base text-neutral-600 dark:text-neutral-300">
-                  The palette, motion and story that make Algorim feel like a
-                  brand, not just a stack of features.
-                </p>
-              </div>
+                {/* warm glows */}
+                <div className="ct-glow-a pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-orange-400/18 blur-[140px]" />
+                <div className="ct-glow-b pointer-events-none absolute -right-48 -bottom-48 h-[620px] w-[620px] rounded-full bg-amber-300/14 blur-[170px]" />
 
-              <div className="absolute bottom-[16%] right-0 sm:right-[6%] text-right">
-                <p className="text-xs uppercase tracking-[0.3em] text-neutral-500 mb-2">
-                  Technicality
-                </p>
-                <h2
-                  id="technicality-word"
-                  className="text-3xl sm:text-4xl md:text-5xl font-mono"
-                >
-                  <span className="text-neutral-500">&lt;</span>
-                  technicality
-                  <span className="text-neutral-500">/&gt;</span>
-                </h2>
-                <p className="mt-3 max-w-sm text-sm md:text-base text-neutral-600 dark:text-neutral-300 ml-auto">
-                  The engineering, architecture and security that keep every
-                  interaction fast, correct and safe.
-                </p>
+                {/* divider (vertical on desktop, horizontal on mobile) */}
+                <div className="ct-divider pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-white/10 md:top-0 md:bottom-0 md:left-1/2 md:right-auto md:h-auto md:w-px" />
+
+                {/* LEFT */}
+                <div className="ct-left relative w-full md:w-1/2 p-7 sm:p-9 md:p-12 flex flex-col justify-center">
+                  <div
+                    className="
+              ct-icon-left absolute top-6 left-6 sm:top-8 sm:left-8
+              h-12 w-12 sm:h-14 sm:w-14 rounded-2xl
+              bg-black/35 border border-orange-400/25
+              backdrop-blur-xl
+              shadow-[0_0_18px_rgba(249,115,22,0.55),0_0_42px_rgba(249,115,22,0.18)]
+              flex items-center justify-center
+            "
+                  >
+                    <Palette className="h-6 w-6 sm:h-7 sm:w-7 text-orange-300 drop-shadow-[0_0_12px_rgba(249,115,22,0.9)]" />
+                  </div>
+
+                  <p className="ct-kicker-left text-[11px] uppercase tracking-[0.35em] text-white/60">
+                    Creativity
+                  </p>
+
+                  <h2
+                    className="
+              ct-title-left mt-3
+              text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight
+              text-transparent bg-clip-text
+              bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400
+              drop-shadow-[0_0_24px_rgba(249,115,22,0.45)]
+            "
+                  >
+                    Creativity
+                  </h2>
+
+                  <p className="ct-copy-left mt-4 sm:mt-5 max-w-md text-sm md:text-base text-white/75 leading-relaxed">
+                    The palette, motion and story that make Algorim feel like a
+                    brand — not just a stack of features.
+                  </p>
+
+                  <div className="ct-chip-left mt-6 sm:mt-7 inline-flex w-fit items-center gap-2 rounded-full border border-orange-400/25 bg-orange-500/10 px-4 py-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-orange-400 shadow-[0_0_14px_rgba(249,115,22,0.75)]" />
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-orange-200/90">
+                      Craft / Motion / Voice
+                    </span>
+                  </div>
+                </div>
+
+                {/* RIGHT (TECHNICALITY) */}
+                <div className="ct-right relative w-full md:w-1/2 p-7 sm:p-9 md:p-12 flex flex-col justify-center md:text-right">
+                  <div
+                    className="
+              ct-icon-right absolute bottom-6 right-6 sm:bottom-8 sm:right-8
+              h-12 w-12 sm:h-14 sm:w-14 rounded-2xl
+              bg-black/35 border border-orange-400/25
+              backdrop-blur-xl
+              shadow-[0_0_18px_rgba(249,115,22,0.55),0_0_42px_rgba(249,115,22,0.18)]
+              flex items-center justify-center
+            "
+                  >
+                    <Code2 className="h-6 w-6 sm:h-7 sm:w-7 text-orange-200 drop-shadow-[0_0_12px_rgba(249,115,22,0.95)]" />
+                  </div>
+
+                  <p className="ct-kicker-right text-[11px] uppercase tracking-[0.35em] text-white/55">
+                    Technicality
+                  </p>
+
+                  <h2
+                    className="
+              ct-title-right mt-3
+              text-3xl sm:text-4xl md:text-5xl font-mono font-semibold tracking-tight
+              text-transparent bg-clip-text
+              bg-gradient-to-r from-orange-200 via-amber-200 to-orange-300
+              drop-shadow-[0_0_22px_rgba(249,115,22,0.45)]
+            "
+                  >
+                    <span className="text-orange-200 drop-shadow-[0_0_14px_rgba(249,115,22,0.9)]">
+                      &lt;
+                    </span>
+                    <span className="mx-1 text-orange-300 drop-shadow-[0_0_26px_rgba(249,115,22,0.8)]">
+                      Technicality
+                    </span>
+                    <span className="text-orange-200 drop-shadow-[0_0_14px_rgba(249,115,22,0.9)]">
+                      /&gt;
+                    </span>
+                  </h2>
+
+                  <p className="ct-copy-right mt-4 sm:mt-5 md:ml-auto max-w-md text-sm md:text-base text-white/75 leading-relaxed">
+                    The engineering, architecture and security that keep every
+                    interaction fast, correct and safe.
+                  </p>
+
+                  <div className="ct-chip-right mt-6 sm:mt-7 md:ml-auto inline-flex w-fit items-center gap-2 rounded-full border border-orange-400/25 bg-orange-500/10 px-4 py-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-300 shadow-[0_0_14px_rgba(252,211,77,0.7)]" />
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-orange-200/90">
+                      Perf / Security / Scale
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Section 2.6 – Global footprint / Globe */}
+        {/* Globe */}
         <section
           ref={worldSectionRef}
           className="relative min-h-screen overflow-hidden"
@@ -1441,20 +2175,22 @@ const DevLayout: React.FC = () => {
               <div className="space-y-3 max-w-xl">
                 <p
                   id="world-kicker"
-                  className="text-[11px] uppercase tracking-[0.28em] text-sky-600/80 dark:text-sky-300/80"
+                  className="text-[11px] uppercase tracking-[0.28em] text-orange-500/80 drop-shadow-[0_0_10px_rgba(249,115,22,0.45)]"
                 >
                   Global footprint
                 </p>
+
                 <h2
                   id="world-title"
-                  className="text-4xl md:text-5xl font-semibold"
+                  className="text-4xl md:text-5xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 drop-shadow-[0_0_22px_rgba(249,115,22,0.55)]"
                 >
                   We work internationally with{" "}
-                  <span className="text-sky-700 dark:text-sky-200">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400 drop-shadow-[0_0_28px_rgba(249,115,22,0.75)]">
                     distributed teams
                   </span>
                   .
                 </h2>
+
                 <p
                   id="world-copy"
                   className="text-sm md:text-base text-neutral-600 dark:text-neutral-300"
@@ -1471,51 +2207,146 @@ const DevLayout: React.FC = () => {
                   <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-500">
                     Time zones
                   </p>
-                  <p className="text-2xl md:text-3xl font-semibold text-sky-700 dark:text-sky-300">
+                  <p className="text-2xl md:text-3xl font-semibold text-orange-400 drop-shadow-[0_0_16px_rgba(249,115,22,0.65)]">
                     08+
                   </p>
                 </div>
+
                 <div className="world-stat space-y-1">
                   <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-500">
                     Countries
                   </p>
-                  <p className="text-2xl md:text-3xl font-semibold text-sky-600 dark:text-sky-100">
+                  <p className="text-2xl md:text-3xl font-semibold text-orange-300 drop-shadow-[0_0_14px_rgba(249,115,22,0.55)]">
                     15
                   </p>
                 </div>
+
                 <div className="world-stat space-y-1">
                   <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-500">
                     Continents
                   </p>
-                  <p className="text-2xl md:text-3xl font-semibold">04</p>
+                  <p className="text-2xl md:text-3xl font-semibold text-orange-200 drop-shadow-[0_0_12px_rgba(249,115,22,0.45)]">
+                    04
+                  </p>
                 </div>
               </div>
             </div>
 
             <div className="relative flex justify-center mt-10">
-              <div
-                className="
-    world-globe-shell
-    relative
-    h-full
-    rounded-full
-
-    overflow-hidden
-  "
-              >
+              <div className="world-globe-shell overflow-hidden">
                 <World globeConfig={globeConfig} data={globeArcs} />
               </div>
             </div>
           </div>
         </section>
+        {/* CTA */}
+        <section
+          ref={ctaSectionRef}
+          className="relative py-24 md:py-32 bg-neutral-950 overflow-hidden"
+        >
+          {/* ambient */}
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute -top-24 left-1/2 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_55%)] blur-2xl" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.06),transparent_40%)]" />
+          </div>
 
-        {/* Section 3 – SERVICES (horizontal deck) */}
+          <div className="relative max-w-6xl mx-auto px-6">
+            <div
+              data-cta-card
+              className="relative overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-900/55 backdrop-blur-xl"
+            >
+              {/* glow layer */}
+              <div
+                data-cta-glow
+                className="pointer-events-none absolute inset-0 opacity-0"
+              >
+                <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_30%_20%,rgba(255,255,255,0.10),transparent_40%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(700px_circle_at_70%_60%,rgba(255,255,255,0.06),transparent_45%)]" />
+              </div>
+
+              {/* sheen / scanner */}
+              <div
+                data-cta-sheen
+                className="pointer-events-none absolute -inset-y-10 -left-1/2 w-1/2 rotate-12 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent)] blur-sm opacity-0"
+              />
+
+              <div className="relative p-8 md:p-12">
+                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-10">
+                  <div className="max-w-2xl">
+                    <div
+                      data-cta-kicker
+                      className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-neutral-400"
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-400/70" />
+                      Secure · Ship · Scale
+                    </div>
+
+                    <h3
+                      data-cta-title
+                      className="mt-4 text-3xl md:text-4xl font-semibold text-neutral-50"
+                    >
+                      Ready to ship something premium?
+                    </h3>
+
+                    <p
+                      data-cta-subtitle
+                      className="mt-3 text-sm md:text-base text-neutral-300"
+                    >
+                      Book a quick call and we’ll map your roadmap, stack, and
+                      risk surface — then propose a clean execution plan.
+                    </p>
+                  </div>
+
+                  <div
+                    data-cta-actions
+                    className="flex flex-col sm:flex-row gap-3 sm:items-center"
+                  >
+                    <a
+                      href="https://meet.brevo.com/algorim-consultation"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium text-neutral-950 bg-neutral-50 hover:bg-white transition"
+                    >
+                      Book a Call
+                    </a>
+
+                    <a
+                      href="#services"
+                      className="inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium text-neutral-50 border border-neutral-700 hover:border-neutral-500 bg-neutral-950/30 hover:bg-neutral-950/40 transition"
+                    >
+                      See Services
+                    </a>
+                  </div>
+                </div>
+
+                {/* micro-trust row */}
+                <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-neutral-400">
+                  <div className="rounded-2xl border border-neutral-800 bg-neutral-950/30 px-4 py-3">
+                    Response in <span className="text-neutral-200">24h</span>
+                  </div>
+                  <div className="rounded-2xl border border-neutral-800 bg-neutral-950/30 px-4 py-3">
+                    Fixed-scope or{" "}
+                    <span className="text-neutral-200">retainer</span>
+                  </div>
+                  <div className="rounded-2xl border border-neutral-800 bg-neutral-950/30 px-4 py-3">
+                    Reports built for{" "}
+                    <span className="text-neutral-200">execs</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-neutral-500/40 to-transparent" />
+            </div>
+          </div>
+        </section>
+
+        {/* Services */}
         <section
           id="services"
           ref={servicesHorizontalSectionRef}
-          className="relative h-screen overflow-hidden py-16 md:py-20"
+          className="relative min-h-[80vh] md:h-screen overflow-hidden "
         >
-          <div className="relative h-full max-w-6xl mx-auto px-6 flex flex-col z-10">
+          <div className="relative h-full max-w-6xl mx-auto px-6 flex flex-col z-10 overflow-r-hidden">
             <div
               id="services-heading"
               className="shrink-0 space-y-3 pt-2 md:pt-4"
@@ -1528,56 +2359,72 @@ const DevLayout: React.FC = () => {
                   Branding · Product · AI · Cloud · Security
                 </span>
               </div>
+
               <h2 className="text-3xl md:text-4xl font-semibold max-w-xl">
                 A horizontal deck of capabilities. Scroll to move sideways.
               </h2>
+
               <p className="text-sm md:text-base text-neutral-600 dark:text-neutral-300 max-w-md">
                 Every card is a fully managed unit you can plug into your
                 company: brand, engineering, AI, security and cloud.
               </p>
             </div>
 
-            <div className="relative flex-1 mt-10 md:mt-12">
-              <div ref={servicesTrackRef} className="flex h-full items-stretch">
+            <div className="relative flex-1 mt-10 md:mt-12 flex items-center">
+              <div
+                ref={servicesTrackRef}
+                className="flex items-stretch gap-4 md:gap-6 h-auto md:h-[420px] overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none scroll-pl-6 pr-6 pb-2"
+              >
                 {services.map((service) => {
                   const Icon = service.icon;
                   return (
                     <Card
                       key={service.id}
-                      className="service-card-h relative flex-shrink-0 h-full
-                                 w-[80vw] sm:w-[65vw] md:w-[440px]
-                                 mr-6
-                                 overflow-hidden
-                                 border border-black/10 dark:border-white/15 bg-white/80 dark:bg-white/[0.03] backdrop-blur-sm
-                                 rounded-2xl p-6 md:p-7 shadow-[0_10px_40px_rgba(0,0,0,0.15)] dark:shadow-xl
-                                 transition-transform duration-300
-                                 hover:-translate-y-2 hover:scale-[1.02] hover:border-black/20 dark:hover:border-white/40 hover:bg-white dark:hover:bg-white/[0.06]"
+                      className="
+                        service-card-h relative flex-shrink-0
+                        w-[80vw] sm:w-[65vw] md:w-[440px]
+                        mr-2 md:mr-6
+                        rounded-xl p-6 md:p-7
+                        snap-start overflow-hidden
+                        border border-black/10 dark:border-white/10
+                        bg-white/70 dark:bg-white/[0.03]
+                        backdrop-blur-xl
+                        shadow-[0_18px_60px_rgba(0,0,0,0.10)]
+                        dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
+                        transition-all duration-300 ease-out
+                        hover:-translate-y-2 hover:scale-[1.02]
+                        hover:border-black/20 dark:hover:border-white/20
+                      "
                     >
-                      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/10 to-transparent dark:via-white/40 opacity-60" />
+                      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/10 to-transparent dark:via-white/20" />
+                      <div className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-orange-400/10 blur-3xl opacity-70" />
+                      <div className="pointer-events-none absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-orange-300/10 blur-3xl opacity-60" />
 
-                      <div className="flex h-full flex-col justify-between gap-4">
+                      <div className="relative flex h-full flex-col justify-between gap-4 z-10">
                         <div>
                           <div className="flex items-center justify-between gap-3 mb-4">
-                            <span className="text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+                            <span className="text-[11px] uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
                               {service.tag}
                             </span>
-                            <div className="service-icon flex h-9 w-9 items-center justify-center rounded-full border border-black/10 dark:border-white/25 bg-black/5 dark:bg-white/10 shadow-[0_0_22px_rgba(0,0,0,0.15)] dark:shadow-[0_0_22px_rgba(255,255,255,0.25)]">
-                              <Icon className="h-5 w-5 text-black dark:text-white" />
+
+                            <div className="service-icon flex h-10 w-10 items-center justify-center rounded-2xl border border-orange-500/25 bg-orange-500/10 shadow-[0_0_22px_rgba(249,115,22,0.35)] dark:shadow-[0_0_26px_rgba(249,115,22,0.55)]">
+                              <Icon className="h-5 w-5 text-orange-500 drop-shadow-[0_0_12px_rgba(249,115,22,0.85)]" />
                             </div>
                           </div>
 
-                          <h3 className="text-xl md:text-2xl font-semibold">
+                          <h3 className="text-xl md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400 drop-shadow-[0_0_16px_rgba(249,115,22,0.55)]">
                             {service.label}
                           </h3>
-                          <p className="text-sm text-neutral-700 dark:text-neutral-100 mt-2">
+
+                          <p className="text-sm text-neutral-700 dark:text-neutral-200 mt-2">
                             {service.description}
                           </p>
                         </div>
 
                         <ul className="space-y-1.5 text-xs md:text-sm text-neutral-700 dark:text-neutral-200/90 mt-4">
                           {service.bullets.map((item, idx) => (
-                            <li key={idx} className="flex gap-2">
-                              <span className="mt-1 h-[3px] w-[10px] rounded-full bg-neutral-400 dark:bg-neutral-500" />
+                            <li key={idx} className="flex gap-2 items-start">
+                              <span className="mt-1 h-[4px] w-[14px] rounded-full bg-neutral-300 dark:bg-white/20" />
                               <span>{item}</span>
                             </li>
                           ))}
@@ -1587,80 +2434,435 @@ const DevLayout: React.FC = () => {
                   );
                 })}
 
-                <Card
-                  className="services-end-card relative flex-shrink-0 h-full
-                             w-[80vw] sm:w-[65vw] md:w-[440px]
-                             mr-6 last:mr-0
-                             border border-black/10 dark:border-white/20 bg-white/90 dark:bg-white/[0.06] backdrop-blur-md
-                             rounded-2xl p-6 md:p-7 shadow-[0_14px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_24px_80px_rgba(0,0,0,0.75)]
-                             flex flex-col items-start justify-between"
-                >
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent dark:via-white/60 opacity-80" />
-                  <div className="space-y-3">
-                    <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-500 dark:text-neutral-300">
-                      End of the deck
-                    </p>
-                    <h3 className="text-2xl md:text-3xl font-semibold">
-                      One continuous team, not six disconnected vendors.
-                    </h3>
-                    <p className="text-sm md:text-base text-neutral-700 dark:text-neutral-100">
-                      Brand, product, AI, security and cloud all come from a
-                      single crew that ships on the same cadence as your team.
-                    </p>
-                  </div>
-                  <p className="mt-6 text-xs md:text-sm uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-                    Scroll down to see how we color the Algorim universe.
-                  </p>
-                </Card>
+                <div className="w-[80vw] sm:w-[65vw] md:w-[440px]" />
               </div>
             </div>
           </div>
         </section>
 
-        {/* Section 3.5 – Brand color circles */}
+        {/* Portfolio — Cyber Command Center */}
+        <section
+          id="portfolio"
+          ref={portfolioSectionRef}
+          className="relative min-h-screen overflow-hidden"
+        >
+          {/* orange cyber atmosphere */}
+          <div className="pointer-events-none absolute inset-0 -z-10">
+            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-orange-400/18 blur-[150px]" />
+            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-amber-300/14 blur-[170px]" />
+
+            {/* cyber grid */}
+            <div
+              className="absolute inset-0 opacity-[0.35]
+        [background-image:
+          linear-gradient(to_right,rgba(249,115,22,0.12)_1px,transparent_1px),
+          linear-gradient(to_bottom,rgba(249,115,22,0.12)_1px,transparent_1px)]
+        [background-size:40px_40px]"
+            />
+
+            {/* vignette */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/30 dark:to-black/65" />
+          </div>
+
+          <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-16 md:pt-24 md:pb-20 z-10">
+            <div className="space-y-3 max-w-2xl">
+              <p className="portfolio-kicker text-[11px] uppercase tracking-[0.28em] text-orange-500/80 drop-shadow-[0_0_12px_rgba(249,115,22,0.45)]">
+                Portfolio / Case Files
+              </p>
+
+              <h2 className="portfolio-title text-4xl md:text-5xl font-semibold leading-tight">
+                Proof of work —{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400 drop-shadow-[0_0_22px_rgba(249,115,22,0.55)]">
+                  built to ship
+                </span>
+                .
+              </h2>
+
+              <p className="portfolio-sub text-sm md:text-base text-neutral-600 dark:text-neutral-300">
+                Scroll to browse each case file. The panel updates like a
+                command console—clean, fast, and intentional.
+              </p>
+            </div>
+
+            {/* command center */}
+            <div className="mt-10 md:mt-12 grid grid-cols-1 md:grid-cols-[0.44fr_0.56fr] gap-6 md:gap-8 items-stretch">
+              {/* LEFT: index */}
+              <div
+                className="
+          relative overflow-hidden rounded-3xl
+          border border-black/10 dark:border-white/10
+          bg-white/70 dark:bg-white/[0.03]
+          backdrop-blur-xl
+          shadow-[0_18px_60px_rgba(0,0,0,0.10)]
+          dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
+        "
+              >
+                {/* inner glow */}
+                <div className="portfolio-glow pointer-events-none absolute -inset-20 -z-10 rounded-full bg-orange-400/10 blur-[120px]" />
+
+                {/* radar rings */}
+                <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.55]">
+                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-orange-400/15" />
+                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-orange-400/12" />
+                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[220px] w-[220px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-orange-400/10" />
+                </div>
+
+                <div className="relative p-6 md:p-7">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
+                      Index
+                    </p>
+                    <span className="text-[10px] uppercase tracking-[0.22em] text-orange-400/90">
+                      scroll-controlled
+                    </span>
+                  </div>
+
+                  <div className="mt-5 space-y-2">
+                    {PORTFOLIO.map((p, i) => (
+                      <div
+                        key={p.id}
+                        data-portfolio-item
+                        className="
+                  group relative
+                  rounded-2xl px-4 py-3
+                  border border-black/10 dark:border-white/10
+                  bg-white/50 dark:bg-white/[0.02]
+                  backdrop-blur-md
+                  transition-colors
+                "
+                      >
+                        {/* active glow */}
+                        <div
+                          className="
+                    pointer-events-none absolute inset-0 rounded-2xl opacity-0
+                    group-[&[data-active='true']]:opacity-100
+                    transition-opacity
+                    bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-orange-500/10
+                  "
+                        />
+
+                        <div className="relative flex items-start justify-between gap-4">
+                          <div>
+                            <p className="text-[10px] uppercase tracking-[0.26em] text-neutral-500 dark:text-neutral-400">
+                              {p.id} · {p.year}
+                            </p>
+                            <p className="mt-1 text-sm font-semibold text-neutral-900 dark:text-neutral-50">
+                              {p.title}
+                            </p>
+                            <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">
+                              {p.subtitle}
+                            </p>
+                          </div>
+
+                          <div className="flex flex-col items-end gap-2 shrink-0">
+                            <span
+                              className={`
+                        text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full
+                        border
+                        ${
+                          p.status === "SOON"
+                            ? "border-orange-500/40 bg-orange-500/15 text-orange-300 shadow-[0_0_18px_rgba(249,115,22,0.35)]"
+                            : "border-amber-400/30 bg-amber-400/10 text-amber-400"
+                        }
+                      `}
+                            >
+                              {p.status === "SOON" ? "SOON" : "LIVE"}
+                            </span>
+
+                            <span className="text-[10px] text-neutral-500 dark:text-neutral-400">
+                              #{String(i + 1).padStart(2, "0")}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* vertical “needle” */}
+                  <div className="pointer-events-none absolute right-4 top-6 bottom-6 w-[2px] rounded-full bg-orange-400/15 overflow-hidden">
+                    <div className="portfolio-needle absolute inset-0 bg-gradient-to-b from-orange-400 via-amber-300 to-orange-500" />
+                  </div>
+                </div>
+              </div>
+
+              {/* RIGHT: active case file */}
+              <div
+                className="
+          relative overflow-hidden rounded-3xl
+          border border-black/10 dark:border-white/10
+          bg-white/70 dark:bg-white/[0.03]
+          backdrop-blur-xl
+          shadow-[0_18px_60px_rgba(0,0,0,0.10)]
+          dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
+        "
+              >
+                {/* scanline */}
+                <div className="portfolio-scan pointer-events-none absolute left-0 right-0 top-[-60px] h-10 opacity-0 bg-gradient-to-r from-transparent via-orange-400/35 to-transparent blur-md" />
+
+                {/* panel glow */}
+                <div className="pointer-events-none absolute -top-28 -right-28 h-72 w-72 rounded-full bg-orange-400/14 blur-3xl" />
+                <div className="pointer-events-none absolute -bottom-28 -left-28 h-80 w-80 rounded-full bg-amber-300/12 blur-3xl" />
+
+                <div className="relative p-6 md:p-7 h-full">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
+                      Active Case File
+                    </p>
+                    <p className="text-[10px] uppercase tracking-[0.22em] text-orange-400/80">
+                      verified output
+                    </p>
+                  </div>
+
+                  <div className="mt-5 relative min-h-[360px] md:min-h-[420px]">
+                    {PORTFOLIO.map((p) => (
+                      <div
+                        key={p.id}
+                        data-portfolio-panel
+                        className="absolute inset-0"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="space-y-2">
+                            <p className="text-[10px] uppercase tracking-[0.26em] text-neutral-500 dark:text-neutral-400">
+                              {p.id} · {p.year}
+                            </p>
+
+                            <h3 className="text-2xl md:text-3xl font-semibold leading-tight">
+                              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400 drop-shadow-[0_0_18px_rgba(249,115,22,0.45)]">
+                                {p.title}
+                              </span>
+                            </h3>
+
+                            <p className="text-sm md:text-base text-neutral-700 dark:text-neutral-200 max-w-xl">
+                              {p.subtitle}
+                            </p>
+                          </div>
+
+                          {p.href ? (
+                            <a
+                              href={p.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="
+                        inline-flex items-center justify-center
+                        rounded-2xl px-4 py-2 text-xs font-semibold
+                        bg-black text-white dark:bg-white dark:text-black
+                        shadow-[0_18px_60px_rgba(0,0,0,0.22)]
+                        hover:scale-[1.02] active:scale-[0.98]
+                        transition-transform
+                      "
+                            >
+                              Visit ↗
+                            </a>
+                          ) : (
+                            <div className="text-[10px] uppercase tracking-[0.22em] px-3 py-2 rounded-2xl border border-orange-500/30 bg-orange-500/10 text-orange-300">
+                              Internal
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="mt-5 flex flex-wrap gap-2">
+                          {p.tags.map((t) => (
+                            <span
+                              key={t}
+                              className="text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full border border-orange-500/25 bg-orange-500/10 text-neutral-700 dark:text-neutral-200"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {p.results.map((r, idx) => (
+                            <div
+                              key={idx}
+                              className="
+                        rounded-2xl p-4
+                        border border-black/10 dark:border-white/10
+                        bg-white/50 dark:bg-white/[0.02]
+                        backdrop-blur-md
+                      "
+                            >
+                              <div className="flex items-start gap-3">
+                                <span className="mt-2 h-[4px] w-[14px] rounded-full bg-orange-400/75 shadow-[0_0_16px_rgba(249,115,22,0.6)]" />
+                                <p className="text-sm text-neutral-700 dark:text-neutral-200">
+                                  {r}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {p.status === "SOON" && (
+                          <div className="mt-6 rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4">
+                            <p className="text-[11px] uppercase tracking-[0.26em] text-orange-300">
+                              Launch notice
+                            </p>
+                            <p className="mt-2 text-sm text-neutral-700 dark:text-neutral-200">
+                              We’re launching our own product soon. If you want
+                              early access, hit the footer email and we’ll
+                              whitelist you.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* bottom console hint */}
+                  <div className="mt-6 pt-5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
+                    <span className="font-mono">SCROLL: NEXT_CASE</span>
+                    <span className="font-mono">STATUS: OK</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Brand circles */}
         <section
           ref={brandCirclesSectionRef}
-          className="relative min-h-screen overflow-hidden py-16 md:py-24"
+          className="relative min-h-screen overflow-hidden "
         >
-          <div className="max-w-5xl mx-auto px-6 h-full flex flex-col items-center justify-center gap-10 relative z-10">
+          {/* ORANGE GLASS ATMOSPHERE (lighter DOM, fewer layers) */}
+          <div className="pointer-events-none absolute inset-0 -z-10">
+            <div className="absolute -top-48 -left-48 h-[620px] w-[620px] rounded-full bg-orange-400/18 blur-[160px]" />
+            <div className="absolute top-1/3 -right-52 h-[680px] w-[680px] rounded-full bg-amber-300/14 blur-[180px]" />
+            <div className="absolute -bottom-56 left-1/2 -translate-x-1/2 h-[720px] w-[720px] rounded-full bg-orange-500/10 blur-[190px]" />
+
+            <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white/80 dark:from-black/55 dark:via-black/35 dark:to-black/65" />
+            <div
+              className="
+        absolute inset-0 opacity-[0.18] dark:opacity-[0.12]
+        [background-image:
+          linear-gradient(to_right,rgba(249,115,22,0.16)_1px,transparent_1px),
+          linear-gradient(to_bottom,rgba(249,115,22,0.14)_1px,transparent_1px)]
+        [background-size:44px_44px]
+      "
+            />
+          </div>
+          <div className="max-w-6xl mx-auto px-6 py-24 flex flex-col items-center gap-12 relative z-10">
             <div
               id="brand-circles-heading"
               className="text-center space-y-3 max-w-2xl"
             >
-              <p className="text-xs uppercase tracking-[0.25em] text-neutral-500 dark:text-neutral-400">
+              <p className="text-xs uppercase tracking-[0.25em] text-neutral-600 dark:text-neutral-400">
                 Color System
               </p>
-              <h2 className="text-3xl md:text-4xl font-semibold">
-                Every great brand starts with a disciplined color language.
+
+              <h2 className="text-3xl md:text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400 drop-shadow-[0_0_20px_rgba(249,115,22,0.45)]">
+                Every great brand starts with disciplined color language.
               </h2>
-              <p className="text-sm md:text-base text-neutral-600 dark:text-neutral-300">
-                Scroll to reveal the tones that power Algorim&apos;s visual
-                voice.
+
+              <p className="text-sm md:text-base text-neutral-700 dark:text-neutral-300">
+                Tap a tile to copy the HEX. On desktop, scroll reveals the
+                system.
               </p>
             </div>
+            <div
+              className="
+    pointer-events-none absolute inset-0 flex items-center justify-center
+    text-[40vw] md:text-[28vw]
+    font-black leading-none
+    text-orange-400/[0.03] dark:text-orange-400/[0.40]
+    select-none -z-10
+  "
+            >
+              Aa
+            </div>
 
-            <div className="flex flex-col md:flex-row md:flex-wrap gap-8 md:gap-10 items-center justify-center">
+            {/* Optimized grid: fewer nested layers, clear hit-targets */}
+            <div
+              className="
+    w-full
+    grid
+    grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+    gap-6 md:gap-8
+    max-w-6xl
+  "
+            >
               {brandColors.map((c) => (
-                <div
+                <button
                   key={c.id}
-                  className="brand-circle-wrapper flex flex-col items-center gap-3"
+                  type="button"
+                  className="
+            brand-circle-wrapper group relative overflow-hidden text-left
+            rounded-3xl
+            border border-black/10 dark:border-white/10
+            bg-white/55 dark:bg-white/[0.035]
+            backdrop-blur-xl
+            shadow-[0_18px_70px_rgba(0,0,0,0.10)]
+            dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
+            transition-transform duration-300
+            hover:-translate-y-1
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/40
+          "
+                  aria-label={`Copy ${c.label} ${c.hex}`}
+                  onClick={() => navigator.clipboard?.writeText(c.hex)}
                 >
-                  <div
-                    className={`brand-circle h-28 w-28 sm:h-32 sm:w-32 rounded-full bg-gradient-to-tr ${c.gradientClass} shadow-[0_0_40px_rgba(255,255,255,0.15)]`}
-                  />
-                  <span className="text-xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-                    {c.label}
-                  </span>
-                  <span className="font-mono text-sm text-neutral-800 dark:text-neutral-200">
-                    {c.hex}
-                  </span>
-                </div>
+                  {/* subtle top hairline */}
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-400/25 to-transparent" />
+
+                  {/* tile halo */}
+                  <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-orange-400/12 blur-3xl opacity-80" />
+                  <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-amber-300/10 blur-3xl opacity-70" />
+
+                  <div className="relative z-10 p-5 md:p-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="space-y-1">
+                        <p className="text-[10px] uppercase tracking-[0.28em] text-neutral-600 dark:text-neutral-400">
+                          {c.label}
+                        </p>
+                        <p className="font-mono text-sm text-neutral-900 dark:text-neutral-100">
+                          {c.hex}
+                        </p>
+                      </div>
+
+                      <span className="text-[10px] uppercase tracking-[0.22em] text-orange-500/80">
+                        copy ↗
+                      </span>
+                    </div>
+
+                    {/* Color plate */}
+                    <div
+                      className="
+                brand-circle relative mt-4 h-40 rounded-2xl overflow-hidden
+                border border-black/10 dark:border-white/10
+                shadow-[0_14px_50px_rgba(0,0,0,0.12)]
+                dark:shadow-[0_14px_60px_rgba(0,0,0,0.55)]
+              "
+                    >
+                      <div
+                        className={`absolute inset-0 bg-gradient-to-tr ${c.gradientClass}`}
+                      />
+                      <div
+                        className="
+                  pointer-events-none absolute inset-0 opacity-30 dark:opacity-20
+                  [background-image:linear-gradient(to_bottom,rgba(0,0,0,0.12)_1px,transparent_1px)]
+                  [background-size:100%_12px]
+                "
+                      />
+                    </div>
+
+                    {/* micro footer */}
+                    <div className="mt-4 flex items-center justify-between text-[10px] uppercase tracking-[0.26em] text-neutral-600 dark:text-neutral-400">
+                      <span className="inline-flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-orange-400/80 shadow-[0_0_14px_rgba(249,115,22,0.6)]" />
+                        token
+                      </span>
+                      <span className="font-mono">{c.id}</span>
+                    </div>
+                  </div>
+
+                  {/* hover ring */}
+                  <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ring-1 ring-orange-400/20" />
+                </button>
               ))}
             </div>
 
             <div
               id="brand-quote"
-              className="max-w-xl text-center text-lg md:text-xl text-neutral-800 dark:text-neutral-100"
+              className="max-w-2xl text-center text-base md:text-lg text-neutral-800 dark:text-neutral-100"
             >
               “Branding isn&apos;t just how you look. It&apos;s a repeatable
               pattern of choices that makes you unmistakable — even when the
@@ -1669,10 +2871,10 @@ const DevLayout: React.FC = () => {
           </div>
         </section>
 
-        {/* Section 4 – Giant “A” zoom */}
+        {/* Giant A */}
         <section
           ref={giantASectionRef}
-          className="relative min-h-screen flex items-center justify-center overflow-hidden"
+          className="relative min-h-screen flex bg-black items-center justify-center overflow-hidden"
         >
           <div
             ref={giantARef}
@@ -1684,7 +2886,7 @@ const DevLayout: React.FC = () => {
           </div>
         </section>
 
-        {/* Section 5 – Outro */}
+        {/* Outro */}
         <section className="fade-section relative min-h-screen flex items-center justify-center">
           <div className="max-w-3xl px-6 text-center space-y-4 relative z-10">
             <h2 className="text-4xl md:text-5xl font-semibold">
@@ -1692,9 +2894,168 @@ const DevLayout: React.FC = () => {
             </h2>
             <p className="text-lg text-neutral-700 dark:text-neutral-300">
               Plug in a senior, cross-functional team that covers branding,
-              product, AI automation, personal agents, security and cloud —{" "}
+              product, AI automation, personal agents, security and cloud —
               instead of stitching five agencies together.
             </p>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <section
+          ref={footerSectionRef}
+          className="relative min-h-[90vh] md:min-h-screen overflow-hidden"
+        >
+          {/* <div className="pointer-events-none absolute inset-0 -z-10">
+            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-orange-400/15 blur-[150px]" />
+            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-amber-300/10 blur-[170px]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/5 dark:to-black/40" />
+          </div> */}
+
+          <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-14 md:pt-24 md:pb-16 h-full flex flex-col justify-between">
+            <div className="footer-inner space-y-10">
+              <div className="footer-head space-y-3">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-neutral-500 dark:text-neutral-400">
+                  Let’s build something dangerous (in a good way)
+                </p>
+
+                <h2 className="footer-title text-4xl md:text-5xl font-semibold leading-tight">
+                  Ready to ship a{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400 drop-shadow-[0_0_22px_rgba(249,115,22,0.55)]">
+                    premium
+                  </span>{" "}
+                  product?
+                </h2>
+
+                <p className="footer-sub text-sm md:text-base text-neutral-600 dark:text-neutral-300 max-w-2xl">
+                  Brand, engineering, AI, security and cloud — one team, one
+                  system, one delivery standard.
+                </p>
+              </div>
+
+              <div className="footer-cta flex flex-col sm:flex-row gap-3 sm:items-center">
+                <a
+                  href="https://meet.brevo.com/algorim-consultation"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="
+                    inline-flex items-center justify-center
+                    rounded-2xl px-5 py-3 text-sm font-semibold
+                    bg-black text-white dark:bg-white dark:text-black
+                    shadow-[0_18px_60px_rgba(0,0,0,0.22)]
+                    hover:scale-[1.02] active:scale-[0.98]
+                    transition-transform
+                  "
+                >
+                  Book a call
+                </a>
+
+                <a
+                  href="mailto:business@algorimsoft.com"
+                  className="
+                    inline-flex items-center justify-center
+                    rounded-2xl px-5 py-3 text-sm font-semibold
+                    border border-black/10 dark:border-white/12
+                    bg-white/60 dark:bg-white/[0.03]
+                    backdrop-blur-xl
+                    hover:border-black/20 dark:hover:border-white/20
+                    transition-colors
+                  "
+                >
+                  business@algorimsoft.com
+                </a>
+              </div>
+              {/* CONTACT */}
+              <div className="footer-contact space-y-4 pt-4">
+                <p className="text-xs uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
+                  Contact
+                </p>
+
+                <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {FOOTER_CONTACTS.map((c) => (
+                    <li
+                      key={c.country}
+                      className="
+          group flex items-center justify-between gap-3
+          rounded-2xl
+          border border-black/10 dark:border-white/10
+          bg-white/55 dark:bg-white/[0.03]
+          backdrop-blur-xl
+          px-4 py-3
+          transition-all
+          hover:border-black/20 dark:hover:border-white/20
+          hover:-translate-y-[1px]
+        "
+                    >
+                      <span className="text-[11px] uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
+                        {c.country}
+                      </span>
+
+                      <a
+                        href={`tel:${toTel(c.phone)}`}
+                        className="
+            font-mono text-sm
+            text-neutral-900 dark:text-neutral-100
+            inline-flex items-center gap-2
+            opacity-90 group-hover:opacity-100
+            transition-opacity
+          "
+                      >
+                        <span className="hidden sm:inline text-[10px] opacity-60">
+                          ↗
+                        </span>
+                        {c.phone}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="footer-grid grid grid-cols-2 md:grid-cols-4 gap-8 pt-6">
+                {FOOTER_LINKS.map((col) => (
+                  <div key={col.title} className="footer-col space-y-3">
+                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
+                      {col.title}
+                    </p>
+
+                    <ul className="space-y-2 text-sm text-neutral-700 dark:text-neutral-200">
+                      {col.links.map((link) => (
+                        <li key={link.label}>
+                          <a
+                            href={link.href}
+                            onClick={(e) =>
+                              handleAnchorClick(e, link.href, link.external)
+                            }
+                            target={link.external ? "_blank" : undefined}
+                            rel={
+                              link.external ? "noopener noreferrer" : undefined
+                            }
+                            className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                          >
+                            {link.label}
+                            {link.external && (
+                              <span className="text-[10px] opacity-60">↗</span>
+                            )}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="footer-bottom mt-14 pt-8 border-t border-black/10 dark:border-white/10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                © {new Date().getFullYear()} Algorim. All rights reserved.
+              </p>
+
+              <div className="flex items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400">
+                <span className="footer-dot inline-block h-2 w-2 rounded-full bg-orange-400/80 shadow-[0_0_16px_rgba(249,115,22,0.65)]" />
+                <span>Build fast · Ship safe · Look premium</span>
+              </div>
+            </div>
+
+            <div className="footer-glow pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[520px] w-[520px] rounded-full bg-orange-400/10 blur-[140px] -z-10" />
           </div>
         </section>
       </main>

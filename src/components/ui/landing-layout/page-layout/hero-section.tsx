@@ -26,18 +26,18 @@ const HeroSection = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center w-full">
             {/* Column Left */}
             <div className="fade-up space-y-6">
-              <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl md:text-7xl lg:text-8xl leading-[1.1]">
+              <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl md:text-7xl lg:text-7xl leading-[1.1]">
                 Elite Teams, Designs & Branding
               </h1>
 
-              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-300 max-w-2xl">
+              <p className="text-lg sm:text-md md:text-lg lg:text-xl text-gray-300 max-w-2xl">
                 Our expertise enables startups and corporates to achieve
                 superior, faster engineering outcomes. From Design, Branding to
                 Engineered Teams.
               </p>
 
               <div>
-                <GlassSurface className="!w-fit px-6 py-3 shimmer-btn flex items-center gap-2">
+                <GlassSurface className="!w-fit !h-12 px-5 py-2 shimmer-btn flex items-center gap-2">
                   <Link href="https://meet.brevo.com/algorim-consultation">
                     Get Consultation
                   </Link>

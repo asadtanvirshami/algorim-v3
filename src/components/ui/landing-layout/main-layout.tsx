@@ -7,12 +7,14 @@ import ModernSideMenu, {
   SocialItem,
 } from "@/components/ui/off-canvas";
 
-const menuItems: NavItem[] = [
-  { label: "Client", href: "/client" },
-  { label: "Portal", href: "/portal" },
-  { label: "Archive", href: "/archive", badge: "36" },
-  { label: "Branding", href: "/branding" },
-  { label: "Contact", href: "/contact", badge: "New" },
+const items = [
+  { label: "Process", href: "#process" },
+  { label: "Who", href: "#who" },
+  { label: "Creativity", href: "#creativity" }, // or "#ct" if you prefer
+  { label: "Services", href: "#services", badge: "12" },
+  { label: "Portfolio", href: "#portfolio" },
+  { label: "Colors", href: "#colors" },
+  { label: "Contact", href: "#contact" },
 ];
 
 const socialItems: SocialItem[] = [
@@ -35,7 +37,7 @@ export default function MainLayout({
       {/* Sider overlay, floats above everything */}
       <>
         <ModernSideMenu
-          items={menuItems}
+          items={items as NavItem[]}
           socials={socialItems}
           logoSrc="/your-logo.svg"
           logoAlt="The Internet Company"
