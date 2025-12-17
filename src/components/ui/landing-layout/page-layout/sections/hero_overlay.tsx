@@ -1,7 +1,7 @@
 import React from "react";
 import HeroSection from "../hero-section";
 
-const HeroOverlay = ({ heroScrollRef }: { heroScrollRef: any }) => {
+const HeroOverlay = ({ heroScrollRef }: { heroScrollRef }) => {
   return (
     <section
       ref={heroScrollRef}
@@ -16,7 +16,7 @@ const HeroOverlay = ({ heroScrollRef }: { heroScrollRef: any }) => {
           <p
             className="
     text-[11px] uppercase tracking-[0.3em] mb-4
-    text-orange-400
+    text-sky-200
     drop-shadow-[0_0_10px_rgba(249,115,22,0.55)]
     animate-[pulse_4s_ease-in-out_infinite]
   "
@@ -28,8 +28,8 @@ const HeroOverlay = ({ heroScrollRef }: { heroScrollRef: any }) => {
             ALGORIM
           </h1>
           <p className="mt-6 max-w-xl mx-auto text-sm md:text-base text-neutral-300">
-            Web, product, AI and security — engineered as one system instead of
-            a patchwork of agencies.
+            Web, product, AI and security engineered as one system instead of a
+            patchwork of agencies.
           </p>
         </div>
       </div>

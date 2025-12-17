@@ -1,13 +1,9 @@
 // DevLayout.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
-import React, {
-  useLayoutEffect,
-  useRef,
-  useEffect,
-  useCallback,
-  useState,
-} from "react";
+import React, { useLayoutEffect, useRef, useEffect, useCallback } from "react";
 import { useLenis } from "lenis/react";
 import { Card } from "../card";
 import dynamic from "next/dynamic";
@@ -36,6 +32,7 @@ const World = dynamic(() => import("../../ui/globe").then((m) => m.World), {
     <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-br from-neutral-200 via-neutral-100 to-neutral-300 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-700" />
   ),
 });
+type SvgIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
 const cardsData = [
   {
@@ -63,7 +60,7 @@ type Service = {
   tag: string;
   description: string;
   bullets: string[];
-  icon: React.ElementType;
+  icon: SvgIcon;
 };
 
 const services: Service[] = [
@@ -169,7 +166,7 @@ type WhoCardDef = {
   title: string;
   subtitle?: string;
   body: string[];
-  icon: React.ElementType;
+  icon: SvgIcon;
 };
 
 const whoCards: WhoCardDef[] = [
@@ -693,10 +690,6 @@ const DevLayout: React.FC = () => {
 
   const ctaSectionRef = useRef<HTMLElement | null>(null);
 
-  const [activeProjectId, setActiveProjectId] = useState(PORTFOLIO[0]?.id);
-  const activeProject =
-    PORTFOLIO.find((p) => p.id === activeProjectId) ?? PORTFOLIO[0];
-
   useEffect(() => {
     (World as any)?.preload?.();
   }, []);
@@ -713,7 +706,7 @@ const DevLayout: React.FC = () => {
       e.preventDefault();
       const target = document.querySelector(href);
       if (target && lenis) {
-        lenis.scrollTo(target, { offset: -40 });
+        lenis.scrollTo(target as any, { offset: -40 });
       }
     },
     [lenis]
@@ -836,7 +829,7 @@ const DevLayout: React.FC = () => {
                       duration: 0.35,
                       ease: "power1.out",
                     }
-                  : false,
+                  : null,
               onUpdate: (self) => {
                 const progress = self.progress;
                 const activeIndex = Math.round(progress * (totalSteps - 1));
@@ -1479,7 +1472,7 @@ const DevLayout: React.FC = () => {
                       duration: 0.35,
                       ease: "power2.out",
                     }
-                  : false,
+                  : null,
               onUpdate: (self) => {
                 const idx = Math.round(self.progress * (total - 1));
                 activate(idx);
@@ -1710,12 +1703,37 @@ const DevLayout: React.FC = () => {
   }, [lenis]);
 
   return (
-    <div className="relative min-h-screen bg-white text-black dark:bg-black dark:text-white">
+    <div
+      className="
+      relative min-h-screen
+      bg-white text-neutral-950
+      dark:bg-[#05070f] dark:text-white
+      transition-colors duration-300
+    "
+    >
       {/* GLOBAL ATMOSPHERE */}
       <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-orange-400/15 blur-[150px]" />
-        <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-amber-300/10 blur-[170px]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/5 dark:to-black/40" />
+        {/* light-mode glows */}
+        <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-blue-500/18 blur-[150px] dark:hidden" />
+        <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-sky-300/18 blur-[170px] dark:hidden" />
+
+        {/* dark-mode glows */}
+        <div className="absolute -top-44 -left-44 h-[560px] w-[560px] rounded-full bg-blue-500/14 blur-[170px] hidden dark:block" />
+        <div className="absolute -bottom-60 -right-60 h-[720px] w-[720px] rounded-full bg-sky-400/10 blur-[190px] hidden dark:block" />
+
+        {/* unified vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/[0.06] dark:to-black/55" />
+
+        {/* subtle noise-ish grid (works both) */}
+        <div
+          className="
+          absolute inset-0 opacity-[0.22] dark:opacity-[0.18]
+          [background-image:
+            linear-gradient(to_right,rgba(59,130,246,0.10)_1px,transparent_1px),
+            linear-gradient(to_bottom,rgba(14,165,233,0.08)_1px,transparent_1px)]
+          [background-size:64px_64px]
+        "
+        />
       </div>
 
       <main
@@ -1727,10 +1745,10 @@ const DevLayout: React.FC = () => {
         {/* Intro */}
         <section className="fade-section relative min-h-[60vh] flex items-center justify-center">
           <div className="max-w-2xl px-6 text-center space-y-4 relative z-10">
-            <p className="text-sm uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+            <p className="text-sm uppercase tracking-[0.2em] text-neutral-600 dark:text-white/60">
               Studio · Engineering · AI
             </p>
-            <h2 className="text-3xl md:text-4xl font-semibold">
+            <h2 className="text-3xl md:text-4xl font-semibold text-neutral-950 dark:text-white">
               We build brands, products and AI-powered platforms that feel
               premium end-to-end.
             </h2>
@@ -1747,21 +1765,27 @@ const DevLayout: React.FC = () => {
               <div className="space-y-3">
                 <p
                   id="process-kicker"
-                  className="text-[11px] uppercase tracking-[0.28em] text-neutral-500 dark:text-neutral-400"
+                  className="text-[11px] uppercase tracking-[0.28em] text-neutral-600 dark:text-white/60"
                 >
                   Our process
                 </p>
                 <h2
                   id="process-title"
-                  className="text-3xl md:text-4xl font-semibold leading-tight"
+                  className="text-3xl md:text-4xl font-semibold leading-tight text-neutral-950 dark:text-white"
                 >
                   A clear, engineered path from{" "}
-                  <span className="text-foreground/90">idea</span> to{" "}
-                  <span className="text-foreground/90">impact</span>.
+                  <span className="text-neutral-900/90 dark:text-white/90">
+                    idea
+                  </span>{" "}
+                  to{" "}
+                  <span className="text-neutral-900/90 dark:text-white/90">
+                    impact
+                  </span>
+                  .
                 </h2>
                 <p
                   id="process-sub"
-                  className="text-sm md:text-base text-neutral-600 dark:text-neutral-300 max-w-md"
+                  className="text-sm md:text-base text-neutral-700 dark:text-white/70 max-w-md"
                 >
                   No chaos, no black box. Just a repeatable system that keeps
                   your team, stakeholders and roadmap aligned.
@@ -1769,17 +1793,17 @@ const DevLayout: React.FC = () => {
               </div>
 
               <div className="hidden md:flex items-stretch gap-4">
-                <div className="relative w-[3px] rounded-full bg-neutral-200 dark:bg-white/5 overflow-hidden">
-                  <div className="process-line-fill absolute inset-0 bg-gradient-to-b from-orange-900 via-orange-900 to-orange-500 " />
+                <div className="relative w-[3px] rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
+                  <div className="process-line-fill absolute inset-0 bg-gradient-to-b from-blue-950 via-blue-700 to-sky-400" />
                 </div>
                 <div className="flex flex-col justify-between py-1 text-xs space-y-4">
-                  <span className="process-step-label text-neutral-500 dark:text-neutral-500">
+                  <span className="process-step-label text-neutral-600 dark:text-white/55">
                     01 · Discover
                   </span>
-                  <span className="process-step-label text-neutral-500 dark:text-neutral-500">
+                  <span className="process-step-label text-neutral-600 dark:text-white/55">
                     02 · Design & Brand
                   </span>
-                  <span className="process-step-label text-neutral-500 dark:text-neutral-500">
+                  <span className="process-step-label text-neutral-600 dark:text-white/55">
                     03 · Ship & Evolve
                   </span>
                 </div>
@@ -1793,16 +1817,28 @@ const DevLayout: React.FC = () => {
                     key={step.id}
                     className="absolute inset-0 flex items-center justify-center"
                   >
-                    <Card className="process-card-inner w-full relative rounded-2xl border border-black/10 dark:border-white/12 bg-white/70 dark:bg-white/[0.03] backdrop-blur-lg px-5 py-5 md:px-6 md:py-6 shadow-[0_22px_70px_rgba(0,0,0,0.18)] dark:shadow-[0_22px_70px_rgba(0,0,0,0.85)] overflow-hidden">
+                    <Card
+                      className="
+                      process-card-inner w-full relative rounded-2xl
+                      border border-black/10 dark:border-white/12
+                      bg-white/70 dark:bg-white/[0.04]
+                      backdrop-blur-lg
+                      px-5 py-5 md:px-6 md:py-6
+                      shadow-[0_22px_70px_rgba(0,0,0,0.14)]
+                      dark:shadow-[0_22px_70px_rgba(0,0,0,0.70)]
+                      overflow-hidden
+                      transition-colors
+                    "
+                    >
                       <div className="pointer-events-none absolute inset-0 -z-10">
-                        <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-orange-500/25 blur-3xl" />
-                        <div className="absolute -bottom-20 -right-16 h-48 w-48 rounded-full bg-orange-400/20 blur-3xl" />
+                        <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-blue-500/20 blur-3xl" />
+                        <div className="absolute -bottom-20 -right-16 h-48 w-48 rounded-full bg-sky-400/16 blur-3xl" />
                       </div>
 
-                      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/20 to-transparent dark:via-white/50 opacity-60" />
+                      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/20 to-transparent dark:via-white/35 opacity-60" />
 
-                      <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300 mb-3 shadow-[0_0_18px_rgba(249,115,22,0.35)]">
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-black text-[10px] font-semibold shadow-[0_0_12px_rgba(249,115,22,0.9)]">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-blue-700 dark:text-sky-200 mb-3 shadow-[0_0_18px_rgba(59,130,246,0.22)]">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white text-[10px] font-semibold shadow-[0_0_12px_rgba(59,130,246,0.6)]">
                           {String(index + 1).padStart(2, "0")}
                         </span>
                         {index === 0 && "Discover"}
@@ -1810,41 +1846,41 @@ const DevLayout: React.FC = () => {
                         {index === 2 && "Ship & Iterate"}
                       </div>
 
-                      <h3 className="text-lg md:text-xl font-semibold text-orange-600 dark:text-orange-300 drop-shadow-[0_0_14px_rgba(249,115,22,0.6)]">
+                      <h3 className="text-lg md:text-xl font-semibold text-blue-800 dark:text-sky-200 drop-shadow-[0_0_14px_rgba(59,130,246,0.22)]">
                         {step.title}
                       </h3>
 
-                      <p className="text-sm text-neutral-700 dark:text-neutral-200 mt-2">
+                      <p className="text-sm text-neutral-700 dark:text-white/80 mt-2">
                         {step.description}
                       </p>
 
-                      <div className="mt-4 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
+                      <div className="mt-4 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.18em] text-neutral-600 dark:text-white/60">
                         {index === 0 && (
                           <>
-                            <span className="px-2 py-1 rounded-full border border-orange-500/30 bg-orange-500/10">
+                            <span className="px-2 py-1 rounded-full border border-blue-500/30 bg-blue-500/10">
                               Audit
                             </span>
-                            <span className="px-2 py-1 rounded-full border border-orange-500/30 bg-orange-500/10">
+                            <span className="px-2 py-1 rounded-full border border-blue-500/30 bg-blue-500/10">
                               Strategy
                             </span>
                           </>
                         )}
                         {index === 1 && (
                           <>
-                            <span className="px-2 py-1 rounded-full border border-orange-500/30 bg-orange-500/10">
+                            <span className="px-2 py-1 rounded-full border border-blue-500/30 bg-blue-500/10">
                               Systems
                             </span>
-                            <span className="px-2 py-1 rounded-full border border-orange-500/30 bg-orange-500/10">
+                            <span className="px-2 py-1 rounded-full border border-blue-500/30 bg-blue-500/10">
                               Prototypes
                             </span>
                           </>
                         )}
                         {index === 2 && (
                           <>
-                            <span className="px-2 py-1 rounded-full border border-orange-500/30 bg-orange-500/10">
+                            <span className="px-2 py-1 rounded-full border border-blue-500/30 bg-blue-500/10">
                               Launch
                             </span>
-                            <span className="px-2 py-1 rounded-full border border-orange-500/30 bg-orange-500/10">
+                            <span className="px-2 py-1 rounded-full border border-blue-500/30 bg-blue-500/10">
                               Feedback loop
                             </span>
                           </>
@@ -1873,31 +1909,32 @@ const DevLayout: React.FC = () => {
                   <Card
                     key={card.id}
                     className="
-    who-card group absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-    w-[88vw] sm:w-[70vw] md:w-[460px]
-    h-[60vh] md:h-[65vh]
-    overflow-hidden flex flex-col justify-between
-    will-change-transform
+                    who-card group absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+                    w-[88vw] sm:w-[70vw] md:w-[460px]
+                    h-[60vh] md:h-[65vh]
+                    overflow-hidden flex flex-col justify-between
+                    will-change-transform
 
-    bg-white/70 text-black backdrop-blur-xl
-    dark:bg-neutral-950/70 dark:text-white
+                    bg-white/70 text-neutral-950 backdrop-blur-xl
+                    dark:bg-white/[0.04] dark:text-white
 
-    border border-black/10 dark:border-white/10
-    shadow-[0_22px_60px_rgba(0,0,0,0.18)]
-    dark:shadow-[0_22px_60px_rgba(0,0,0,0.85)]
+                    border border-black/10 dark:border-white/10
+                    shadow-[0_22px_60px_rgba(0,0,0,0.16)]
+                    dark:shadow-[0_22px_60px_rgba(0,0,0,0.75)]
 
-    rounded-none
-  "
+                    rounded-none
+                    transition-colors
+                  "
                   >
-                    {/* ===== cyber atmosphere + subtle grid ===== */}
+                    {/* ===== atmosphere + subtle grid ===== */}
                     <div className="pointer-events-none absolute inset-0 -z-10">
                       <div
-                        className="absolute inset-0 opacity-[0.18] dark:opacity-[0.12]"
+                        className="absolute inset-0 opacity-[0.16] dark:opacity-[0.12]"
                         style={{
                           backgroundImage: `
-          linear-gradient(to right, rgba(249,115,22,0.12) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(249,115,22,0.10) 1px, transparent 1px)
-        `,
+                          linear-gradient(to right, rgba(59,130,246,0.12) 1px, transparent 1px),
+                          linear-gradient(to bottom, rgba(14,165,233,0.10) 1px, transparent 1px)
+                        `,
                           backgroundSize: "34px 34px",
                           maskImage:
                             "radial-gradient(circle at 30% 20%, black 0%, black 45%, transparent 75%)",
@@ -1905,42 +1942,30 @@ const DevLayout: React.FC = () => {
                             "radial-gradient(circle at 30% 20%, black 0%, black 45%, transparent 75%)",
                         }}
                       />
-                      <div className="absolute -top-28 -left-28 h-72 w-72 rounded-full bg-orange-400/10 blur-3xl" />
-                      <div className="absolute -bottom-32 -right-32 h-80 w-80 rounded-full bg-amber-300/10 blur-3xl" />
-                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/5 dark:to-black/35" />
+                      <div className="absolute -top-28 -left-28 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl" />
+                      <div className="absolute -bottom-32 -right-32 h-80 w-80 rounded-full bg-sky-300/10 blur-3xl" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/[0.04] dark:to-black/45" />
                     </div>
 
-                    {/* ===== sharp “arrow” frame (corners + notches) ===== */}
+                    {/* ===== sharp frame ===== */}
                     <div className="pointer-events-none absolute inset-0">
-                      {/* top line */}
-                      <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent" />
-                      {/* bottom line */}
-                      <div className="absolute left-8 right-8 bottom-0 h-px bg-gradient-to-r from-transparent via-orange-500/25 to-transparent" />
-                      {/* left line */}
-                      <div className="absolute top-8 bottom-8 left-0 w-px bg-gradient-to-b from-transparent via-orange-500/20 to-transparent" />
-                      {/* right line */}
-                      <div className="absolute top-8 bottom-8 right-0 w-px bg-gradient-to-b from-transparent via-orange-500/20 to-transparent" />
+                      <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
+                      <div className="absolute left-8 right-8 bottom-0 h-px bg-gradient-to-r from-transparent via-sky-400/25 to-transparent" />
+                      <div className="absolute top-8 bottom-8 left-0 w-px bg-gradient-to-b from-transparent via-blue-500/20 to-transparent" />
+                      <div className="absolute top-8 bottom-8 right-0 w-px bg-gradient-to-b from-transparent via-sky-400/20 to-transparent" />
 
-                      {/* corner arrows (L shapes) */}
-                      <span className="absolute left-3 top-3 h-6 w-6 border-l border-t border-orange-500/40" />
-                      <span className="absolute right-3 top-3 h-6 w-6 border-r border-t border-orange-500/35" />
-                      <span className="absolute left-3 bottom-3 h-6 w-6 border-l border-b border-orange-500/30" />
-                      <span className="absolute right-3 bottom-3 h-6 w-6 border-r border-b border-orange-500/30" />
+                      <span className="absolute left-3 top-3 h-6 w-6 border-l border-t border-blue-500/40" />
+                      <span className="absolute right-3 top-3 h-6 w-6 border-r border-t border-blue-500/35" />
+                      <span className="absolute left-3 bottom-3 h-6 w-6 border-l border-b border-sky-400/30" />
+                      <span className="absolute right-3 bottom-3 h-6 w-6 border-r border-b border-sky-400/30" />
 
-                      {/* “arrow” notches */}
-                      <span className="absolute left-0 top-10 h-0 w-0 border-y-[10px] border-y-transparent border-r-[12px] border-r-orange-500/20" />
-                      <span className="absolute right-0 bottom-10 h-0 w-0 border-y-[10px] border-y-transparent border-l-[12px] border-l-orange-500/18" />
+                      <span className="absolute left-0 top-10 h-0 w-0 border-y-[10px] border-y-transparent border-r-[12px] border-r-blue-500/20" />
+                      <span className="absolute right-0 bottom-10 h-0 w-0 border-y-[10px] border-y-transparent border-l-[12px] border-l-sky-400/18" />
                     </div>
 
-                    {/* ===== LARGE NUMBER (more cyber) ===== */}
+                    {/* ===== LARGE NUMBER ===== */}
                     <div className="pointer-events-none absolute top-5 left-6 select-none">
-                      <span
-                        className="
-        text-[52px] sm:text-[64px] md:text-[72px]
-        font-extrabold tracking-tight
-        text-neutral-300/70 dark:text-neutral-800/80
-      "
-                      >
+                      <span className="text-[52px] sm:text-[64px] md:text-[72px] font-extrabold tracking-tight text-neutral-300/70 dark:text-white/10">
                         {number}
                       </span>
                     </div>
@@ -1948,39 +1973,28 @@ const DevLayout: React.FC = () => {
                     {/* ===== HEADER ===== */}
                     <div className="relative z-10 flex items-start justify-between px-6 pt-6">
                       <div className="mt-2">
-                        <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-500 dark:text-neutral-400">
+                        <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60">
                           {card.title}
                         </p>
                         {card.subtitle && (
-                          <h3 className="text-lg md:text-xl font-semibold mt-1 text-neutral-900 dark:text-neutral-100">
+                          <h3 className="text-lg md:text-xl font-semibold mt-1 text-neutral-950 dark:text-white">
                             {card.subtitle}
                           </h3>
                         )}
-                        {/* tiny status chip */}
-                        <div className="mt-3 inline-flex items-center gap-2 rounded-none border border-orange-500/25 bg-orange-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
-                          <span className="h-1.5 w-1.5 rounded-full bg-orange-400 shadow-[0_0_14px_rgba(249,115,22,0.7)]" />
+
+                        <div className="mt-3 inline-flex items-center gap-2 rounded-none border border-blue-500/25 bg-blue-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-blue-800 dark:text-sky-200">
+                          <span className="h-1.5 w-1.5 rounded-full bg-sky-400 shadow-[0_0_14px_rgba(14,165,233,0.55)]" />
                           classified brief
                         </div>
                       </div>
 
-                      {/* ICON (square + sharp) */}
-                      <div
-                        className="
-        who-icon flex h-10 w-10 items-center justify-center
-        rounded-none
-        border border-orange-500/25
-        bg-orange-500/10
-        shadow-[0_0_22px_rgba(249,115,22,0.25)]
-        transition-transform duration-300
-        group-hover:scale-[1.06]
-      "
-                      >
-                        <Icon className="h-5 w-5 text-orange-500 drop-shadow-[0_0_10px_rgba(249,115,22,0.85)]" />
+                      <div className="who-icon flex h-10 w-10 items-center justify-center rounded-none border border-blue-500/25 bg-blue-500/10 shadow-[0_0_22px_rgba(59,130,246,0.18)] transition-transform duration-300 group-hover:scale-[1.06]">
+                        <Icon className="h-5 w-5 text-blue-600 dark:text-sky-200 drop-shadow-[0_0_10px_rgba(59,130,246,0.35)]" />
                       </div>
                     </div>
 
                     {/* ===== BODY ===== */}
-                    <div className="relative z-10 px-6 pb-6 space-y-3 text-sm md:text-base text-neutral-800 dark:text-neutral-200 mt-4">
+                    <div className="relative z-10 px-6 pb-6 space-y-3 text-sm md:text-base text-neutral-800 dark:text-white/80 mt-4">
                       {card.body.map((paragraph, idx) => (
                         <p key={idx} className="leading-relaxed">
                           {paragraph}
@@ -1988,11 +2002,11 @@ const DevLayout: React.FC = () => {
                       ))}
                     </div>
 
-                    {/* ===== bottom “arrow” action hint ===== */}
+                    {/* ===== bottom hint ===== */}
                     <div className="pointer-events-none absolute bottom-0 left-0 right-0">
-                      <div className="mx-6 mb-5 flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-neutral-500 dark:text-neutral-500">
+                      <div className="mx-6 mb-5 flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-neutral-600 dark:text-white/55">
                         <span>scroll to decrypt</span>
-                        <span className="text-orange-500/70">⟶</span>
+                        <span className="text-sky-500/70">⟶</span>
                       </div>
                     </div>
                   </Card>
@@ -2004,13 +2018,13 @@ const DevLayout: React.FC = () => {
               id="who-heading"
               className="w-full md:w-1/2 space-y-4 text-left md:text-right relative z-10"
             >
-              <p className="text-xs uppercase tracking-[0.25em] text-neutral-500 dark:text-neutral-400">
+              <p className="text-xs uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60">
                 Who We Are
               </p>
-              <h2 className="text-3xl md:text-4xl font-semibold md:leading-tight max-w-xl md:ml-auto">
+              <h2 className="text-3xl md:text-4xl font-semibold md:leading-tight max-w-xl md:ml-auto text-neutral-950 dark:text-white">
                 Architects of the digital future.
               </h2>
-              <p className="text-sm md:text-base text-neutral-600 dark:text-neutral-300 max-w-md md:ml-auto">
+              <p className="text-sm md:text-base text-neutral-700 dark:text-white/70 max-w-md md:ml-auto">
                 Scroll to watch each card slide from bottom-right to top-left,
                 layering the story of Algorim step by step.
               </p>
@@ -2018,144 +2032,101 @@ const DevLayout: React.FC = () => {
           </div>
         </section>
 
-        {/* Creativity & Technicality (ORANGE) */}
-        {/* Creativity & Technicality (ORANGE) */}
+        {/* Creativity & Technicality (BLUE/SKY) */}
         <section
           ref={creativityTechSectionRef}
           className="relative min-h-screen overflow-hidden"
         >
-          {/* atmosphere */}
           <div className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-orange-400/18 blur-[150px]" />
-            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-amber-300/14 blur-[170px]" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/35 dark:to-black/70" />
+            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-blue-500/18 blur-[150px] dark:bg-blue-500/12 dark:blur-[170px]" />
+            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-sky-300/14 blur-[170px] dark:bg-sky-400/10 dark:blur-[190px]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/[0.08] dark:to-black/70" />
           </div>
 
           <div className="max-w-6xl mx-auto px-6 h-full flex items-center justify-center relative z-10">
             <div className="ct-shell relative w-full h-[72vh] md:h-[80vh]">
-              {/* MAIN GLASS CARD */}
               <div
                 className="
-          ct-card relative w-full h-full
-          rounded-[36px]
-          border border-white/10
-          bg-white/[0.05]
-          backdrop-blur-2xl
-          shadow-[0_30px_110px_rgba(0,0,0,0.65)]
-          overflow-hidden
-
-          flex flex-col md:flex-row
-        "
+                ct-card relative w-full h-full
+                rounded-[36px]
+                border border-black/10 dark:border-white/10
+                bg-white/60 dark:bg-white/[0.04]
+                backdrop-blur-2xl
+                shadow-[0_30px_110px_rgba(0,0,0,0.20)]
+                dark:shadow-[0_30px_110px_rgba(0,0,0,0.75)]
+                overflow-hidden
+                flex flex-col md:flex-row
+                transition-colors
+              "
               >
-                {/* inner grid */}
                 <div
                   className="
-            pointer-events-none absolute inset-0 opacity-[0.14]
-            [background-image:
-              linear-gradient(to_right,rgba(249,115,22,0.18)_1px,transparent_1px),
-              linear-gradient(to_bottom,rgba(249,115,22,0.14)_1px,transparent_1px)]
-            [background-size:46px_46px]
-          "
+                  pointer-events-none absolute inset-0 opacity-[0.10] dark:opacity-[0.14]
+                  [background-image:
+                    linear-gradient(to_right,rgba(59,130,246,0.18)_1px,transparent_1px),
+                    linear-gradient(to_bottom,rgba(14,165,233,0.14)_1px,transparent_1px)]
+                  [background-size:46px_46px]
+                "
                 />
 
-                {/* warm glows */}
-                <div className="ct-glow-a pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-orange-400/18 blur-[140px]" />
-                <div className="ct-glow-b pointer-events-none absolute -right-48 -bottom-48 h-[620px] w-[620px] rounded-full bg-amber-300/14 blur-[170px]" />
+                <div className="ct-glow-a pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-blue-500/16 blur-[140px]" />
+                <div className="ct-glow-b pointer-events-none absolute -right-48 -bottom-48 h-[620px] w-[620px] rounded-full bg-sky-300/14 blur-[170px]" />
 
-                {/* divider (vertical on desktop, horizontal on mobile) */}
-                <div className="ct-divider pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-white/10 md:top-0 md:bottom-0 md:left-1/2 md:right-auto md:h-auto md:w-px" />
+                <div className="ct-divider pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-black/10 dark:bg-white/10 md:top-0 md:bottom-0 md:left-1/2 md:right-auto md:h-auto md:w-px" />
 
-                {/* LEFT */}
                 <div className="ct-left relative w-full md:w-1/2 p-7 sm:p-9 md:p-12 flex flex-col justify-center">
-                  <div
-                    className="
-              ct-icon-left absolute top-6 left-6 sm:top-8 sm:left-8
-              h-12 w-12 sm:h-14 sm:w-14 rounded-2xl
-              bg-black/35 border border-orange-400/25
-              backdrop-blur-xl
-              shadow-[0_0_18px_rgba(249,115,22,0.55),0_0_42px_rgba(249,115,22,0.18)]
-              flex items-center justify-center
-            "
-                  >
-                    <Palette className="h-6 w-6 sm:h-7 sm:w-7 text-orange-300 drop-shadow-[0_0_12px_rgba(249,115,22,0.9)]" />
+                  <div className="ct-icon-left absolute top-6 left-6 sm:top-8 sm:left-8 h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-white/70 dark:bg-black/35 border border-blue-400/25 backdrop-blur-xl shadow-[0_0_18px_rgba(59,130,246,0.22),0_0_42px_rgba(59,130,246,0.10)] flex items-center justify-center">
+                    <Palette className="h-6 w-6 sm:h-7 sm:w-7 text-blue-600 dark:text-sky-200 drop-shadow-[0_0_12px_rgba(14,165,233,0.35)]" />
                   </div>
 
-                  <p className="ct-kicker-left text-[11px] uppercase tracking-[0.35em] text-white/60">
+                  <p className="ct-kicker-left text-[11px] uppercase tracking-[0.35em] text-neutral-600 dark:text-white/60">
                     Creativity
                   </p>
 
-                  <h2
-                    className="
-              ct-title-left mt-3
-              text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight
-              text-transparent bg-clip-text
-              bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400
-              drop-shadow-[0_0_24px_rgba(249,115,22,0.45)]
-            "
-                  >
+                  <h2 className="ct-title-left mt-3 text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_24px_rgba(59,130,246,0.18)]">
                     Creativity
                   </h2>
 
-                  <p className="ct-copy-left mt-4 sm:mt-5 max-w-md text-sm md:text-base text-white/75 leading-relaxed">
+                  <p className="ct-copy-left mt-4 sm:mt-5 max-w-md text-sm md:text-base text-neutral-700 dark:text-white/70 leading-relaxed">
                     The palette, motion and story that make Algorim feel like a
                     brand — not just a stack of features.
                   </p>
 
-                  <div className="ct-chip-left mt-6 sm:mt-7 inline-flex w-fit items-center gap-2 rounded-full border border-orange-400/25 bg-orange-500/10 px-4 py-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-orange-400 shadow-[0_0_14px_rgba(249,115,22,0.75)]" />
-                    <span className="text-[10px] uppercase tracking-[0.3em] text-orange-200/90">
+                  <div className="ct-chip-left mt-6 sm:mt-7 inline-flex w-fit items-center gap-2 rounded-full border border-blue-400/25 bg-blue-500/10 px-4 py-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-sky-400 shadow-[0_0_14px_rgba(14,165,233,0.55)]" />
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-blue-700 dark:text-sky-200/90">
                       Craft / Motion / Voice
                     </span>
                   </div>
                 </div>
 
-                {/* RIGHT (TECHNICALITY) */}
                 <div className="ct-right relative w-full md:w-1/2 p-7 sm:p-9 md:p-12 flex flex-col justify-center md:text-right">
-                  <div
-                    className="
-              ct-icon-right absolute bottom-6 right-6 sm:bottom-8 sm:right-8
-              h-12 w-12 sm:h-14 sm:w-14 rounded-2xl
-              bg-black/35 border border-orange-400/25
-              backdrop-blur-xl
-              shadow-[0_0_18px_rgba(249,115,22,0.55),0_0_42px_rgba(249,115,22,0.18)]
-              flex items-center justify-center
-            "
-                  >
-                    <Code2 className="h-6 w-6 sm:h-7 sm:w-7 text-orange-200 drop-shadow-[0_0_12px_rgba(249,115,22,0.95)]" />
+                  <div className="ct-icon-right absolute bottom-6 right-6 sm:bottom-8 sm:right-8 h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-white/70 dark:bg-black/35 border border-blue-400/25 backdrop-blur-xl shadow-[0_0_18px_rgba(59,130,246,0.22),0_0_42px_rgba(59,130,246,0.10)] flex items-center justify-center">
+                    <Code2 className="h-6 w-6 sm:h-7 sm:w-7 text-blue-600 dark:text-sky-200 drop-shadow-[0_0_12px_rgba(14,165,233,0.35)]" />
                   </div>
 
-                  <p className="ct-kicker-right text-[11px] uppercase tracking-[0.35em] text-white/55">
+                  <p className="ct-kicker-right text-[11px] uppercase tracking-[0.35em] text-neutral-600 dark:text-white/60">
                     Technicality
                   </p>
 
-                  <h2
-                    className="
-              ct-title-right mt-3
-              text-3xl sm:text-4xl md:text-5xl font-mono font-semibold tracking-tight
-              text-transparent bg-clip-text
-              bg-gradient-to-r from-orange-200 via-amber-200 to-orange-300
-              drop-shadow-[0_0_22px_rgba(249,115,22,0.45)]
-            "
-                  >
-                    <span className="text-orange-200 drop-shadow-[0_0_14px_rgba(249,115,22,0.9)]">
-                      &lt;
-                    </span>
-                    <span className="mx-1 text-orange-300 drop-shadow-[0_0_26px_rgba(249,115,22,0.8)]">
+                  <h2 className="ct-title-right mt-3 text-3xl sm:text-4xl md:text-5xl font-mono font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_22px_rgba(59,130,246,0.18)]">
+                    <span className="text-sky-500 dark:text-sky-200">&lt;</span>
+                    <span className="mx-1 text-blue-700 dark:text-sky-100">
                       Technicality
                     </span>
-                    <span className="text-orange-200 drop-shadow-[0_0_14px_rgba(249,115,22,0.9)]">
+                    <span className="text-sky-500 dark:text-sky-200">
                       /&gt;
                     </span>
                   </h2>
 
-                  <p className="ct-copy-right mt-4 sm:mt-5 md:ml-auto max-w-md text-sm md:text-base text-white/75 leading-relaxed">
+                  <p className="ct-copy-right mt-4 sm:mt-5 md:ml-auto max-w-md text-sm md:text-base text-neutral-700 dark:text-white/70 leading-relaxed">
                     The engineering, architecture and security that keep every
                     interaction fast, correct and safe.
                   </p>
 
-                  <div className="ct-chip-right mt-6 sm:mt-7 md:ml-auto inline-flex w-fit items-center gap-2 rounded-full border border-orange-400/25 bg-orange-500/10 px-4 py-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-amber-300 shadow-[0_0_14px_rgba(252,211,77,0.7)]" />
-                    <span className="text-[10px] uppercase tracking-[0.3em] text-orange-200/90">
+                  <div className="ct-chip-right mt-6 sm:mt-7 md:ml-auto inline-flex w-fit items-center gap-2 rounded-full border border-blue-400/25 bg-blue-500/10 px-4 py-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-sky-300 shadow-[0_0_14px_rgba(14,165,233,0.55)]" />
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-blue-700 dark:text-sky-200/90">
                       Perf / Security / Scale
                     </span>
                   </div>
@@ -2175,17 +2146,17 @@ const DevLayout: React.FC = () => {
               <div className="space-y-3 max-w-xl">
                 <p
                   id="world-kicker"
-                  className="text-[11px] uppercase tracking-[0.28em] text-orange-500/80 drop-shadow-[0_0_10px_rgba(249,115,22,0.45)]"
+                  className="text-[11px] uppercase tracking-[0.28em] text-blue-700/80 dark:text-sky-300/80 drop-shadow-[0_0_10px_rgba(59,130,246,0.18)]"
                 >
                   Global footprint
                 </p>
 
                 <h2
                   id="world-title"
-                  className="text-4xl md:text-5xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 drop-shadow-[0_0_22px_rgba(249,115,22,0.55)]"
+                  className="text-4xl md:text-5xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_22px_rgba(59,130,246,0.18)]"
                 >
                   We work internationally with{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400 drop-shadow-[0_0_28px_rgba(249,115,22,0.75)]">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_28px_rgba(59,130,246,0.22)]">
                     distributed teams
                   </span>
                   .
@@ -2193,7 +2164,7 @@ const DevLayout: React.FC = () => {
 
                 <p
                   id="world-copy"
-                  className="text-sm md:text-base text-neutral-600 dark:text-neutral-300"
+                  className="text-sm md:text-base text-neutral-700 dark:text-white/70"
                 >
                   From Europe to the Middle East, North America and
                   Asia–Pacific, we plug directly into your stack and ship on
@@ -2204,28 +2175,28 @@ const DevLayout: React.FC = () => {
 
               <div className="grid grid-cols-3 gap-6 text-right text-xs md:text-sm">
                 <div className="world-stat space-y-1">
-                  <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-500">
+                  <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60">
                     Time zones
                   </p>
-                  <p className="text-2xl md:text-3xl font-semibold text-orange-400 drop-shadow-[0_0_16px_rgba(249,115,22,0.65)]">
+                  <p className="text-2xl md:text-3xl font-semibold text-blue-600 dark:text-sky-200 drop-shadow-[0_0_16px_rgba(59,130,246,0.18)]">
                     08+
                   </p>
                 </div>
 
                 <div className="world-stat space-y-1">
-                  <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-500">
+                  <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60">
                     Countries
                   </p>
-                  <p className="text-2xl md:text-3xl font-semibold text-orange-300 drop-shadow-[0_0_14px_rgba(249,115,22,0.55)]">
+                  <p className="text-2xl md:text-3xl font-semibold text-blue-500 dark:text-sky-100 drop-shadow-[0_0_14px_rgba(59,130,246,0.18)]">
                     15
                   </p>
                 </div>
 
                 <div className="world-stat space-y-1">
-                  <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-500">
+                  <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60">
                     Continents
                   </p>
-                  <p className="text-2xl md:text-3xl font-semibold text-orange-200 drop-shadow-[0_0_12px_rgba(249,115,22,0.45)]">
+                  <p className="text-2xl md:text-3xl font-semibold text-sky-500 dark:text-sky-200 drop-shadow-[0_0_12px_rgba(14,165,233,0.18)]">
                     04
                   </p>
                 </div>
@@ -2239,35 +2210,42 @@ const DevLayout: React.FC = () => {
             </div>
           </div>
         </section>
+
         {/* CTA */}
         <section
           ref={ctaSectionRef}
-          className="relative py-24 md:py-32 bg-neutral-950 overflow-hidden"
+          className="relative py-24 md:py-32 overflow-hidden bg-white dark:bg-black"
         >
-          {/* ambient */}
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute -top-24 left-1/2 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_55%)] blur-2xl" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.06),transparent_40%)]" />
+            <div className="absolute -top-24 left-1/2 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.12),transparent_55%)] blur-2xl" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(14,165,233,0.10),transparent_40%)]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/[0.06] dark:to-black/55" />
           </div>
 
           <div className="relative max-w-6xl mx-auto px-6">
             <div
               data-cta-card
-              className="relative overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-900/55 backdrop-blur-xl"
+              className="
+              relative overflow-hidden rounded-3xl
+              border border-black/10 dark:border-white/10
+              bg-white/70 dark:bg-white/[0.04]
+              backdrop-blur-xl
+              shadow-[0_18px_70px_rgba(0,0,0,0.16)]
+              dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
+              transition-colors
+            "
             >
-              {/* glow layer */}
               <div
                 data-cta-glow
                 className="pointer-events-none absolute inset-0 opacity-0"
               >
-                <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_30%_20%,rgba(255,255,255,0.10),transparent_40%)]" />
-                <div className="absolute inset-0 bg-[radial-gradient(700px_circle_at_70%_60%,rgba(255,255,255,0.06),transparent_45%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_30%_20%,rgba(59,130,246,0.16),transparent_40%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(700px_circle_at_70%_60%,rgba(14,165,233,0.10),transparent_45%)]" />
               </div>
 
-              {/* sheen / scanner */}
               <div
                 data-cta-sheen
-                className="pointer-events-none absolute -inset-y-10 -left-1/2 w-1/2 rotate-12 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent)] blur-sm opacity-0"
+                className="pointer-events-none absolute -inset-y-10 -left-1/2 w-1/2 rotate-12 bg-[linear-gradient(90deg,transparent,rgba(56,189,248,0.14),transparent)] blur-sm opacity-0"
               />
 
               <div className="relative p-8 md:p-12">
@@ -2275,22 +2253,22 @@ const DevLayout: React.FC = () => {
                   <div className="max-w-2xl">
                     <div
                       data-cta-kicker
-                      className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-neutral-400"
+                      className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60"
                     >
-                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-400/70" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-sky-400/70" />
                       Secure · Ship · Scale
                     </div>
 
                     <h3
                       data-cta-title
-                      className="mt-4 text-3xl md:text-4xl font-semibold text-neutral-50"
+                      className="mt-4 text-3xl md:text-4xl font-semibold text-neutral-950 dark:text-white"
                     >
                       Ready to ship something premium?
                     </h3>
 
                     <p
                       data-cta-subtitle
-                      className="mt-3 text-sm md:text-base text-neutral-300"
+                      className="mt-3 text-sm md:text-base text-neutral-700 dark:text-white/70"
                     >
                       Book a quick call and we’ll map your roadmap, stack, and
                       risk surface — then propose a clean execution plan.
@@ -2305,37 +2283,55 @@ const DevLayout: React.FC = () => {
                       href="https://meet.brevo.com/algorim-consultation"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium text-neutral-950 bg-neutral-50 hover:bg-white transition"
+                      className="
+                      inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium
+                      bg-blue-600 text-white hover:bg-blue-700
+                      shadow-[0_18px_60px_rgba(59,130,246,0.18)]
+                      transition
+                    "
                     >
                       Book a Call
                     </a>
 
                     <a
                       href="#services"
-                      className="inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium text-neutral-50 border border-neutral-700 hover:border-neutral-500 bg-neutral-950/30 hover:bg-neutral-950/40 transition"
+                      className="
+                      inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium
+                      border border-black/10 dark:border-white/12
+                      bg-white/60 dark:bg-white/[0.04]
+                      text-neutral-950 dark:text-white
+                      hover:border-blue-500/30
+                      transition
+                    "
                     >
                       See Services
                     </a>
                   </div>
                 </div>
 
-                {/* micro-trust row */}
-                <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-neutral-400">
-                  <div className="rounded-2xl border border-neutral-800 bg-neutral-950/30 px-4 py-3">
-                    Response in <span className="text-neutral-200">24h</span>
+                <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-neutral-600 dark:text-white/60">
+                  <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/[0.04] px-4 py-3">
+                    Response in{" "}
+                    <span className="text-neutral-950 dark:text-white">
+                      24h
+                    </span>
                   </div>
-                  <div className="rounded-2xl border border-neutral-800 bg-neutral-950/30 px-4 py-3">
+                  <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/[0.04] px-4 py-3">
                     Fixed-scope or{" "}
-                    <span className="text-neutral-200">retainer</span>
+                    <span className="text-neutral-950 dark:text-white">
+                      retainer
+                    </span>
                   </div>
-                  <div className="rounded-2xl border border-neutral-800 bg-neutral-950/30 px-4 py-3">
+                  <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/[0.04] px-4 py-3">
                     Reports built for{" "}
-                    <span className="text-neutral-200">execs</span>
+                    <span className="text-neutral-950 dark:text-white">
+                      execs
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-neutral-500/40 to-transparent" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-sky-400/25 to-transparent" />
             </div>
           </div>
         </section>
@@ -2344,27 +2340,27 @@ const DevLayout: React.FC = () => {
         <section
           id="services"
           ref={servicesHorizontalSectionRef}
-          className="relative min-h-[80vh] md:h-screen overflow-hidden "
+          className="relative min-h-[80vh] md:h-screen overflow-hidden"
         >
-          <div className="relative h-full max-w-6xl mx-auto px-6 flex flex-col z-10 overflow-r-hidden">
+          <div className="relative h-full max-w-6xl mx-auto px-6 flex flex-col z-10 overflow-r-hidden mt-12">
             <div
               id="services-heading"
               className="shrink-0 space-y-3 pt-2 md:pt-4"
             >
               <div className="flex flex-wrap gap-2 mb-1">
-                <span className="services-pill text-[11px] uppercase tracking-[0.25em] text-neutral-500 dark:text-neutral-400">
+                <span className="services-pill text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60">
                   Services
                 </span>
-                <span className="services-pill text-[11px] uppercase tracking-[0.25em] text-neutral-500 dark:text-neutral-500">
+                <span className="services-pill text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/45">
                   Branding · Product · AI · Cloud · Security
                 </span>
               </div>
 
-              <h2 className="text-3xl md:text-4xl font-semibold max-w-xl">
+              <h2 className="text-3xl md:text-4xl font-semibold max-w-xl text-neutral-950 dark:text-white">
                 A horizontal deck of capabilities. Scroll to move sideways.
               </h2>
 
-              <p className="text-sm md:text-base text-neutral-600 dark:text-neutral-300 max-w-md">
+              <p className="text-sm md:text-base text-neutral-700 dark:text-white/70 max-w-md">
                 Every card is a fully managed unit you can plug into your
                 company: brand, engineering, AI, security and cloud.
               </p>
@@ -2381,50 +2377,50 @@ const DevLayout: React.FC = () => {
                     <Card
                       key={service.id}
                       className="
-                        service-card-h relative flex-shrink-0
-                        w-[80vw] sm:w-[65vw] md:w-[440px]
-                        mr-2 md:mr-6
-                        rounded-xl p-6 md:p-7
-                        snap-start overflow-hidden
-                        border border-black/10 dark:border-white/10
-                        bg-white/70 dark:bg-white/[0.03]
-                        backdrop-blur-xl
-                        shadow-[0_18px_60px_rgba(0,0,0,0.10)]
-                        dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
-                        transition-all duration-300 ease-out
-                        hover:-translate-y-2 hover:scale-[1.02]
-                        hover:border-black/20 dark:hover:border-white/20
-                      "
+                      service-card-h relative flex-shrink-0
+                      w-[80vw] sm:w-[65vw] md:w-[440px]
+                      mr-2 md:mr-6
+                      rounded-xl p-6 md:p-7
+                      snap-start overflow-hidden
+                      border border-black/10 dark:border-white/10
+                      bg-white/70 dark:bg-white/[0.04]
+                      backdrop-blur-xl
+                      shadow-[0_18px_60px_rgba(0,0,0,0.12)]
+                      dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
+                      transition-all duration-300 ease-out
+                      hover:-translate-y-2 hover:scale-[1.02]
+                      hover:border-black/20 dark:hover:border-white/20
+                    "
                     >
                       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/10 to-transparent dark:via-white/20" />
-                      <div className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-orange-400/10 blur-3xl opacity-70" />
-                      <div className="pointer-events-none absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-orange-300/10 blur-3xl opacity-60" />
+                      <div className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-blue-400/10 blur-3xl opacity-70" />
+                      <div className="pointer-events-none absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-sky-300/10 blur-3xl opacity-60" />
 
                       <div className="relative flex h-full flex-col justify-between gap-4 z-10">
                         <div>
                           <div className="flex items-center justify-between gap-3 mb-4">
-                            <span className="text-[11px] uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
+                            <span className="text-[11px] uppercase tracking-[0.22em] text-neutral-600 dark:text-white/60">
                               {service.tag}
                             </span>
 
-                            <div className="service-icon flex h-10 w-10 items-center justify-center rounded-2xl border border-orange-500/25 bg-orange-500/10 shadow-[0_0_22px_rgba(249,115,22,0.35)] dark:shadow-[0_0_26px_rgba(249,115,22,0.55)]">
-                              <Icon className="h-5 w-5 text-orange-500 drop-shadow-[0_0_12px_rgba(249,115,22,0.85)]" />
+                            <div className="service-icon flex h-10 w-10 items-center justify-center rounded-2xl border border-blue-500/25 bg-blue-500/10 shadow-[0_0_22px_rgba(59,130,246,0.18)] dark:shadow-[0_0_26px_rgba(59,130,246,0.30)]">
+                              <Icon className="h-5 w-5 text-blue-600 dark:text-sky-200 drop-shadow-[0_0_12px_rgba(59,130,246,0.35)]" />
                             </div>
                           </div>
 
-                          <h3 className="text-xl md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400 drop-shadow-[0_0_16px_rgba(249,115,22,0.55)]">
+                          <h3 className="text-xl md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_16px_rgba(59,130,246,0.18)]">
                             {service.label}
                           </h3>
 
-                          <p className="text-sm text-neutral-700 dark:text-neutral-200 mt-2">
+                          <p className="text-sm text-neutral-700 dark:text-white/75 mt-2">
                             {service.description}
                           </p>
                         </div>
 
-                        <ul className="space-y-1.5 text-xs md:text-sm text-neutral-700 dark:text-neutral-200/90 mt-4">
+                        <ul className="space-y-1.5 text-xs md:text-sm text-neutral-700 dark:text-white/75 mt-4">
                           {service.bullets.map((item, idx) => (
                             <li key={idx} className="flex gap-2 items-start">
-                              <span className="mt-1 h-[4px] w-[14px] rounded-full bg-neutral-300 dark:bg-white/20" />
+                              <span className="mt-1 h-[4px] w-[14px] rounded-full bg-black/15 dark:bg-white/20" />
                               <span>{item}</span>
                             </li>
                           ))}
@@ -2446,73 +2442,68 @@ const DevLayout: React.FC = () => {
           ref={portfolioSectionRef}
           className="relative min-h-screen overflow-hidden"
         >
-          {/* orange cyber atmosphere */}
           <div className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-orange-400/18 blur-[150px]" />
-            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-amber-300/14 blur-[170px]" />
+            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-blue-500/16 blur-[160px]" />
+            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-sky-300/14 blur-[170px]" />
 
-            {/* cyber grid */}
             <div
-              className="absolute inset-0 opacity-[0.35]
-        [background-image:
-          linear-gradient(to_right,rgba(249,115,22,0.12)_1px,transparent_1px),
-          linear-gradient(to_bottom,rgba(249,115,22,0.12)_1px,transparent_1px)]
-        [background-size:40px_40px]"
+              className="absolute inset-0 opacity-[0.30] dark:opacity-[0.35]
+              [background-image:
+                linear-gradient(to_right,rgba(59,130,246,0.12)_1px,transparent_1px),
+                linear-gradient(to_bottom,rgba(14,165,233,0.12)_1px,transparent_1px)]
+              [background-size:40px_40px]"
             />
 
-            {/* vignette */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/30 dark:to-black/65" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/[0.06] dark:to-black/65" />
           </div>
 
           <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-16 md:pt-24 md:pb-20 z-10">
             <div className="space-y-3 max-w-2xl">
-              <p className="portfolio-kicker text-[11px] uppercase tracking-[0.28em] text-orange-500/80 drop-shadow-[0_0_12px_rgba(249,115,22,0.45)]">
+              <p className="portfolio-kicker text-[11px] uppercase tracking-[0.28em] text-blue-700/80 dark:text-sky-300/80 drop-shadow-[0_0_12px_rgba(59,130,246,0.18)]">
                 Portfolio / Case Files
               </p>
 
-              <h2 className="portfolio-title text-4xl md:text-5xl font-semibold leading-tight">
+              <h2 className="portfolio-title text-4xl md:text-5xl font-semibold leading-tight text-neutral-950 dark:text-white">
                 Proof of work —{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400 drop-shadow-[0_0_22px_rgba(249,115,22,0.55)]">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_22px_rgba(59,130,246,0.18)]">
                   built to ship
                 </span>
                 .
               </h2>
 
-              <p className="portfolio-sub text-sm md:text-base text-neutral-600 dark:text-neutral-300">
+              <p className="portfolio-sub text-sm md:text-base text-neutral-700 dark:text-white/70">
                 Scroll to browse each case file. The panel updates like a
                 command console—clean, fast, and intentional.
               </p>
             </div>
 
-            {/* command center */}
             <div className="mt-10 md:mt-12 grid grid-cols-1 md:grid-cols-[0.44fr_0.56fr] gap-6 md:gap-8 items-stretch">
               {/* LEFT: index */}
               <div
                 className="
-          relative overflow-hidden rounded-3xl
-          border border-black/10 dark:border-white/10
-          bg-white/70 dark:bg-white/[0.03]
-          backdrop-blur-xl
-          shadow-[0_18px_60px_rgba(0,0,0,0.10)]
-          dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
-        "
+                relative overflow-hidden rounded-3xl
+                border border-black/10 dark:border-white/10
+                bg-white/70 dark:bg-white/[0.04]
+                backdrop-blur-xl
+                shadow-[0_18px_60px_rgba(0,0,0,0.12)]
+                dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
+                transition-colors
+              "
               >
-                {/* inner glow */}
-                <div className="portfolio-glow pointer-events-none absolute -inset-20 -z-10 rounded-full bg-orange-400/10 blur-[120px]" />
+                <div className="portfolio-glow pointer-events-none absolute -inset-20 -z-10 rounded-full bg-blue-500/10 blur-[120px]" />
 
-                {/* radar rings */}
                 <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.55]">
-                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-orange-400/15" />
-                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-orange-400/12" />
-                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[220px] w-[220px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-orange-400/10" />
+                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-blue-400/12" />
+                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-300/10" />
+                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[220px] w-[220px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-300/8" />
                 </div>
 
                 <div className="relative p-6 md:p-7">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
+                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-600 dark:text-white/60">
                       Index
                     </p>
-                    <span className="text-[10px] uppercase tracking-[0.22em] text-orange-400/90">
+                    <span className="text-[10px] uppercase tracking-[0.22em] text-sky-500/90 dark:text-sky-300/90">
                       scroll-controlled
                     </span>
                   </div>
@@ -2523,33 +2514,31 @@ const DevLayout: React.FC = () => {
                         key={p.id}
                         data-portfolio-item
                         className="
-                  group relative
-                  rounded-2xl px-4 py-3
-                  border border-black/10 dark:border-white/10
-                  bg-white/50 dark:bg-white/[0.02]
-                  backdrop-blur-md
-                  transition-colors
-                "
+                        group relative rounded-2xl px-4 py-3
+                        border border-black/10 dark:border-white/10
+                        bg-white/55 dark:bg-white/[0.03]
+                        backdrop-blur-md
+                        transition-colors
+                      "
                       >
-                        {/* active glow */}
                         <div
                           className="
-                    pointer-events-none absolute inset-0 rounded-2xl opacity-0
-                    group-[&[data-active='true']]:opacity-100
-                    transition-opacity
-                    bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-orange-500/10
-                  "
+                          pointer-events-none absolute inset-0 rounded-2xl opacity-0
+                          group-[&[data-active='true']]:opacity-100
+                          transition-opacity
+                          bg-gradient-to-r from-blue-500/10 via-sky-400/10 to-blue-500/10
+                        "
                         />
 
                         <div className="relative flex items-start justify-between gap-4">
                           <div>
-                            <p className="text-[10px] uppercase tracking-[0.26em] text-neutral-500 dark:text-neutral-400">
+                            <p className="text-[10px] uppercase tracking-[0.26em] text-neutral-600 dark:text-white/60">
                               {p.id} · {p.year}
                             </p>
-                            <p className="mt-1 text-sm font-semibold text-neutral-900 dark:text-neutral-50">
+                            <p className="mt-1 text-sm font-semibold text-neutral-950 dark:text-white">
                               {p.title}
                             </p>
-                            <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">
+                            <p className="mt-1 text-xs text-neutral-700 dark:text-white/70">
                               {p.subtitle}
                             </p>
                           </div>
@@ -2557,19 +2546,18 @@ const DevLayout: React.FC = () => {
                           <div className="flex flex-col items-end gap-2 shrink-0">
                             <span
                               className={`
-                        text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full
-                        border
-                        ${
-                          p.status === "SOON"
-                            ? "border-orange-500/40 bg-orange-500/15 text-orange-300 shadow-[0_0_18px_rgba(249,115,22,0.35)]"
-                            : "border-amber-400/30 bg-amber-400/10 text-amber-400"
-                        }
-                      `}
+                              text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full border
+                              ${
+                                p.status === "SOON"
+                                  ? "border-blue-500/35 bg-blue-500/10 text-blue-700 dark:text-sky-200 shadow-[0_0_18px_rgba(59,130,246,0.16)]"
+                                  : "border-sky-400/30 bg-sky-400/10 text-sky-700 dark:text-sky-200"
+                              }
+                            `}
                             >
                               {p.status === "SOON" ? "SOON" : "LIVE"}
                             </span>
 
-                            <span className="text-[10px] text-neutral-500 dark:text-neutral-400">
+                            <span className="text-[10px] text-neutral-600 dark:text-white/55">
                               #{String(i + 1).padStart(2, "0")}
                             </span>
                           </div>
@@ -2578,9 +2566,8 @@ const DevLayout: React.FC = () => {
                     ))}
                   </div>
 
-                  {/* vertical “needle” */}
-                  <div className="pointer-events-none absolute right-4 top-6 bottom-6 w-[2px] rounded-full bg-orange-400/15 overflow-hidden">
-                    <div className="portfolio-needle absolute inset-0 bg-gradient-to-b from-orange-400 via-amber-300 to-orange-500" />
+                  <div className="pointer-events-none absolute right-4 top-6 bottom-6 w-[2px] rounded-full bg-blue-400/15 overflow-hidden">
+                    <div className="portfolio-needle absolute inset-0 bg-gradient-to-b from-blue-500 via-sky-300 to-blue-600" />
                   </div>
                 </div>
               </div>
@@ -2588,27 +2575,26 @@ const DevLayout: React.FC = () => {
               {/* RIGHT: active case file */}
               <div
                 className="
-          relative overflow-hidden rounded-3xl
-          border border-black/10 dark:border-white/10
-          bg-white/70 dark:bg-white/[0.03]
-          backdrop-blur-xl
-          shadow-[0_18px_60px_rgba(0,0,0,0.10)]
-          dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
-        "
+                relative overflow-hidden rounded-3xl
+                border border-black/10 dark:border-white/10
+                bg-white/70 dark:bg-white/[0.04]
+                backdrop-blur-xl
+                shadow-[0_18px_60px_rgba(0,0,0,0.12)]
+                dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
+                transition-colors
+              "
               >
-                {/* scanline */}
-                <div className="portfolio-scan pointer-events-none absolute left-0 right-0 top-[-60px] h-10 opacity-0 bg-gradient-to-r from-transparent via-orange-400/35 to-transparent blur-md" />
+                <div className="portfolio-scan pointer-events-none absolute left-0 right-0 top-[-60px] h-10 opacity-0 bg-gradient-to-r from-transparent via-blue-400/35 to-transparent blur-md" />
 
-                {/* panel glow */}
-                <div className="pointer-events-none absolute -top-28 -right-28 h-72 w-72 rounded-full bg-orange-400/14 blur-3xl" />
-                <div className="pointer-events-none absolute -bottom-28 -left-28 h-80 w-80 rounded-full bg-amber-300/12 blur-3xl" />
+                <div className="pointer-events-none absolute -top-28 -right-28 h-72 w-72 rounded-full bg-blue-400/12 blur-3xl" />
+                <div className="pointer-events-none absolute -bottom-28 -left-28 h-80 w-80 rounded-full bg-sky-300/12 blur-3xl" />
 
                 <div className="relative p-6 md:p-7 h-full">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
+                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-600 dark:text-white/60">
                       Active Case File
                     </p>
-                    <p className="text-[10px] uppercase tracking-[0.22em] text-orange-400/80">
+                    <p className="text-[10px] uppercase tracking-[0.22em] text-blue-700/80 dark:text-sky-300/80">
                       verified output
                     </p>
                   </div>
@@ -2622,17 +2608,17 @@ const DevLayout: React.FC = () => {
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="space-y-2">
-                            <p className="text-[10px] uppercase tracking-[0.26em] text-neutral-500 dark:text-neutral-400">
+                            <p className="text-[10px] uppercase tracking-[0.26em] text-neutral-600 dark:text-white/60">
                               {p.id} · {p.year}
                             </p>
 
                             <h3 className="text-2xl md:text-3xl font-semibold leading-tight">
-                              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400 drop-shadow-[0_0_18px_rgba(249,115,22,0.45)]">
+                              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_18px_rgba(59,130,246,0.18)]">
                                 {p.title}
                               </span>
                             </h3>
 
-                            <p className="text-sm md:text-base text-neutral-700 dark:text-neutral-200 max-w-xl">
+                            <p className="text-sm md:text-base text-neutral-700 dark:text-white/75 max-w-xl">
                               {p.subtitle}
                             </p>
                           </div>
@@ -2643,18 +2629,18 @@ const DevLayout: React.FC = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               className="
-                        inline-flex items-center justify-center
-                        rounded-2xl px-4 py-2 text-xs font-semibold
-                        bg-black text-white dark:bg-white dark:text-black
-                        shadow-[0_18px_60px_rgba(0,0,0,0.22)]
-                        hover:scale-[1.02] active:scale-[0.98]
-                        transition-transform
-                      "
+                              inline-flex items-center justify-center
+                              rounded-2xl px-4 py-2 text-xs font-semibold
+                              bg-blue-600 text-white hover:bg-blue-700
+                              shadow-[0_18px_60px_rgba(59,130,246,0.18)]
+                              hover:scale-[1.02] active:scale-[0.98]
+                              transition-transform
+                            "
                             >
                               Visit ↗
                             </a>
                           ) : (
-                            <div className="text-[10px] uppercase tracking-[0.22em] px-3 py-2 rounded-2xl border border-orange-500/30 bg-orange-500/10 text-orange-300">
+                            <div className="text-[10px] uppercase tracking-[0.22em] px-3 py-2 rounded-2xl border border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-sky-200">
                               Internal
                             </div>
                           )}
@@ -2664,7 +2650,7 @@ const DevLayout: React.FC = () => {
                           {p.tags.map((t) => (
                             <span
                               key={t}
-                              className="text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full border border-orange-500/25 bg-orange-500/10 text-neutral-700 dark:text-neutral-200"
+                              className="text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full border border-blue-500/20 bg-blue-500/10 text-neutral-800 dark:text-white/80"
                             >
                               {t}
                             </span>
@@ -2676,15 +2662,16 @@ const DevLayout: React.FC = () => {
                             <div
                               key={idx}
                               className="
-                        rounded-2xl p-4
-                        border border-black/10 dark:border-white/10
-                        bg-white/50 dark:bg-white/[0.02]
-                        backdrop-blur-md
-                      "
+                              rounded-2xl p-4
+                              border border-black/10 dark:border-white/10
+                              bg-white/55 dark:bg-white/[0.03]
+                              backdrop-blur-md
+                              transition-colors
+                            "
                             >
                               <div className="flex items-start gap-3">
-                                <span className="mt-2 h-[4px] w-[14px] rounded-full bg-orange-400/75 shadow-[0_0_16px_rgba(249,115,22,0.6)]" />
-                                <p className="text-sm text-neutral-700 dark:text-neutral-200">
+                                <span className="mt-2 h-[4px] w-[14px] rounded-full bg-sky-400/75 shadow-[0_0_16px_rgba(14,165,233,0.25)]" />
+                                <p className="text-sm text-neutral-700 dark:text-white/75">
                                   {r}
                                 </p>
                               </div>
@@ -2693,11 +2680,11 @@ const DevLayout: React.FC = () => {
                         </div>
 
                         {p.status === "SOON" && (
-                          <div className="mt-6 rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4">
-                            <p className="text-[11px] uppercase tracking-[0.26em] text-orange-300">
+                          <div className="mt-6 rounded-2xl border border-blue-500/25 bg-blue-500/10 p-4">
+                            <p className="text-[11px] uppercase tracking-[0.26em] text-blue-700 dark:text-sky-200">
                               Launch notice
                             </p>
-                            <p className="mt-2 text-sm text-neutral-700 dark:text-neutral-200">
+                            <p className="mt-2 text-sm text-neutral-700 dark:text-white/75">
                               We’re launching our own product soon. If you want
                               early access, hit the footer email and we’ll
                               whitelist you.
@@ -2708,8 +2695,7 @@ const DevLayout: React.FC = () => {
                     ))}
                   </div>
 
-                  {/* bottom console hint */}
-                  <div className="mt-6 pt-5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
+                  <div className="mt-6 pt-5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs text-neutral-600 dark:text-white/55">
                     <span className="font-mono">SCROLL: NEXT_CASE</span>
                     <span className="font-mono">STATUS: OK</span>
                   </div>
@@ -2722,147 +2708,126 @@ const DevLayout: React.FC = () => {
         {/* Brand circles */}
         <section
           ref={brandCirclesSectionRef}
-          className="relative min-h-screen overflow-hidden "
+          className="relative min-h-screen overflow-hidden"
         >
-          {/* ORANGE GLASS ATMOSPHERE (lighter DOM, fewer layers) */}
           <div className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute -top-48 -left-48 h-[620px] w-[620px] rounded-full bg-orange-400/18 blur-[160px]" />
-            <div className="absolute top-1/3 -right-52 h-[680px] w-[680px] rounded-full bg-amber-300/14 blur-[180px]" />
-            <div className="absolute -bottom-56 left-1/2 -translate-x-1/2 h-[720px] w-[720px] rounded-full bg-orange-500/10 blur-[190px]" />
+            <div className="absolute -top-48 -left-48 h-[620px] w-[620px] rounded-full bg-blue-500/16 blur-[160px]" />
+            <div className="absolute top-1/3 -right-52 h-[680px] w-[680px] rounded-full bg-sky-300/14 blur-[180px]" />
+            <div className="absolute -bottom-56 left-1/2 -translate-x-1/2 h-[720px] w-[720px] rounded-full bg-blue-500/10 blur-[190px]" />
 
-            <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white/80 dark:from-black/55 dark:via-black/35 dark:to-black/65" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/85 via-white/65 to-white/85 dark:from-black/55 dark:via-black/35 dark:to-black/65" />
             <div
               className="
-        absolute inset-0 opacity-[0.18] dark:opacity-[0.12]
-        [background-image:
-          linear-gradient(to_right,rgba(249,115,22,0.16)_1px,transparent_1px),
-          linear-gradient(to_bottom,rgba(249,115,22,0.14)_1px,transparent_1px)]
-        [background-size:44px_44px]
-      "
+              absolute inset-0 opacity-[0.16] dark:opacity-[0.12]
+              [background-image:
+                linear-gradient(to_right,rgba(59,130,246,0.16)_1px,transparent_1px),
+                linear-gradient(to_bottom,rgba(14,165,233,0.14)_1px,transparent_1px)]
+              [background-size:44px_44px]
+            "
             />
           </div>
+
           <div className="max-w-6xl mx-auto px-6 py-24 flex flex-col items-center gap-12 relative z-10">
             <div
               id="brand-circles-heading"
               className="text-center space-y-3 max-w-2xl"
             >
-              <p className="text-xs uppercase tracking-[0.25em] text-neutral-600 dark:text-neutral-400">
+              <p className="text-xs uppercase tracking-[0.25em] text-neutral-700 dark:text-white/60">
                 Color System
               </p>
 
-              <h2 className="text-3xl md:text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400 drop-shadow-[0_0_20px_rgba(249,115,22,0.45)]">
+              <h2 className="text-3xl md:text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_20px_rgba(59,130,246,0.18)]">
                 Every great brand starts with disciplined color language.
               </h2>
 
-              <p className="text-sm md:text-base text-neutral-700 dark:text-neutral-300">
+              <p className="text-sm md:text-base text-neutral-700 dark:text-white/70">
                 Tap a tile to copy the HEX. On desktop, scroll reveals the
                 system.
               </p>
             </div>
+
             <div
               className="
-    pointer-events-none absolute inset-0 flex items-center justify-center
-    text-[40vw] md:text-[28vw]
-    font-black leading-none
-    text-orange-400/[0.03] dark:text-orange-400/[0.40]
-    select-none -z-10
-  "
+              pointer-events-none absolute inset-0 flex items-center justify-center
+              text-[40vw] md:text-[28vw]
+              font-black leading-none
+              text-blue-500/[0.05] dark:text-white/[0.06]
+              select-none -z-10
+            "
             >
               Aa
             </div>
 
-            {/* Optimized grid: fewer nested layers, clear hit-targets */}
-            <div
-              className="
-    w-full
-    grid
-    grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
-    gap-6 md:gap-8
-    max-w-6xl
-  "
-            >
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl">
               {brandColors.map((c) => (
                 <button
                   key={c.id}
                   type="button"
                   className="
-            brand-circle-wrapper group relative overflow-hidden text-left
-            rounded-3xl
-            border border-black/10 dark:border-white/10
-            bg-white/55 dark:bg-white/[0.035]
-            backdrop-blur-xl
-            shadow-[0_18px_70px_rgba(0,0,0,0.10)]
-            dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
-            transition-transform duration-300
-            hover:-translate-y-1
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/40
-          "
+                  brand-circle-wrapper group relative overflow-hidden text-left
+                  rounded-3xl
+                  border border-black/10 dark:border-white/10
+                  bg-white/65 dark:bg-white/[0.04]
+                  backdrop-blur-xl
+                  shadow-[0_18px_70px_rgba(0,0,0,0.14)]
+                  dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
+                  transition-transform duration-300
+                  hover:-translate-y-1
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/40
+                "
                   aria-label={`Copy ${c.label} ${c.hex}`}
                   onClick={() => navigator.clipboard?.writeText(c.hex)}
                 >
-                  {/* subtle top hairline */}
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-400/25 to-transparent" />
-
-                  {/* tile halo */}
-                  <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-orange-400/12 blur-3xl opacity-80" />
-                  <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-amber-300/10 blur-3xl opacity-70" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/25 to-transparent" />
+                  <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-blue-400/12 blur-3xl opacity-80" />
+                  <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-sky-300/10 blur-3xl opacity-70" />
 
                   <div className="relative z-10 p-5 md:p-6">
                     <div className="flex items-start justify-between gap-4">
                       <div className="space-y-1">
-                        <p className="text-[10px] uppercase tracking-[0.28em] text-neutral-600 dark:text-neutral-400">
+                        <p className="text-[10px] uppercase tracking-[0.28em] text-neutral-700 dark:text-white/60">
                           {c.label}
                         </p>
-                        <p className="font-mono text-sm text-neutral-900 dark:text-neutral-100">
+                        <p className="font-mono text-sm text-neutral-950 dark:text-white">
                           {c.hex}
                         </p>
                       </div>
 
-                      <span className="text-[10px] uppercase tracking-[0.22em] text-orange-500/80">
+                      <span className="text-[10px] uppercase tracking-[0.22em] text-blue-700/80 dark:text-sky-300/80">
                         copy ↗
                       </span>
                     </div>
 
-                    {/* Color plate */}
-                    <div
-                      className="
-                brand-circle relative mt-4 h-40 rounded-2xl overflow-hidden
-                border border-black/10 dark:border-white/10
-                shadow-[0_14px_50px_rgba(0,0,0,0.12)]
-                dark:shadow-[0_14px_60px_rgba(0,0,0,0.55)]
-              "
-                    >
+                    <div className="brand-circle relative mt-4 h-40 rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 shadow-[0_14px_50px_rgba(0,0,0,0.12)] dark:shadow-[0_14px_60px_rgba(0,0,0,0.55)]">
                       <div
                         className={`absolute inset-0 bg-gradient-to-tr ${c.gradientClass}`}
                       />
                       <div
                         className="
-                  pointer-events-none absolute inset-0 opacity-30 dark:opacity-20
-                  [background-image:linear-gradient(to_bottom,rgba(0,0,0,0.12)_1px,transparent_1px)]
-                  [background-size:100%_12px]
-                "
+                        pointer-events-none absolute inset-0 opacity-30 dark:opacity-20
+                        [background-image:linear-gradient(to_bottom,rgba(0,0,0,0.12)_1px,transparent_1px)]
+                        [background-size:100%_12px]
+                      "
                       />
                     </div>
 
-                    {/* micro footer */}
-                    <div className="mt-4 flex items-center justify-between text-[10px] uppercase tracking-[0.26em] text-neutral-600 dark:text-neutral-400">
+                    <div className="mt-4 flex items-center justify-between text-[10px] uppercase tracking-[0.26em] text-neutral-700 dark:text-white/60">
                       <span className="inline-flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-orange-400/80 shadow-[0_0_14px_rgba(249,115,22,0.6)]" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-sky-400/80 shadow-[0_0_14px_rgba(14,165,233,0.35)]" />
                         token
                       </span>
                       <span className="font-mono">{c.id}</span>
                     </div>
                   </div>
 
-                  {/* hover ring */}
-                  <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ring-1 ring-orange-400/20" />
+                  <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ring-1 ring-sky-400/20" />
                 </button>
               ))}
             </div>
 
             <div
               id="brand-quote"
-              className="max-w-2xl text-center text-base md:text-lg text-neutral-800 dark:text-neutral-100"
+              className="max-w-2xl text-center text-base md:text-lg text-neutral-800 dark:text-white/85"
             >
               “Branding isn&apos;t just how you look. It&apos;s a repeatable
               pattern of choices that makes you unmistakable — even when the
@@ -2874,13 +2839,13 @@ const DevLayout: React.FC = () => {
         {/* Giant A */}
         <section
           ref={giantASectionRef}
-          className="relative min-h-screen flex bg-black items-center justify-center overflow-hidden"
+          className="relative min-h-screen flex bg-white dark:bg-black items-center justify-center overflow-hidden transition-colors"
         >
           <div
             ref={giantARef}
             className="font-black tracking-tight leading-none select-none relative z-10"
           >
-            <span className="block font-[family-name:var(--font-revamped)] text-[22vw] md:text-[18vw] lg:text-[16vw]">
+            <span className="block font-[family-name:var(--font-revamped)] text-[22vw] md:text-[18vw] lg:text-[16vw] text-transparent bg-clip-text bg-gradient-to-b from-black via-nuetral-800 to-black dark:from-white dark:via-nuetral-200 dark:to-white">
               A
             </span>
           </div>
@@ -2889,10 +2854,10 @@ const DevLayout: React.FC = () => {
         {/* Outro */}
         <section className="fade-section relative min-h-screen flex items-center justify-center">
           <div className="max-w-3xl px-6 text-center space-y-4 relative z-10">
-            <h2 className="text-4xl md:text-5xl font-semibold">
+            <h2 className="text-4xl md:text-5xl font-semibold text-neutral-950 dark:text-white">
               Elite Engineering, AI & Security on Subscription.
             </h2>
-            <p className="text-lg text-neutral-700 dark:text-neutral-300">
+            <p className="text-lg text-neutral-700 dark:text-white/70">
               Plug in a senior, cross-functional team that covers branding,
               product, AI automation, personal agents, security and cloud —
               instead of stitching five agencies together.
@@ -2905,28 +2870,22 @@ const DevLayout: React.FC = () => {
           ref={footerSectionRef}
           className="relative min-h-[90vh] md:min-h-screen overflow-hidden"
         >
-          {/* <div className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-orange-400/15 blur-[150px]" />
-            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-amber-300/10 blur-[170px]" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/5 dark:to-black/40" />
-          </div> */}
-
           <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-14 md:pt-24 md:pb-16 h-full flex flex-col justify-between">
             <div className="footer-inner space-y-10">
               <div className="footer-head space-y-3">
-                <p className="text-[11px] uppercase tracking-[0.28em] text-neutral-500 dark:text-neutral-400">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-neutral-600 dark:text-white/60">
                   Let’s build something dangerous (in a good way)
                 </p>
 
-                <h2 className="footer-title text-4xl md:text-5xl font-semibold leading-tight">
+                <h2 className="footer-title text-4xl md:text-5xl font-semibold leading-tight text-neutral-950 dark:text-white">
                   Ready to ship a{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400 drop-shadow-[0_0_22px_rgba(249,115,22,0.55)]">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_22px_rgba(59,130,246,0.18)]">
                     premium
                   </span>{" "}
                   product?
                 </h2>
 
-                <p className="footer-sub text-sm md:text-base text-neutral-600 dark:text-neutral-300 max-w-2xl">
+                <p className="footer-sub text-sm md:text-base text-neutral-700 dark:text-white/70 max-w-2xl">
                   Brand, engineering, AI, security and cloud — one team, one
                   system, one delivery standard.
                 </p>
@@ -2938,13 +2897,13 @@ const DevLayout: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="
-                    inline-flex items-center justify-center
-                    rounded-2xl px-5 py-3 text-sm font-semibold
-                    bg-black text-white dark:bg-white dark:text-black
-                    shadow-[0_18px_60px_rgba(0,0,0,0.22)]
-                    hover:scale-[1.02] active:scale-[0.98]
-                    transition-transform
-                  "
+                  inline-flex items-center justify-center
+                  rounded-2xl px-5 py-3 text-sm font-semibold
+                  bg-blue-600 text-white hover:bg-blue-700
+                  shadow-[0_18px_60px_rgba(59,130,246,0.18)]
+                  hover:scale-[1.02] active:scale-[0.98]
+                  transition
+                "
                 >
                   Book a call
                 </a>
@@ -2952,21 +2911,22 @@ const DevLayout: React.FC = () => {
                 <a
                   href="mailto:business@algorimsoft.com"
                   className="
-                    inline-flex items-center justify-center
-                    rounded-2xl px-5 py-3 text-sm font-semibold
-                    border border-black/10 dark:border-white/12
-                    bg-white/60 dark:bg-white/[0.03]
-                    backdrop-blur-xl
-                    hover:border-black/20 dark:hover:border-white/20
-                    transition-colors
-                  "
+                  inline-flex items-center justify-center
+                  rounded-2xl px-5 py-3 text-sm font-semibold
+                  border border-black/10 dark:border-white/12
+                  bg-white/70 dark:bg-white/[0.04]
+                  backdrop-blur-xl
+                  hover:border-blue-500/30
+                  transition-colors
+                  text-neutral-950 dark:text-white
+                "
                 >
                   business@algorimsoft.com
                 </a>
               </div>
-              {/* CONTACT */}
+
               <div className="footer-contact space-y-4 pt-4">
-                <p className="text-xs uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
+                <p className="text-xs uppercase tracking-[0.22em] text-neutral-600 dark:text-white/60">
                   Contact
                 </p>
 
@@ -2975,30 +2935,30 @@ const DevLayout: React.FC = () => {
                     <li
                       key={c.country}
                       className="
-          group flex items-center justify-between gap-3
-          rounded-2xl
-          border border-black/10 dark:border-white/10
-          bg-white/55 dark:bg-white/[0.03]
-          backdrop-blur-xl
-          px-4 py-3
-          transition-all
-          hover:border-black/20 dark:hover:border-white/20
-          hover:-translate-y-[1px]
-        "
+                      group flex items-center justify-between gap-3
+                      rounded-2xl
+                      border border-black/10 dark:border-white/10
+                      bg-white/65 dark:bg-white/[0.04]
+                      backdrop-blur-xl
+                      px-4 py-3
+                      transition-all
+                      hover:border-blue-500/25
+                      hover:-translate-y-[1px]
+                    "
                     >
-                      <span className="text-[11px] uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
+                      <span className="text-[11px] uppercase tracking-[0.22em] text-neutral-600 dark:text-white/60">
                         {c.country}
                       </span>
 
                       <a
                         href={`tel:${toTel(c.phone)}`}
                         className="
-            font-mono text-sm
-            text-neutral-900 dark:text-neutral-100
-            inline-flex items-center gap-2
-            opacity-90 group-hover:opacity-100
-            transition-opacity
-          "
+                        font-mono text-sm
+                        text-neutral-950 dark:text-white
+                        inline-flex items-center gap-2
+                        opacity-90 group-hover:opacity-100
+                        transition-opacity
+                      "
                       >
                         <span className="hidden sm:inline text-[10px] opacity-60">
                           ↗
@@ -3013,11 +2973,11 @@ const DevLayout: React.FC = () => {
               <div className="footer-grid grid grid-cols-2 md:grid-cols-4 gap-8 pt-6">
                 {FOOTER_LINKS.map((col) => (
                   <div key={col.title} className="footer-col space-y-3">
-                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
+                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-600 dark:text-white/60">
                       {col.title}
                     </p>
 
-                    <ul className="space-y-2 text-sm text-neutral-700 dark:text-neutral-200">
+                    <ul className="space-y-2 text-sm text-neutral-800 dark:text-white/80">
                       {col.links.map((link) => (
                         <li key={link.label}>
                           <a
@@ -3045,17 +3005,17 @@ const DevLayout: React.FC = () => {
             </div>
 
             <div className="footer-bottom mt-14 pt-8 border-t border-black/10 dark:border-white/10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="text-xs text-neutral-600 dark:text-white/60">
                 © {new Date().getFullYear()} Algorim. All rights reserved.
               </p>
 
-              <div className="flex items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400">
-                <span className="footer-dot inline-block h-2 w-2 rounded-full bg-orange-400/80 shadow-[0_0_16px_rgba(249,115,22,0.65)]" />
+              <div className="flex items-center gap-3 text-xs text-neutral-600 dark:text-white/60">
+                <span className="footer-dot inline-block h-2 w-2 rounded-full bg-sky-400/80 shadow-[0_0_16px_rgba(14,165,233,0.35)]" />
                 <span>Build fast · Ship safe · Look premium</span>
               </div>
             </div>
 
-            <div className="footer-glow pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[520px] w-[520px] rounded-full bg-orange-400/10 blur-[140px] -z-10" />
+            <div className="footer-glow pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[520px] w-[520px] rounded-full bg-blue-500/10 blur-[140px] -z-10" />
           </div>
         </section>
       </main>
