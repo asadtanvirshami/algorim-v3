@@ -714,6 +714,7 @@ const DevLayout: React.FC = () => {
 
   useLayoutEffect(() => {
     if (!layoutRef.current) return;
+    if (typeof window === "undefined") return;
 
     const ctx = gsap.context(() => {
       const mm: any = gsap.matchMedia();
