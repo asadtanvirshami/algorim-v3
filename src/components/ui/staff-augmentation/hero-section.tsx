@@ -3,8 +3,6 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
-import GlassSurface from "@/components/GlassSurface";
-
 const HeroSection = () => {
   return (
     <div className="flex justify-center items-center w-full h-full px-16 mx-auto text-center md:text-left">
@@ -21,12 +19,12 @@ const HeroSection = () => {
             </p>
           </div>
           <div className="mt-8">
-            <GlassSurface className="w-full !h-12 shimmer-btn">
+            <Button className="w-full !h-12 shimmer-btn">
               <Link href="https://meet.brevo.com/algorim-consultation">
                 Get Free Consultation
               </Link>
               <ArrowUpRightIcon />
-            </GlassSurface>
+            </Button>
           </div>
         </div>
         {/* //Column Right */}
