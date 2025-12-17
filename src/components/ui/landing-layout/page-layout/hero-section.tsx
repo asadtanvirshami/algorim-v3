@@ -2,9 +2,9 @@
 import React from "react";
 import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
-import GlassSurface from "@/components/GlassSurface";
 import Lottie from "lottie-react";
 import animationData from "../../../../../public/assets/hero/Scene.json";
+import { Button } from "../../button";
 
 const HeroSection = () => {
   return (
@@ -37,12 +37,15 @@ const HeroSection = () => {
               </p>
 
               <div>
-                <GlassSurface className="!w-fit !h-12 px-5 py-2 shimmer-btn flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  className="!w-fit border !h-12 px-5 py-2 shimmer-btn flex items-center gap-2"
+                >
                   <Link href="https://meet.brevo.com/algorim-consultation">
                     Get Consultation
                   </Link>
                   <ArrowUpRightIcon />
-                </GlassSurface>
+                </Button>
               </div>
             </div>
 
