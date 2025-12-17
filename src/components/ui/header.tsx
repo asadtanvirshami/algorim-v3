@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Separator } from "./separator";
 import { Button } from "./button";
-import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
