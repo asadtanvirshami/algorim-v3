@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
 import { Red_Hat_Display } from "next/font/google";
-import "./globals.css";
-import ReactLenis from "lenis/react";
 import localFont from "next/font/local";
+import "./globals.css";
 
 const revamped = localFont({
   src: "./../fonts/Revamped.otf",
   weight: "100 900",
   variable: "--font-revamped",
+  display: "swap",
 });
 
 const redhat = Red_Hat_Display({
   subsets: ["latin"],
   variable: "--font-redhat",
   weight: ["300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -24,24 +25,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${revamped.variable} ${redhat.variable} antialiased`}>
-        <ReactLenis
-          root
-          options={{
-            lerp: 0.08, // smoothing (0–1)
-            duration: 1.2, // approximate duration of scroll
-            syncTouch: true, // ✅ works in new Lenis instead of smoothTouch
-            wheelMultiplier: 1,
-            gestureOrientation: "vertical",
-          }}
-        >
-          {children}
-        </ReactLenis>
+        {children}
       </body>
     </html>
   );

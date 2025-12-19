@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://algorimsoft.com
+
+# Sitemaps
+Sitemap: https://algorimsoft.com/sitemap.xml

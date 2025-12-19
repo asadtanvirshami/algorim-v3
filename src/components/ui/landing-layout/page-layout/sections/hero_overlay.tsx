@@ -1,5 +1,5 @@
 import React from "react";
-import HeroSection from "../hero-section";
+import HeroSection from "./hero-section";
 
 const HeroOverlay = ({ heroScrollRef }: { heroScrollRef }) => {
   return (

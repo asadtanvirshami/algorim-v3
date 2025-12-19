@@ -1,46 +1,32 @@
-// DevLayout.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// DevLayout.tsx
 "use client";
 
-import React, { useLayoutEffect, useRef, useCallback } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { useLenis } from "lenis/react";
-import { Card } from "../card";
-import dynamic from "next/dynamic";
 
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import {
-  Compass,
-  Target,
-  Eye,
-  Palette,
-  Code2,
-  Bot,
-  ShieldHalf,
-  Cloud,
-  Cuboid,
-} from "lucide-react";
 import HeroOverlay from "../landing-layout/page-layout/sections/hero_overlay";
-
-gsap.registerPlugin(ScrollTrigger);
-
-const World = dynamic(() => import("../../ui/globe").then((m) => m.World), {
-  ssr: false,
-  loading: () => (
-    <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-br from-white/10 via-white/5 to-white/10" />
-  ),
-});
-
-type SvgIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
+import IntroSection from "../landing-layout/page-layout/sections/intro-section";
+import ProcessSection from "../landing-layout/page-layout/sections/process-section";
+import AboutSection from "../landing-layout/page-layout/sections/about-section";
+import ServicesSection from "../landing-layout/page-layout/sections/services-section";
+import CreativitySection from "../landing-layout/page-layout/sections/creativity-section";
+import GlobeSection from "../landing-layout/page-layout/sections/globe-section";
+import CTASection from "../landing-layout/page-layout/sections/cta-section";
+import PortfolioSection from "../landing-layout/page-layout/sections/portfolio-section";
+import BrandSections from "../landing-layout/page-layout/sections/brand-section";
+import ASection from "../landing-layout/page-layout/sections/A-section";
+import OutroSection from "../landing-layout/page-layout/sections/outro-section";
+import Footer from "../footer";
 
 /** =========================
  *  RESPONSIVE LAYOUT HELPERS
  *  ========================= */
 const CONTAINER =
   "mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-10 lg:px-16 2xl:max-w-7xl";
-
-const SECTION_Y = "py-16 sm:py-20 md:py-24 lg:py-28";
 
 /** =========================
  *  COLOR SYSTEM (dark, premium)
@@ -63,611 +49,8 @@ const UI = {
     "text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-cyan-200 to-cyan-300",
 };
 
-const cardsData = [
-  {
-    id: 0,
-    title: "Discover",
-    description: "Scroll to explore what we build, ship and optimize.",
-  },
-  {
-    id: 1,
-    title: "Design & Branding",
-    description:
-      "High-end product design and brand systems for digital products.",
-  },
-  {
-    id: 2,
-    title: "Engineering",
-    description: "Elite engineering teams shipping fast, stable and secure apps.",
-  },
-];
-
-type Service = {
-  id: string;
-  label: string;
-  tag: string;
-  description: string;
-  bullets: string[];
-  icon: SvgIcon;
-};
-
-const services: Service[] = [
-  {
-    id: "branding",
-    label: "Branding & Design",
-    tag: "Brand Systems · Creative",
-    description:
-      "We build brands that are visually consistent, strategically sharp and ready to scale across every touchpoint.",
-    bullets: [
-      "Complete branding systems & guidelines",
-      "Business cards, e-cards & presentation templates",
-      "Social media posts & campaign assets",
-      "Meta Ads creatives & Business Manager setup",
-      "SEO-friendly brand foundations & content direction",
-      "Logo design & identity systems",
-      "UI/UX design for web & mobile products",
-      "Brand strategy & long-term brand development",
-    ],
-    icon: Palette,
-  },
-  {
-    id: "fullstack",
-    label: "Full-Stack & Product Engineering",
-    tag: "Web · Mobile · Platforms",
-    description:
-      "From MVPs to enterprise platforms, we ship fast, stable and secure apps across web and mobile.",
-    bullets: [
-      "Backend: Node.js, NestJS, Go (Gin), REST & GraphQL APIs",
-      "Frontend: Next.js, Vite, React (SPA/SSR/ISR)",
-      "Mobile: React Native & Flutter for iOS & Android",
-      "Architecture, code reviews & performance optimization",
-      "Design systems wired directly into engineering",
-      "CI/CD pipelines, testing automation & observability",
-    ],
-    icon: Code2,
-  },
-  {
-    id: "ai",
-    label: "AI Automation & Personal Agents",
-    tag: "LLMs · Agents · Workflows",
-    description:
-      "We plug AI into your tools and data to build automations, copilots and agents that actually move KPIs.",
-    bullets: [
-      "LLM integration into products (chat, copilots, assistants)",
-      "RAG & semantic search over docs, tickets, CRM & logs",
-      "Personal AI agents for sales, support, ops & internal tools",
-      "End-to-end AI workflows (Zapier, n8n, custom orchestration)",
-      "Email, Slack, CRM and backoffice automations",
-      "Prompt, safety and evaluation loops to keep agents reliable",
-    ],
-    icon: Bot,
-  },
-  {
-    id: "security",
-    label: "Cyber Security",
-    tag: "Offensive & Defensive",
-    description:
-      "Offensive and defensive security operations to keep your products, infra and data safe.",
-    bullets: [
-      "Penetration testing (apps, APIs, infra, networks)",
-      "SOC services & continuous monitoring",
-      "Blue Teaming: detection & response playbooks",
-      "Red Teaming: realistic attack simulations",
-      "Security hardening, policies & training",
-    ],
-    icon: ShieldHalf,
-  },
-  {
-    id: "cloud",
-    label: "Cloud & DevOps Solutions",
-    tag: "Cloud · DevOps",
-    description:
-      "We design cloud-native architectures with DevOps baked in, so shipping is fast and reliable.",
-    bullets: [
-      "Cloud architecture (AWS, GCP, Azure or hybrid)",
-      "Infrastructure as Code (IaC) & automation",
-      "CI/CD pipelines, observability & logging",
-      "Scalability, cost optimization & reliability",
-      "Developer experience & platform engineering basics",
-    ],
-    icon: Cloud,
-  },
-  {
-    id: "3d",
-    label: "3D Websites & High-End Frontend",
-    tag: "Immersive Experiences",
-    description:
-      "Cinematic web experiences that blend motion, 3D and micro-interactions without sacrificing performance.",
-    bullets: [
-      "3D experiences using Three.js & WebGL",
-      "Smooth motion with GSAP, Lenis & Framer Motion",
-      "Lottie animations & micro-interactions",
-      "Landing pages, product demos & storytelling sites",
-      "Performance-aware, SEO-friendly implementations",
-    ],
-    icon: Cuboid,
-  },
-];
-
-type WhoCardDef = {
-  id: string;
-  title: string;
-  subtitle?: string;
-  body: string[];
-  icon: SvgIcon;
-};
-
-const whoCards: WhoCardDef[] = [
-  {
-    id: "who-1",
-    title: "Who We Are",
-    subtitle: "Architects of the digital future.",
-    body: [
-      'At Algorim, we are architects of the digital future. Our name is inspired by "algorithm"—a testament to our core belief in creating logical, efficient, and powerful solutions to complex business challenges.',
-    ],
-    icon: Compass,
-  },
-  {
-    id: "who-2",
-    title: "Mission",
-    subtitle: "",
-    body: [
-      "To democratize access to elite technology talent, empowering businesses worldwide to build secure, intelligent, and decentralized solutions without the Silicon Valley price tag.",
-      "We bridge the gap between brilliant ideas and world-class execution.",
-    ],
-    icon: Target,
-  },
-  {
-    id: "who-3",
-    title: "Vision",
-    subtitle: "",
-    body: [
-      "To be the world's most trusted partner for applied innovation.",
-      "We’re building a future where any company—from ambitious startups to established enterprises—can harness the power of AI, Web3, and secure development to build what's next.",
-    ],
-    icon: Eye,
-  },
-];
-
-type BrandColor = {
-  id: string;
-  label: string;
-  hex: string;
-  gradientClass: string;
-};
-
-const brandColors: BrandColor[] = [
-  {
-    id: "emerald",
-    label: "Neon Emerald",
-    hex: "#22F39B",
-    gradientClass: "from-emerald-400 via-lime-300 to-cyan-300",
-  },
-  {
-    id: "violet",
-    label: "Electric Violet",
-    hex: "#7C3BFF",
-    gradientClass: "from-violet-500 via-fuchsia-500 to-sky-400",
-  },
-  {
-    id: "gold",
-    label: "Solar Gold",
-    hex: "#FACC15",
-    gradientClass: "from-amber-300 via-yellow-400 to-orange-400",
-  },
-  {
-    id: "infrared",
-    label: "Infrared Coral",
-    hex: "#FF4E6A",
-    gradientClass: "from-rose-500 via-red-500 to-orange-500",
-  },
-  {
-    id: "cyan",
-    label: "Deep Space Cyan",
-    hex: "#22D3EE",
-    gradientClass: "from-cyan-400 via-sky-300 to-blue-500",
-  },
-];
-
-const globeConfig = {
-  pointSize: 4,
-  globeColor: "#161617",
-  showAtmosphere: true,
-  atmosphereColor: "#FFFFFF",
-  atmosphereAltitude: 0.1,
-  emissive: "#161617",
-  emissiveIntensity: 0.1,
-  shininess: 0.15,
-  polygonColor: "rgba(255,255,255,0.7)",
-  ambientLight: "#d2d2d6",
-  directionalLeftLight: "#ffffff",
-  directionalTopLight: "#ffffff",
-  pointLight: "#ffffff",
-  arcTime: 1000,
-  arcLength: 0.9,
-  rings: 1,
-  maxRings: 3,
-  initialPosition: { lat: 22.3193, lng: 114.1694 },
-  autoRotate: true,
-  autoRotateSpeed: 0.5,
-};
-
-const colors = ["#e3a44b", "#e3a44b", "#e3a44b"];
-
-const globeArcs = [
-  {
-    order: 1,
-    startLat: -19.885592,
-    startLng: -43.951191,
-    endLat: -22.9068,
-    endLng: -43.1729,
-    arcAlt: 0.1,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 1,
-    startLat: 28.6139,
-    startLng: 77.209,
-    endLat: 3.139,
-    endLng: 101.6869,
-    arcAlt: 0.2,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 1,
-    startLat: -19.885592,
-    startLng: -43.951191,
-    endLat: -1.303396,
-    endLng: 36.852443,
-    arcAlt: 0.5,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 2,
-    startLat: 1.3521,
-    startLng: 103.8198,
-    endLat: 35.6762,
-    endLng: 139.6503,
-    arcAlt: 0.2,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 2,
-    startLat: 51.5072,
-    startLng: -0.1276,
-    endLat: 3.139,
-    endLng: 101.6869,
-    arcAlt: 0.3,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 2,
-    startLat: -15.785493,
-    startLng: -47.909029,
-    endLat: 36.162809,
-    endLng: -115.119411,
-    arcAlt: 0.3,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 3,
-    startLat: -33.8688,
-    startLng: 151.2093,
-    endLat: 22.3193,
-    endLng: 114.1694,
-    arcAlt: 0.3,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 3,
-    startLat: 21.3099,
-    startLng: -157.8581,
-    endLat: 40.7128,
-    endLng: -74.006,
-    arcAlt: 0.3,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 3,
-    startLat: -6.2088,
-    startLng: 106.8456,
-    endLat: 51.5072,
-    endLng: -0.1276,
-    arcAlt: 0.3,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 4,
-    startLat: 11.986597,
-    startLng: 8.571831,
-    endLat: -15.595412,
-    endLng: -56.05918,
-    arcAlt: 0.5,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 4,
-    startLat: -34.6037,
-    startLng: -58.3816,
-    endLat: 22.3193,
-    endLng: 114.1694,
-    arcAlt: 0.7,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 4,
-    startLat: 51.5072,
-    startLng: -0.1276,
-    endLat: 48.8566,
-    endLng: -2.3522,
-    arcAlt: 0.1,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 5,
-    startLat: 14.5995,
-    startLng: 120.9842,
-    endLat: 51.5072,
-    endLng: -0.1276,
-    arcAlt: 0.3,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 5,
-    startLat: 1.3521,
-    startLng: 103.8198,
-    endLat: -33.8688,
-    endLng: 151.2093,
-    arcAlt: 0.2,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 5,
-    startLat: 34.0522,
-    startLng: -118.2437,
-    endLat: 48.8566,
-    endLng: -2.3522,
-    arcAlt: 0.2,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 6,
-    startLat: -15.432563,
-    startLng: 28.315853,
-    endLat: 1.094136,
-    endLng: -63.34546,
-    arcAlt: 0.7,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 6,
-    startLat: 37.5665,
-    startLng: 126.978,
-    endLat: 35.6762,
-    endLng: 139.6503,
-    arcAlt: 0.1,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 6,
-    startLat: 22.3193,
-    startLng: 114.1694,
-    endLat: 51.5072,
-    endLng: -0.1276,
-    arcAlt: 0.3,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 7,
-    startLat: -19.885592,
-    startLng: -43.951191,
-    endLat: -15.595412,
-    endLng: -56.05918,
-    arcAlt: 0.1,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 7,
-    startLat: 48.8566,
-    startLng: -2.3522,
-    endLat: 52.52,
-    endLng: 13.405,
-    arcAlt: 0.1,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 7,
-    startLat: 52.52,
-    startLng: 13.405,
-    endLat: 34.0522,
-    endLng: -118.2437,
-    arcAlt: 0.2,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 8,
-    startLat: -8.833221,
-    startLng: 13.264837,
-    endLat: -33.936138,
-    endLng: 18.436529,
-    arcAlt: 0.2,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 8,
-    startLat: 49.2827,
-    startLng: -123.1207,
-    endLat: 52.3676,
-    endLng: 4.9041,
-    arcAlt: 0.2,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 8,
-    startLat: 1.3521,
-    startLng: 103.8198,
-    endLat: 40.7128,
-    endLng: -74.006,
-    arcAlt: 0.5,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 9,
-    startLat: 51.5072,
-    startLng: -0.1276,
-    endLat: 34.0522,
-    endLng: -118.2437,
-    arcAlt: 0.2,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 9,
-    startLat: 22.3193,
-    startLng: 114.1694,
-    endLat: -22.9068,
-    endLng: -43.1729,
-    arcAlt: 0.7,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 9,
-    startLat: 1.3521,
-    startLng: 103.8198,
-    endLat: -34.6037,
-    endLng: -58.3816,
-    arcAlt: 0.5,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-  {
-    order: 10,
-    startLat: -22.9068,
-    startLng: -43.1729,
-    endLat: 28.6139,
-    endLng: 77.209,
-    arcAlt: 0.7,
-    color: colors[Math.floor(Math.random() * (colors.length - 1))],
-  },
-];
-
-type FooterLink = {
-  label: string;
-  href: string;
-  external?: boolean;
-};
-
-type FooterColumn = {
-  title: string;
-  links: FooterLink[];
-};
-
-type ContactItem = {
-  country: string;
-  phone: string;
-};
-
-const FOOTER_CONTACTS: ContactItem[] = [
-  { country: "Andorra", phone: "+371 665 320" },
-  { country: "United Arab Emirates", phone: "+971 50 697 5307" },
-  { country: "Spain", phone: "+34 635 110 145" },
-  { country: "Pakistan", phone: "+92 331 2051939" },
-  { country: "United States", phone: "+1 707-657-5347" },
-];
-
-const toTel = (phone: string) => phone.replace(/[^\d+]/g, "");
-
-const FOOTER_LINKS: FooterColumn[] = [
-  {
-    title: "Services",
-    links: [
-      { label: "Branding", href: "#services" },
-      { label: "Engineering", href: "#services" },
-      { label: "AI Automation", href: "#services" },
-      { label: "Cyber Security", href: "#services" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "About", href: "#who-heading" },
-      { label: "Process", href: "#process-kicker" },
-      { label: "Contact", href: "mailto:business@algorimsoft.com" },
-    ],
-  },
-  {
-    title: "Social",
-    links: [
-      {
-        label: "LinkedIn",
-        href: "https://www.linkedin.com/company/algorim-io",
-        external: true,
-      },
-      {
-        label: "Instagram",
-        href: "https://www.instagram.com/algorim.io",
-        external: true,
-      },
-    ],
-  },
-];
-
-type PortfolioProject = {
-  id: string;
-  title: string;
-  subtitle: string;
-  year: string;
-  tags: string[];
-  results: string[];
-  href?: string;
-  status?: "LIVE" | "SOON" | any;
-};
-
-const PORTFOLIO: PortfolioProject[] = [
-  {
-    id: "case-001",
-    title: "n0hacks.com",
-    subtitle: "Cybersecurity services — offensive + defensive operations.",
-    year: "2025",
-    tags: ["Pentesting", "Red Team", "Cloud", "Incident Response"],
-    results: [
-      "High-trust security offering",
-      "Premium positioning + clarity",
-      "Security-first delivery system",
-    ],
-    href: "https://n0hacks.com",
-    status: "LIVE",
-  },
-  {
-    id: "case-002",
-    title: "tradingbacktesting.com",
-    subtitle: "Trading research + backtesting workflows and analytics.",
-    year: "2024",
-    tags: ["FinTech", "Backtesting", "Data", "Performance"],
-    results: ["Faster strategy iteration", "Better simulation UX", "Built for signal + speed"],
-    href: "https://tradingbacktesting.com",
-    status: "LIVE",
-  },
-  {
-    id: "case-003",
-    title: "Internal AI Systems",
-    subtitle: "Agents + automation wired into real ops.",
-    year: "2025",
-    tags: ["Agents", "RAG", "Automation", "Evaluation"],
-    results: ["Reduced manual ops", "Reliable workflows", "Production-safe agent loops"],
-    status: "LIVE",
-  },
-  {
-    id: "case-004",
-    title: "Launching our product soon",
-    subtitle: "A new platform we’re shipping — built for scale & defense.",
-    year: "2025",
-    tags: ["Product", "SaaS", "Security-first", "Stealth"],
-    results: ["Built from first principles", "Hardening baked into architecture", "Designed to scale globally"],
-    status: "SOON",
-  },
-];
-
 const DevLayout: React.FC = () => {
-  const lenis = useLenis();
+  const lenis = useLenis(); // must be provided by <ReactLenis root />
 
   const layoutRef = useRef<HTMLElement | null>(null);
   const heroScrollRef = useRef<HTMLElement | null>(null);
@@ -684,30 +67,44 @@ const DevLayout: React.FC = () => {
   const portfolioSectionRef = useRef<HTMLElement | null>(null);
   const ctaSectionRef = useRef<HTMLElement | null>(null);
 
-  const handleAnchorClick = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>, href: string, external?: boolean) => {
-      if (external) return;
-      if (!href.startsWith("#")) return;
-
-      e.preventDefault();
-      const target = document.querySelector(href);
-      if (target && lenis) {
-        lenis.scrollTo(target as any, { offset: -40 });
-      }
-    },
-    []
-  );
-
   useLayoutEffect(() => {
     if (!layoutRef.current) return;
+    if (typeof window === "undefined") return;
+
+    // Register on client only
+    gsap.registerPlugin(ScrollTrigger);
+
+    // ✅ NEVER at module scope in Next. Do it here.
+    ScrollTrigger.config({
+      ignoreMobileResize: true,
+      limitCallbacks: true,
+      autoRefreshEvents: "visibilitychange,DOMContentLoaded,load",
+    });
+
+    // ✅ Lenis + GSAP ticker sync (THIS is what usually “fixes everything”)
+    const onLenisScroll = () => ScrollTrigger.update();
+    const ticker = (time: number) => {
+      // gsap time is seconds, Lenis expects ms
+      lenis?.raf(time * 1000);
+    };
+
+    if (lenis) {
+      lenis.on("scroll", onLenisScroll);
+      gsap.ticker.add(ticker);
+      gsap.ticker.lagSmoothing(0);
+    }
 
     const ctx = gsap.context(() => {
       const mm: any = gsap.matchMedia();
 
       mm.add("(min-width: 768px)", () => {
-        if (lenis) lenis.on("scroll", ScrollTrigger.update);
+        // -------------------------
+        // YOUR ORIGINAL ANIMATIONS
+        // -------------------------
 
-        // HERO pinned
+        // =========================
+        // HERO pinned (KEEP GLOBAL, but add willChange)
+        // =========================
         if (heroScrollRef.current) {
           const tlHero = gsap.timeline({
             scrollTrigger: {
@@ -716,11 +113,17 @@ const DevLayout: React.FC = () => {
               end: "+=160%",
               scrub: 1.1,
               pin: true,
+              anticipatePin: 1,
             },
           });
 
-          gsap.set(".hero-overlay", { yPercent: 100 });
-          gsap.set(".hero-word", { opacity: 0, scale: 0.75, y: 40 });
+          gsap.set(".hero-overlay", { yPercent: 100, willChange: "transform" });
+          gsap.set(".hero-word", {
+            opacity: 0,
+            scale: 0.75,
+            y: 40,
+            willChange: "transform,opacity,filter",
+          });
 
           tlHero
             .to(".hero-overlay", {
@@ -754,40 +157,66 @@ const DevLayout: React.FC = () => {
             );
         }
 
-        // OUR PROCESS pinned (desktop only)
+        // =========================
+        // OUR PROCESS pinned (SCOPED + discrete updates)
+        // =========================
         if (pinnedSectionRef.current) {
           const section = pinnedSectionRef.current;
-          const lineFill = section.querySelector(".process-line-fill") as HTMLElement | null;
 
-          const labels = gsap.utils.toArray<HTMLElement>(".process-step-label");
-          const cards = gsap.utils.toArray<HTMLElement>(".process-card-inner");
+          const lineFill = section.querySelector(
+            ".process-line-fill"
+          ) as HTMLElement | null;
+
+          // Scope to section to avoid grabbing wrong nodes
+          const labels = gsap.utils.toArray<HTMLElement>(
+            ".process-step-label",
+            section
+          );
+          const cards = gsap.utils.toArray<HTMLElement>(
+            ".process-card-inner",
+            section
+          );
 
           if (cards.length) {
             const totalSteps = cards.length;
+            let lastIdx = -1;
 
             cards.forEach((card, index) => {
               gsap.set(card, {
                 opacity: index === 0 ? 1 : 0,
                 scale: index === 0 ? 1 : 0.94,
                 y: index === 0 ? 0 : 18,
+                willChange: "transform,opacity",
               });
             });
 
             if (lineFill) {
-              gsap.set(lineFill, { scaleY: 0, transformOrigin: "top center" });
+              gsap.set(lineFill, {
+                scaleY: 0,
+                transformOrigin: "top center",
+                willChange: "transform",
+              });
             }
 
             gsap.set(labels, { opacity: 0.45 });
             if (labels[0]) gsap.set(labels[0], { opacity: 1 });
 
-            gsap.from(["#process-kicker", "#process-title", "#process-sub", ".process-cards-window"], {
-              opacity: 0,
-              y: 24,
-              duration: 0.8,
-              ease: "power3.out",
-              stagger: 0.08,
-              scrollTrigger: { trigger: section, start: "top 80%" },
-            });
+            gsap.from(
+              [
+                section.querySelector("#process-kicker"),
+                section.querySelector("#process-title"),
+                section.querySelector("#process-sub"),
+                section.querySelector(".process-cards-window"),
+              ].filter(Boolean),
+              {
+                opacity: 0,
+                y: 24,
+                duration: 0.8,
+                ease: "power3.out",
+                stagger: 0.08,
+                scrollTrigger: { trigger: section, start: "top 80%" },
+              }
+            );
 
             ScrollTrigger.create({
               trigger: section,
@@ -795,6 +224,7 @@ const DevLayout: React.FC = () => {
               end: "+=" + totalSteps * 160 + "%",
               scrub: 1.1,
               pin: true,
+              anticipatePin: 1,
               snap:
                 totalSteps > 1
                   ? {
@@ -805,13 +235,19 @@ const DevLayout: React.FC = () => {
                       duration: 0.35,
                       ease: "power1.out",
                     }
-                  : null,
+                  : undefined,
               onUpdate: (self) => {
                 const progress = self.progress;
-                const activeIndex = Math.round(progress * (totalSteps - 1));
 
-                cards.forEach((card, index) => {
-                  const isActive = index === activeIndex;
+                // Continuous but cheap
+                if (lineFill) gsap.set(lineFill, { scaleY: progress });
+
+                const idx = Math.round(progress * (totalSteps - 1));
+                if (idx === lastIdx) return; // ✅ stops update spam
+                lastIdx = idx;
+
+                cards.forEach((card, i) => {
+                  const isActive = i === idx;
                   gsap.to(card, {
                     opacity: isActive ? 1 : 0,
                     scale: isActive ? 1 : 0.94,
@@ -822,18 +258,9 @@ const DevLayout: React.FC = () => {
                   });
                 });
 
-                if (lineFill) {
-                  gsap.to(lineFill, {
-                    scaleY: progress,
-                    duration: 0.2,
-                    ease: "power2.out",
-                    overwrite: "auto",
-                  });
-                }
-
-                labels.forEach((label, index) => {
+                labels.forEach((label, i) => {
                   gsap.to(label, {
-                    opacity: index === activeIndex ? 1 : 0.45,
+                    opacity: i === idx ? 1 : 0.45,
                     duration: 0.2,
                     ease: "power2.out",
                     overwrite: "auto",
@@ -844,7 +271,9 @@ const DevLayout: React.FC = () => {
           }
         }
 
+        // =========================
         // Generic fades
+        // =========================
         gsap.utils.toArray<HTMLElement>(".fade-section").forEach((section) => {
           gsap.from(section, {
             opacity: 0,
@@ -859,7 +288,9 @@ const DevLayout: React.FC = () => {
           });
         });
 
-        // WHO WE ARE stack (desktop only)
+        // =========================
+        // WHO WE ARE stack
+        // =========================
         if (whoSectionRef.current) {
           const cards = gsap.utils.toArray<HTMLElement>(".who-card");
 
@@ -873,6 +304,7 @@ const DevLayout: React.FC = () => {
               rotateY: 4,
               transformPerspective: 1200,
               zIndex: index + 1,
+              willChange: "transform,opacity",
             });
           });
 
@@ -883,6 +315,7 @@ const DevLayout: React.FC = () => {
               end: "+=350%",
               scrub: 1.15,
               pin: true,
+              anticipatePin: 1,
             },
           });
 
@@ -895,7 +328,9 @@ const DevLayout: React.FC = () => {
 
           cards.forEach((card, index) => {
             const offset = index * 32;
-            const iconEl = card.querySelector(".who-icon") as HTMLElement | null;
+            const iconEl = card.querySelector(
+              ".who-icon"
+            ) as HTMLElement | null;
 
             tlWho.to(
               card,
@@ -929,7 +364,9 @@ const DevLayout: React.FC = () => {
           });
         }
 
-        // CREATIVITY vs TECHNICALITY
+        // =========================
+        // CREATIVITY vs TECHNICALITY (kept as-is)
+        // =========================
         if (creativityTechSectionRef.current) {
           const section = creativityTechSectionRef.current;
 
@@ -949,8 +386,13 @@ const DevLayout: React.FC = () => {
             y: 40,
             scale: 0.98,
             filter: "blur(6px)",
+            willChange: "transform,opacity,filter",
           });
-          gsap.set(".ct-divider", { scaleY: 0, transformOrigin: "top" });
+          gsap.set(".ct-divider", {
+            scaleY: 0,
+            transformOrigin: "top",
+            willChange: "transform",
+          });
 
           gsap.set(
             [
@@ -963,7 +405,7 @@ const DevLayout: React.FC = () => {
               ".ct-copy-right",
               ".ct-chip-right",
             ],
-            { opacity: 0, y: 18 }
+            { opacity: 0, y: 18, willChange: "transform,opacity" }
           );
 
           gsap.set(".ct-icon-left", {
@@ -971,8 +413,15 @@ const DevLayout: React.FC = () => {
             scale: 0.85,
             x: -10,
             y: -10,
+            willChange: "transform,opacity",
           });
-          gsap.set(".ct-icon-right", { opacity: 0, scale: 0.85, x: 10, y: 10 });
+          gsap.set(".ct-icon-right", {
+            opacity: 0,
+            scale: 0.85,
+            x: 10,
+            y: 10,
+            willChange: "transform,opacity",
+          });
 
           gsap.set(".ct-glow-a", { x: -60, y: -40, scale: 0.9, opacity: 0.6 });
           gsap.set(".ct-glow-b", { x: 60, y: 40, scale: 0.9, opacity: 0.55 });
@@ -1000,7 +449,12 @@ const DevLayout: React.FC = () => {
               "-=0.55"
             )
             .to(
-              [".ct-kicker-left", ".ct-title-left", ".ct-copy-left", ".ct-chip-left"],
+              [
+                ".ct-kicker-left",
+                ".ct-title-left",
+                ".ct-copy-left",
+                ".ct-chip-left",
+              ],
               {
                 opacity: 1,
                 y: 0,
@@ -1010,9 +464,18 @@ const DevLayout: React.FC = () => {
               },
               "-=0.45"
             )
-            .to(".ct-divider", { scaleY: 1, duration: 0.7, ease: "power2.out" }, "-=0.55")
             .to(
-              [".ct-kicker-right", ".ct-title-right", ".ct-copy-right", ".ct-chip-right"],
+              ".ct-divider",
+              { scaleY: 1, duration: 0.7, ease: "power2.out" },
+              "-=0.55"
+            )
+            .to(
+              [
+                ".ct-kicker-right",
+                ".ct-title-right",
+                ".ct-copy-right",
+                ".ct-chip-right",
+              ],
               {
                 opacity: 1,
                 y: 0,
@@ -1024,28 +487,59 @@ const DevLayout: React.FC = () => {
             )
             .to(
               ".ct-glow-a",
-              { x: 30, y: 10, scale: 1.08, opacity: 0.85, duration: 1.4, ease: "sine.inOut" },
+              {
+                x: 30,
+                y: 10,
+                scale: 1.08,
+                opacity: 0.85,
+                duration: 1.4,
+                ease: "sine.inOut",
+              },
               0.2
             )
             .to(
               ".ct-glow-b",
-              { x: -30, y: -10, scale: 1.1, opacity: 0.8, duration: 1.4, ease: "sine.inOut" },
+              {
+                x: -30,
+                y: -10,
+                scale: 1.1,
+                opacity: 0.8,
+                duration: 1.4,
+                ease: "sine.inOut",
+              },
               0.2
             )
-            .to(".ct-icon-left", { y: -6, duration: 1.2, ease: "sine.inOut" }, 0.4)
-            .to(".ct-icon-right", { y: 6, duration: 1.2, ease: "sine.inOut" }, 0.4);
+            .to(
+              ".ct-icon-left",
+              { y: -6, duration: 1.2, ease: "sine.inOut" },
+              0.4
+            )
+            .to(
+              ".ct-icon-right",
+              { y: 6, duration: 1.2, ease: "sine.inOut" },
+              0.4
+            );
         }
 
-        // WORLD section
+        // =========================
+        // WORLD (kept as-is, minor willChange)
+        // =========================
         if (worldSectionRef.current) {
           const section = worldSectionRef.current;
-          const globeShell = section.querySelector(".world-globe-shell") as HTMLElement | null;
+          const globeShell = section.querySelector(
+            ".world-globe-shell"
+          ) as HTMLElement | null;
 
           gsap.set(["#world-kicker", "#world-title", "#world-copy"], {
             opacity: 0,
             y: 30,
+            willChange: "transform,opacity",
           });
-          gsap.set(".world-stat", { opacity: 0, y: 20 });
+          gsap.set(".world-stat", {
+            opacity: 0,
+            y: 20,
+            willChange: "transform,opacity",
+          });
 
           if (globeShell) {
             gsap.set(globeShell, {
@@ -1056,6 +550,7 @@ const DevLayout: React.FC = () => {
               rotateY: 18,
               transformStyle: "preserve-3d",
               transformOrigin: "50% 50%",
+              willChange: "transform,opacity",
             });
           }
 
@@ -1071,30 +566,61 @@ const DevLayout: React.FC = () => {
           });
 
           tlWorld
-            .to("#world-kicker", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0)
-            .to("#world-title", { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.05)
-            .to("#world-copy", { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.1)
+            .to(
+              "#world-kicker",
+              { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+              0
+            )
+            .to(
+              "#world-title",
+              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+              0.05
+            )
+            .to(
+              "#world-copy",
+              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+              0.1
+            )
             .to(
               ".world-stat",
-              { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.12 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                ease: "power3.out",
+                stagger: 0.12,
+              },
               0.25
             );
 
           if (globeShell) {
             tlWorld.to(
               globeShell,
-              { opacity: 1, y: 0, scale: 1, rotateX: 0, rotateY: 0, duration: 1.2, ease: "power3.out" },
+              {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                rotateX: 0,
+                rotateY: 0,
+                duration: 1.2,
+                ease: "power3.out",
+              },
               0.2
             );
           }
         }
 
-        // SERVICES horizontal (desktop only)
+        // =========================
+        // SERVICES horizontal (scoped cards + stable refresh)
+        // =========================
         const servicesSection = servicesHorizontalSectionRef.current;
         const servicesTrack = servicesTrackRef.current;
 
         if (servicesSection && servicesTrack) {
-          const cards = gsap.utils.toArray<HTMLElement>(".service-card-h");
+          const cards = gsap.utils.toArray<HTMLElement>(
+            ".service-card-h",
+            servicesSection
+          );
 
           const getScrollDistance = () => {
             const raw = servicesTrack.scrollWidth - servicesSection.clientWidth;
@@ -1115,6 +641,7 @@ const DevLayout: React.FC = () => {
             },
           });
 
+          // keep your float, but keep it light
           gsap.to(".service-icon", {
             y: -4,
             repeat: -1,
@@ -1125,15 +652,24 @@ const DevLayout: React.FC = () => {
 
           cards.forEach((card, index) => {
             const direction = index % 2 === 0 ? -1 : 1;
-            const iconEl = card.querySelector(".service-icon") as HTMLElement | null;
+            const iconEl = card.querySelector(
+              ".service-icon"
+            ) as HTMLElement | null;
 
             gsap.set(card, {
               opacity: 0,
               y: 80,
               rotateY: 10 * direction,
               scale: 0.9,
+              willChange: "transform,opacity",
             });
-            if (iconEl) gsap.set(iconEl, { y: 20, opacity: 0, scale: 0.7 });
+            if (iconEl)
+              gsap.set(iconEl, {
+                y: 20,
+                opacity: 0,
+                scale: 0.7,
+                willChange: "transform,opacity",
+              });
 
             ScrollTrigger.create({
               trigger: card,
@@ -1148,6 +684,7 @@ const DevLayout: React.FC = () => {
                   scale: 1,
                   duration: 0.9,
                   ease: "power3.out",
+                  overwrite: "auto",
                 });
                 if (iconEl)
                   gsap.to(iconEl, {
@@ -1156,6 +693,7 @@ const DevLayout: React.FC = () => {
                     scale: 1,
                     duration: 0.6,
                     ease: "power2.out",
+                    overwrite: "auto",
                   });
               },
               onLeaveBack: () => {
@@ -1166,6 +704,7 @@ const DevLayout: React.FC = () => {
                   scale: 0.9,
                   duration: 0.5,
                   ease: "power2.in",
+                  overwrite: "auto",
                 });
                 if (iconEl)
                   gsap.to(iconEl, {
@@ -1174,22 +713,39 @@ const DevLayout: React.FC = () => {
                     scale: 0.7,
                     duration: 0.4,
                     ease: "power2.in",
+                    overwrite: "auto",
                   });
               },
             });
           });
         }
 
-        // CTA section
+        // =========================
+        // CTA (kept as-is)
+        // =========================
         if (ctaSectionRef.current) {
           const section = ctaSectionRef.current;
 
-          gsap.set("[data-cta-card]", { y: 40, autoAlpha: 0, scale: 0.985 });
+          gsap.set("[data-cta-card]", {
+            y: 40,
+            autoAlpha: 0,
+            scale: 0.985,
+            willChange: "transform,opacity",
+          });
           gsap.set(
-            ["[data-cta-kicker]", "[data-cta-title]", "[data-cta-subtitle]", "[data-cta-actions]"],
-            { y: 18, autoAlpha: 0 }
+            [
+              "[data-cta-kicker]",
+              "[data-cta-title]",
+              "[data-cta-subtitle]",
+              "[data-cta-actions]",
+            ],
+            { y: 18, autoAlpha: 0, willChange: "transform,opacity" }
           );
-          gsap.set("[data-cta-sheen]", { xPercent: -120, autoAlpha: 0 });
+          gsap.set("[data-cta-sheen]", {
+            xPercent: -120,
+            autoAlpha: 0,
+            willChange: "transform,opacity",
+          });
           gsap.set("[data-cta-glow]", { autoAlpha: 0 });
 
           const tlCTA = gsap.timeline({
@@ -1212,45 +768,119 @@ const DevLayout: React.FC = () => {
             })
             .to(
               ["[data-cta-kicker]", "[data-cta-title]", "[data-cta-subtitle]"],
-              { y: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out", stagger: 0.08 },
+              {
+                y: 0,
+                autoAlpha: 1,
+                duration: 0.8,
+                ease: "power3.out",
+                stagger: 0.08,
+              },
               0.08
             )
-            .to("[data-cta-actions]", { y: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, 0.18)
-            .to("[data-cta-sheen]", { xPercent: 120, autoAlpha: 1, duration: 1.2, ease: "none" }, 0.1);
+            .to(
+              "[data-cta-actions]",
+              { y: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" },
+              0.18
+            )
+            .to(
+              "[data-cta-sheen]",
+              { xPercent: 120, autoAlpha: 1, duration: 1.2, ease: "none" },
+              0.1
+            );
 
           ScrollTrigger.create({
             trigger: section,
             start: "top 55%",
-            onEnter: () => gsap.to("[data-cta-glow]", { autoAlpha: 1, duration: 0.7, ease: "power2.out" }),
-            onLeaveBack: () => gsap.to("[data-cta-glow]", { autoAlpha: 0, duration: 0.25, ease: "power2.out" }),
+            onEnter: () =>
+              gsap.to("[data-cta-glow]", {
+                autoAlpha: 1,
+                duration: 0.7,
+                ease: "power2.out",
+              }),
+            onLeaveBack: () =>
+              gsap.to("[data-cta-glow]", {
+                autoAlpha: 0,
+                duration: 0.25,
+                ease: "power2.out",
+              }),
           });
         }
 
-        // PORTFOLIO pinned (desktop only)
+        // =========================
+        // PORTFOLIO pinned (discrete index updates + cheap continuous sets)
+        // =========================
         if (portfolioSectionRef.current) {
           const section = portfolioSectionRef.current;
 
-          const items = gsap.utils.toArray<HTMLElement>("[data-portfolio-item]");
-          const panels = gsap.utils.toArray<HTMLElement>("[data-portfolio-panel]");
+          const items = gsap.utils.toArray<HTMLElement>(
+            "[data-portfolio-item]",
+            section
+          );
+          const panels = gsap.utils.toArray<HTMLElement>(
+            "[data-portfolio-panel]",
+            section
+          );
 
-          const scan = section.querySelector(".portfolio-scan") as HTMLElement | null;
-          const glow = section.querySelector(".portfolio-glow") as HTMLElement | null;
-          const needle = section.querySelector(".portfolio-needle") as HTMLElement | null;
+          const scan = section.querySelector(
+            ".portfolio-scan"
+          ) as HTMLElement | null;
+          const glow = section.querySelector(
+            ".portfolio-glow"
+          ) as HTMLElement | null;
+          const needle = section.querySelector(
+            ".portfolio-needle"
+          ) as HTMLElement | null;
 
-          gsap.set([items, panels], { willChange: "transform,opacity,filter" });
-          gsap.set(panels, { autoAlpha: 0, y: 18, filter: "blur(6px)" });
-          gsap.set(items, { autoAlpha: 0, x: -16 });
+          gsap.set(panels, {
+            autoAlpha: 0,
+            y: 18,
+            filter: "blur(6px)",
+            willChange: "transform,opacity,filter",
+          });
+          gsap.set(items, {
+            autoAlpha: 0,
+            x: -16,
+            willChange: "transform,opacity",
+          });
 
-          if (scan) gsap.set(scan, { y: -80, autoAlpha: 0 });
-          if (glow) gsap.set(glow, { autoAlpha: 0, scale: 0.92 });
-          if (needle) gsap.set(needle, { scaleY: 0.1, transformOrigin: "top center" });
+          if (scan)
+            gsap.set(scan, {
+              y: -80,
+              autoAlpha: 0,
+              willChange: "transform,opacity",
+            });
+          if (glow)
+            gsap.set(glow, {
+              autoAlpha: 0,
+              scale: 0.92,
+              willChange: "transform,opacity",
+            });
+          if (needle)
+            gsap.set(needle, {
+              scaleY: 0.1,
+              transformOrigin: "top center",
+              willChange: "transform",
+            });
 
           const total = Math.max(1, panels.length);
+          let lastIdx = -1;
 
           const activate = (activeIndex: number) => {
+            if (activeIndex === lastIdx) return;
+            lastIdx = activeIndex;
+
             items.forEach((el, i) => {
-              el.setAttribute("data-active", i === activeIndex ? "true" : "false");
-              gsap.to(el, { autoAlpha: 1, x: 0, duration: 0.25, ease: "power2.out", overwrite: "auto" });
+              el.setAttribute(
+                "data-active",
+                i === activeIndex ? "true" : "false"
+              );
+              gsap.to(el, {
+                autoAlpha: 1,
+                x: 0,
+                duration: 0.25,
+                ease: "power2.out",
+                overwrite: "auto",
+              });
               gsap.to(el, {
                 opacity: i === activeIndex ? 1 : 0.55,
                 duration: 0.2,
@@ -1275,7 +905,9 @@ const DevLayout: React.FC = () => {
           activate(0);
 
           gsap.fromTo(
-            section.querySelectorAll(".portfolio-kicker, .portfolio-title, .portfolio-sub"),
+            section.querySelectorAll(
+              ".portfolio-kicker, .portfolio-title, .portfolio-sub"
+            ),
             { autoAlpha: 0, y: 18 },
             {
               autoAlpha: 1,
@@ -1287,53 +919,44 @@ const DevLayout: React.FC = () => {
             }
           );
 
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: section,
-              start: "top top",
-              end: `+=${total * 140}%`,
-              scrub: 1.1,
-              pin: true,
-              anticipatePin: 1,
-              snap:
-                total > 1
-                  ? {
-                      snapTo: (value) => {
-                        const seg = 1 / (total - 1);
-                        return Math.round(value / seg) * seg;
-                      },
-                      duration: 0.35,
-                      ease: "power2.out",
-                    }
-                  : null,
-              onUpdate: (self) => {
-                const idx = Math.round(self.progress * (total - 1));
-                activate(idx);
-
-                if (needle) {
-                  gsap.to(needle, {
-                    scaleY: 0.12 + self.progress * 0.88,
-                    duration: 0.2,
+          ScrollTrigger.create({
+            trigger: section,
+            start: "top top",
+            end: `+=${total * 140}%`,
+            scrub: 1.1,
+            pin: true,
+            anticipatePin: 1,
+            snap:
+              total > 1
+                ? {
+                    snapTo: (value) => {
+                      const seg = 1 / (total - 1);
+                      return Math.round(value / seg) * seg;
+                    },
+                    duration: 0.35,
                     ease: "power2.out",
-                    overwrite: "auto",
-                  });
-                }
+                  }
+                : undefined,
+            onUpdate: (self) => {
+              const idx = Math.round(self.progress * (total - 1));
+              activate(idx);
 
-                if (scan) {
-                  gsap.to(scan, {
-                    autoAlpha: 1,
-                    y: -60 + self.progress * 260,
-                    duration: 0.25,
-                    ease: "none",
-                    overwrite: "auto",
-                  });
-                }
-              },
+              // continuous but cheap
+              if (needle)
+                gsap.set(needle, { scaleY: 0.12 + self.progress * 0.88 });
+              if (scan)
+                gsap.set(scan, { autoAlpha: 1, y: -60 + self.progress * 260 });
             },
           });
 
           if (glow) {
-            gsap.to(glow, { autoAlpha: 1, scale: 1, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: section, start: "top 60%" } });
+            gsap.to(glow, {
+              autoAlpha: 1,
+              scale: 1,
+              duration: 0.8,
+              ease: "power3.out",
+              scrollTrigger: { trigger: section, start: "top 60%" },
+            });
           }
 
           gsap.to(section.querySelectorAll(".portfolio-radar"), {
@@ -1344,9 +967,13 @@ const DevLayout: React.FC = () => {
           });
         }
 
-        // Brand circles (desktop only)
+        // =========================
+        // Brand circles (kept as-is)
+        // =========================
         if (brandCirclesSectionRef.current) {
-          const circles = gsap.utils.toArray<HTMLElement>(".brand-circle-wrapper");
+          const circles = gsap.utils.toArray<HTMLElement>(
+            ".brand-circle-wrapper"
+          );
 
           const tlBrand = gsap.timeline({
             scrollTrigger: {
@@ -1355,6 +982,7 @@ const DevLayout: React.FC = () => {
               end: "+=320%",
               scrub: 1.1,
               pin: true,
+              anticipatePin: 1,
             },
           });
 
@@ -1394,7 +1022,11 @@ const DevLayout: React.FC = () => {
             );
           });
 
-          tlBrand.from("#brand-quote", { opacity: 0, y: 30, duration: 0.9, ease: "power3.out" }, "+=0.2");
+          tlBrand.from(
+            "#brand-quote",
+            { opacity: 0, y: 30, duration: 0.9, ease: "power3.out" },
+            "+=0.2"
+          );
 
           gsap.to(".brand-circle", {
             scale: 1.03,
@@ -1406,43 +1038,59 @@ const DevLayout: React.FC = () => {
           });
         }
 
-        // Giant A zoom
+        // =========================
+        // Giant A zoom (kept as-is)
+        // =========================
         if (giantASectionRef.current && giantARef.current) {
-          const zoomTl = gsap.timeline({
-            scrollTrigger: {
-              trigger: giantASectionRef.current,
-              start: "top top",
-              end: "+=200%",
-              scrub: 1.2,
-              pin: true,
-              anticipatePin: 1,
-            },
-          });
-
-          zoomTl.fromTo(
-            giantARef.current,
-            {
-              scale: 1,
-              opacity: 0.9,
-              filter:
-                "drop-shadow(0 0 8px rgba(255,255,255,0.25)) drop-shadow(0 0 24px rgba(255,255,255,0.12))",
-            },
-            {
-              scale: 8,
-              opacity: 0,
-              filter:
-                "drop-shadow(0 0 40px rgba(255,255,255,0.8)) drop-shadow(0 0 110px rgba(255,255,255,0.45))",
-              ease: "power2.inOut",
-            }
-          );
+          gsap
+            .timeline({
+              scrollTrigger: {
+                trigger: giantASectionRef.current,
+                start: "top top",
+                end: "+=200%",
+                scrub: 1.2,
+                pin: true,
+                anticipatePin: 1,
+              },
+            })
+            .fromTo(
+              giantARef.current,
+              {
+                scale: 1,
+                opacity: 0.9,
+                filter:
+                  "drop-shadow(0 0 8px rgba(255,255,255,0.25)) drop-shadow(0 0 24px rgba(255,255,255,0.12))",
+              },
+              {
+                scale: 8,
+                opacity: 0,
+                filter:
+                  "drop-shadow(0 0 40px rgba(255,255,255,0.8)) drop-shadow(0 0 110px rgba(255,255,255,0.45))",
+                ease: "power2.inOut",
+              }
+            );
         }
 
-        // FOOTER pinned reveal
+        // =========================
+        // FOOTER pinned reveal (kept as-is)
+        // =========================
         if (footerSectionRef.current) {
           const section = footerSectionRef.current;
 
-          gsap.set([".footer-head", ".footer-cta", ".footer-grid", ".footer-bottom"], { opacity: 0, y: 26 });
-          gsap.set(".footer-glow", { opacity: 0, scale: 0.9, y: 40 });
+          gsap.set(
+            [".footer-head", ".footer-cta", ".footer-grid", ".footer-bottom"],
+            {
+              opacity: 0,
+              y: 26,
+              willChange: "transform,opacity",
+            }
+          );
+          gsap.set(".footer-glow", {
+            opacity: 0,
+            scale: 0.9,
+            y: 40,
+            willChange: "transform,opacity",
+          });
 
           const tlFooter = gsap.timeline({
             scrollTrigger: {
@@ -1456,26 +1104,65 @@ const DevLayout: React.FC = () => {
           });
 
           tlFooter
-            .to(".footer-glow", { opacity: 1, scale: 1, y: 0, duration: 1, ease: "power3.out" })
-            .to(".footer-head", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.05)
-            .to(".footer-cta", { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.18)
-            .to(".footer-grid", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.28)
-            .to(".footer-bottom", { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.45)
-            .to(".footer-glow", { y: -60, duration: 1.2, ease: "sine.inOut" }, 0.2);
+            .to(".footer-glow", {
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              duration: 1,
+              ease: "power3.out",
+            })
+            .to(
+              ".footer-head",
+              { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+              0.05
+            )
+            .to(
+              ".footer-cta",
+              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+              0.18
+            )
+            .to(
+              ".footer-grid",
+              { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+              0.28
+            )
+            .to(
+              ".footer-bottom",
+              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+              0.45
+            )
+            .to(
+              ".footer-glow",
+              { y: -60, duration: 1.2, ease: "sine.inOut" },
+              0.2
+            );
 
-          gsap.to(".footer-dot", { scale: 1.25, repeat: -1, yoyo: true, duration: 1.2, ease: "sine.inOut" });
+          gsap.to(".footer-dot", {
+            scale: 1.25,
+            repeat: -1,
+            yoyo: true,
+            duration: 1.2,
+            ease: "sine.inOut",
+          });
         }
 
         ScrollTrigger.refresh();
+        requestAnimationFrame(() => ScrollTrigger.refresh());
+        setTimeout(() => ScrollTrigger.refresh(), 250);
 
-        return () => {
-          if (lenis) lenis.off("scroll", ScrollTrigger.update);
-        };
+        return () => {};
       });
     }, layoutRef);
 
-    return () => ctx.revert();
-  }, []);
+    return () => {
+      ctx.revert();
+
+      if (lenis) {
+        lenis.off("scroll", onLenisScroll);
+        gsap.ticker.remove(ticker);
+      }
+    };
+  }, [lenis]);
 
   return (
     <div
@@ -1502,1088 +1189,62 @@ const DevLayout: React.FC = () => {
         />
       </div>
 
-      <main ref={layoutRef} className="relative font-[family-name:var(--font-redhat)]">
+      <main
+        ref={layoutRef}
+        className="relative font-[family-name:var(--font-redhat)]"
+      >
         <HeroOverlay heroScrollRef={heroScrollRef} />
-
-        {/* Intro */}
-        <section className="fade-section z-10 relative min-h-[60svh] flex items-center justify-center">
-          <div className="max-w-2xl px-4 sm:px-6 text-center space-y-4 relative z-10">
-            <p className={`text-sm uppercase tracking-[0.2em] ${UI.textMuted}`}>
-              Studio · Engineering · AI
-            </p>
-            <h2 className={`text-3xl md:text-4xl font-semibold ${UI.textStrong}`}>
-              We build brands, products and AI-powered platforms that feel premium end-to-end.
-            </h2>
-          </div>
-        </section>
-
-        {/* Process */}
-        <section ref={pinnedSectionRef} className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
-          <div className={`relative w-full ${CONTAINER} ${SECTION_Y} grid grid-cols-1 md:grid-cols-[0.55fr_0.65fr] gap-10 md:gap-16 items-center`}>
-            <div className="space-y-8">
-              <div className="space-y-3">
-                <p id="process-kicker" className={`text-[11px] uppercase tracking-[0.28em] ${UI.textMuted}`}>
-                  Our process
-                </p>
-                <h2 id="process-title" className={`text-3xl md:text-4xl font-semibold leading-tight ${UI.textStrong}`}>
-                  A clear, engineered path from <span className={UI.accentText}>idea</span> to{" "}
-                  <span className={UI.accentText}>impact</span>.
-                </h2>
-                <p id="process-sub" className={`text-sm md:text-base ${UI.textSub} max-w-md`}>
-                  No chaos, no black box. Just a repeatable system that keeps your team, stakeholders and roadmap aligned.
-                </p>
-              </div>
-
-              <div className="hidden md:flex items-stretch gap-4">
-                <div className="relative w-[3px] rounded-full bg-white/10 overflow-hidden">
-                  <div className="process-line-fill absolute inset-0 bg-gradient-to-b from-emerald-300/30 via-white/20 to-violet-300/25" />
-                </div>
-                <div className="flex flex-col justify-between py-1 text-xs space-y-4">
-                  <span className={`process-step-label ${UI.textMuted}`}>01 · Discover</span>
-                  <span className={`process-step-label ${UI.textMuted}`}>02 · Design & Brand</span>
-                  <span className={`process-step-label ${UI.textMuted}`}>03 · Ship & Evolve</span>
-                </div>
-              </div>
-            </div>
-
-            {/* MOBILE: stacked list (prevents overlap) */}
-            <div className="md:hidden space-y-4">
-              {cardsData.map((step: any, index: number) => (
-                <Card
-                  key={step.id}
-                  className={[
-                    "rounded-2xl px-5 py-5 overflow-hidden",
-                    UI.glass,
-                    UI.border,
-                    "shadow-[0_18px_60px_rgba(0,0,0,0.65)]",
-                  ].join(" ")}
-                >
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-white/85 mb-3">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/85 text-black text-[10px] font-semibold">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    {index === 0 && "Discover"}
-                    {index === 1 && "Design & Brand"}
-                    {index === 2 && "Ship & Iterate"}
-                  </div>
-
-                  <h3 className={`text-lg font-semibold ${UI.textStrong}`}>{step.title}</h3>
-                  <p className={`text-sm ${UI.textSub} mt-2`}>{step.description}</p>
-                </Card>
-              ))}
-            </div>
-
-            {/* DESKTOP: pinned window (GSAP targets .process-card-inner) */}
-            <div className="hidden md:block process-cards-window relative h-[360px] overflow-hidden">
-              <div className="relative h-full">
-                {cardsData.map((step: any, index: number) => (
-                  <div key={step.id} className="absolute inset-0 flex items-center justify-center">
-                    <Card
-                      className={[
-                        "process-card-inner w-full relative rounded-2xl px-6 py-6 overflow-hidden transition-colors",
-                        UI.glass,
-                        UI.border,
-                        "shadow-[0_22px_70px_rgba(0,0,0,0.75)]",
-                      ].join(" ")}
-                    >
-                      <div className="pointer-events-none absolute inset-0 -z-10">
-                        <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
-                        <div className="absolute -bottom-20 -right-16 h-48 w-48 rounded-full bg-white/8 blur-3xl" />
-                        <div className="absolute inset-0 opacity-[0.10] [background-image:linear-gradient(to_right,rgba(255,255,255,0.10)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.07)_1px,transparent_1px)] [background-size:44px_44px]" />
-                      </div>
-
-                      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/18 to-transparent opacity-70" />
-
-                      <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-white/85 mb-3 shadow-[0_0_18px_rgba(255,255,255,0.08)]">
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/85 text-black text-[10px] font-semibold shadow-[0_0_12px_rgba(255,255,255,0.14)]">
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                        {index === 0 && "Discover"}
-                        {index === 1 && "Design & Brand"}
-                        {index === 2 && "Ship & Iterate"}
-                      </div>
-
-                      <h3 className={`text-xl font-semibold ${UI.textStrong}`}>{step.title}</h3>
-                      <p className={`text-sm ${UI.textSub} mt-2`}>{step.description}</p>
-
-                      <div className={`mt-4 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.18em] ${UI.textMuted}`}>
-                        {index === 0 && (
-                          <>
-                            <span className="px-2 py-1 rounded-full border border-white/10 bg-white/[0.04] text-white/75">
-                              Audit
-                            </span>
-                            <span className="px-2 py-1 rounded-full border border-white/10 bg-white/[0.04] text-white/75">
-                              Strategy
-                            </span>
-                          </>
-                        )}
-                        {index === 1 && (
-                          <>
-                            <span className="px-2 py-1 rounded-full border border-white/10 bg-white/[0.04] text-white/75">
-                              Systems
-                            </span>
-                            <span className="px-2 py-1 rounded-full border border-white/10 bg-white/[0.04] text-white/75">
-                              Prototypes
-                            </span>
-                          </>
-                        )}
-                        {index === 2 && (
-                          <>
-                            <span className="px-2 py-1 rounded-full border border-white/10 bg-white/[0.04] text-white/75">
-                              Launch
-                            </span>
-                            <span className="px-2 py-1 rounded-full border border-white/10 bg-white/[0.04] text-white/75">
-                              Feedback loop
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </Card>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* WHO WE ARE */}
-        <section ref={whoSectionRef} className="relative min-h-[100svh] overflow-hidden py-16 md:py-24">
-          <div className={`relative ${CONTAINER} h-full flex flex-col md:flex-row items-center gap-10`}>
-            {/* MOBILE: normal flow cards */}
-            <div className="md:hidden w-full space-y-4">
-              {whoCards.map((card: any) => {
-                const Icon = card.icon;
-                return (
-                  <Card
-                    key={card.id}
-                    className={[
-                      "rounded-2xl overflow-hidden",
-                      UI.glass,
-                      UI.border,
-                      "shadow-[0_18px_60px_rgba(0,0,0,0.65)]",
-                    ].join(" ")}
-                  >
-                    <div className="p-6">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <p className={`text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>{card.title}</p>
-                          {card.subtitle && (
-                            <h3 className={`text-lg font-semibold mt-1 ${UI.textStrong}`}>{card.subtitle}</h3>
-                          )}
-                        </div>
-                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06]">
-                          <Icon className="h-5 w-5 text-white/90" />
-                        </div>
-                      </div>
-
-                      <div className={`mt-4 space-y-3 text-sm ${UI.textSub}`}>
-                        {card.body.map((p: string, idx: number) => (
-                          <p key={idx} className="leading-relaxed">
-                            {p}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
-
-            {/* DESKTOP: pinned stacked cards */}
-            <div className="hidden md:block relative w-full md:w-1/2 h-[70vh]">
-              {whoCards.map((card: any, index: number) => {
-                const Icon = card.icon;
-                const number = String(index + 1).padStart(2, "0");
-
-                return (
-                  <Card
-                    key={card.id}
-                    className={[
-                      "who-card group absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[460px] h-[65vh] overflow-hidden flex flex-col justify-between will-change-transform rounded-none transition-colors",
-                      UI.glass,
-                      UI.border,
-                      "shadow-[0_22px_60px_rgba(0,0,0,0.78)]",
-                    ].join(" ")}
-                  >
-                    <div className="pointer-events-none absolute inset-0 -z-10">
-                      <div
-                        className="absolute inset-0 opacity-[0.10]"
-                        style={{
-                          backgroundImage: `
-                            linear-gradient(to right, rgba(255,255,255,0.10) 1px, transparent 1px),
-                            linear-gradient(to bottom, rgba(255,255,255,0.07) 1px, transparent 1px)
-                          `,
-                          backgroundSize: "34px 34px",
-                          maskImage:
-                            "radial-gradient(circle at 30% 20%, black 0%, black 45%, transparent 75%)",
-                          WebkitMaskImage:
-                            "radial-gradient(circle at 30% 20%, black 0%, black 45%, transparent 75%)",
-                        }}
-                      />
-                      <div className="absolute -top-28 -left-28 h-72 w-72 rounded-full bg-white/8 blur-3xl" />
-                      <div className="absolute -bottom-32 -right-32 h-80 w-80 rounded-full bg-white/6 blur-3xl" />
-                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/55" />
-                    </div>
-
-                    <div className="pointer-events-none absolute inset-0">
-                      <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-white/14 to-transparent" />
-                      <div className="absolute left-8 right-8 bottom-0 h-px bg-gradient-to-r from-transparent via-white/12 to-transparent" />
-                      <div className="absolute top-8 bottom-8 left-0 w-px bg-gradient-to-b from-transparent via-white/12 to-transparent" />
-                      <div className="absolute top-8 bottom-8 right-0 w-px bg-gradient-to-b from-transparent via-white/12 to-transparent" />
-
-                      <span className="absolute left-3 top-3 h-6 w-6 border-l border-t border-white/18" />
-                      <span className="absolute right-3 top-3 h-6 w-6 border-r border-t border-white/16" />
-                      <span className="absolute left-3 bottom-3 h-6 w-6 border-l border-b border-white/14" />
-                      <span className="absolute right-3 bottom-3 h-6 w-6 border-r border-b border-white/14" />
-
-                      <span className="absolute left-0 top-10 h-0 w-0 border-y-[10px] border-y-transparent border-r-[12px] border-r-white/10" />
-                      <span className="absolute right-0 bottom-10 h-0 w-0 border-y-[10px] border-y-transparent border-l-[12px] border-l-white/8" />
-                    </div>
-
-                    <div className="pointer-events-none absolute top-5 left-6 select-none">
-                      <span className="text-[72px] font-extrabold tracking-tight text-white/10">{number}</span>
-                    </div>
-
-                    <div className="relative z-10 flex items-start justify-between px-6 pt-6">
-                      <div className="mt-2">
-                        <p className={`text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>{card.title}</p>
-                        {card.subtitle && (
-                          <h3 className={`text-xl font-semibold mt-1 ${UI.textStrong}`}>{card.subtitle}</h3>
-                        )}
-
-                        <div className="mt-3 inline-flex items-center gap-2 rounded-none border border-white/10 bg-white/[0.06] px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-white/85">
-                          <span className="h-1.5 w-1.5 rounded-full bg-white/60 shadow-[0_0_14px_rgba(255,255,255,0.12)]" />
-                          classified brief
-                        </div>
-                      </div>
-
-                      <div className="who-icon flex h-10 w-10 items-center justify-center rounded-none border border-white/10 bg-white/[0.06] shadow-[0_0_22px_rgba(255,255,255,0.10)] transition-transform duration-300 group-hover:scale-[1.06]">
-                        <Icon className="h-5 w-5 text-white/90 drop-shadow-[0_0_10px_rgba(255,255,255,0.10)]" />
-                      </div>
-                    </div>
-
-                    <div className={`relative z-10 px-6 pb-6 space-y-3 text-base ${UI.textSub} mt-4`}>
-                      {card.body.map((paragraph: string, idx: number) => (
-                        <p key={idx} className="leading-relaxed">
-                          {paragraph}
-                        </p>
-                      ))}
-                    </div>
-
-                    <div className="pointer-events-none absolute bottom-0 left-0 right-0">
-                      <div className={`mx-6 mb-5 flex items-center justify-between text-[10px] uppercase tracking-[0.28em] ${UI.textMuted}`}>
-                        <span>scroll to decrypt</span>
-                        <span className="text-white/45">⟶</span>
-                      </div>
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
-
-            <div id="who-heading" className="w-full md:w-1/2 space-y-4 text-left md:text-right relative z-10">
-              <p className={`text-xs uppercase tracking-[0.25em] ${UI.textMuted}`}>Who We Are</p>
-              <h2 className={`text-3xl md:text-4xl font-semibold md:leading-tight max-w-xl md:ml-auto ${UI.textStrong}`}>
-                Architects of the digital future.
-              </h2>
-              <p className={`text-sm md:text-base ${UI.textSub} max-w-md md:ml-auto`}>
-                Scroll to watch each card slide from bottom-right to top-left, layering the story of Algorim step by step.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Creativity & Technicality */}
-        <section ref={creativityTechSectionRef} className="relative min-h-[100svh] overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-white/8 blur-[210px]" />
-            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-white/6 blur-[240px]" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/75" />
-          </div>
-
-          <div className={`${CONTAINER} h-full flex items-center justify-center relative z-10`}>
-            <div className="ct-shell relative w-full h-[72svh] md:h-[80svh]">
-              <div
-                className={[
-                  "ct-card relative w-full h-full rounded-[28px] sm:rounded-[36px] overflow-hidden flex flex-col md:flex-row transition-colors",
-                  UI.glass,
-                  UI.border,
-                  "shadow-[0_30px_110px_rgba(0,0,0,0.78)]",
-                ].join(" ")}
-              >
-                <div className="pointer-events-none absolute inset-0 opacity-[0.12] [background-image:linear-gradient(to_right,rgba(255,255,255,0.10)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:46px_46px]" />
-
-                <div className="ct-glow-a pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-emerald-300/10 blur-[190px]" />
-                <div className="ct-glow-b pointer-events-none absolute -right-48 -bottom-48 h-[620px] w-[620px] rounded-full bg-violet-300/10 blur-[220px]" />
-
-                <div className="ct-divider pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-white/10 md:top-0 md:bottom-0 md:left-1/2 md:right-auto md:h-auto md:w-px" />
-
-                <div className="ct-left relative w-full md:w-1/2 p-6 sm:p-8 md:p-12 flex flex-col justify-center">
-                  <div className="ct-icon-left absolute top-5 left-5 sm:top-7 sm:left-7 h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-white/[0.06] border border-white/10 backdrop-blur-xl shadow-[0_0_18px_rgba(255,255,255,0.10)] flex items-center justify-center">
-                    <Palette className="h-6 w-6 sm:h-7 sm:w-7 text-white/90 drop-shadow-[0_0_12px_rgba(255,255,255,0.10)]" />
-                  </div>
-
-                  <p className={`ct-kicker-left text-[11px] uppercase tracking-[0.35em] ${UI.textMuted}`}>Creativity</p>
-
-                  <h2 className={`ct-title-left mt-3 text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight ${UI.accentText}`}>
-                    Creativity
-                  </h2>
-
-                  <p className={`ct-copy-left mt-4 sm:mt-5 max-w-md text-sm md:text-base ${UI.textSub} leading-relaxed`}>
-                    The palette, motion and story that make Algorim feel like a brand — not just a stack of features.
-                  </p>
-
-                  <div className="ct-chip-left mt-6 sm:mt-7 inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-white/60 shadow-[0_0_14px_rgba(255,255,255,0.12)]" />
-                    <span className="text-[10px] uppercase tracking-[0.3em] text-white/85">Craft / Motion / Voice</span>
-                  </div>
-                </div>
-
-                <div className="ct-right relative w-full md:w-1/2 p-6 sm:p-8 md:p-12 flex flex-col justify-center md:text-right">
-                  <div className="ct-icon-right absolute bottom-5 right-5 sm:bottom-7 sm:right-7 h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-white/[0.06] border border-white/10 backdrop-blur-xl shadow-[0_0_18px_rgba(255,255,255,0.10)] flex items-center justify-center">
-                    <Code2 className="h-6 w-6 sm:h-7 sm:w-7 text-white/90 drop-shadow-[0_0_12px_rgba(255,255,255,0.10)]" />
-                  </div>
-
-                  <p className={`ct-kicker-right text-[11px] uppercase tracking-[0.35em] ${UI.textMuted}`}>Technicality</p>
-
-                  <h2 className="ct-title-right mt-3 text-3xl sm:text-4xl md:text-5xl font-mono font-semibold tracking-tight text-white/92">
-                    <span className="text-white/55">&lt;</span>
-                    <span className="mx-1">Technicality</span>
-                    <span className="text-white/55">/&gt;</span>
-                  </h2>
-
-                  <p className={`ct-copy-right mt-4 sm:mt-5 md:ml-auto max-w-md text-sm md:text-base ${UI.textSub} leading-relaxed`}>
-                    The engineering, architecture and security that keep every interaction fast, correct and safe.
-                  </p>
-
-                  <div className="ct-chip-right mt-6 sm:mt-7 md:ml-auto inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-white/60 shadow-[0_0_14px_rgba(255,255,255,0.12)]" />
-                    <span className="text-[10px] uppercase tracking-[0.3em] text-white/85">Perf / Security / Scale</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Globe */}
-        <section ref={worldSectionRef} className="relative min-h-[100svh] overflow-hidden">
-          <div className={`relative ${CONTAINER} pt-20 pb-24 md:pt-24 md:pb-28 flex flex-col gap-12 z-10`}>
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
-              <div className="space-y-3 max-w-xl">
-                <p id="world-kicker" className={`text-[11px] uppercase tracking-[0.28em] ${UI.textMuted}`}>
-                  Global footprint
-                </p>
-
-                <h2 id="world-title" className={`text-4xl md:text-5xl font-semibold ${UI.textStrong}`}>
-                  We work internationally with <span className={UI.accentText}>distributed teams</span>.
-                </h2>
-
-                <p id="world-copy" className={`text-sm md:text-base ${UI.textSub}`}>
-                  From Europe to the Middle East, North America and Asia–Pacific, we plug directly into your stack and ship
-                  on your timezone while keeping security, performance and brand experience aligned.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 sm:gap-6 text-right text-xs md:text-sm">
-                <div className="world-stat space-y-1">
-                  <p className={`text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>Time zones</p>
-                  <p className="text-2xl md:text-3xl font-semibold text-white/92">08+</p>
-                </div>
-
-                <div className="world-stat space-y-1">
-                  <p className={`text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>Countries</p>
-                  <p className="text-2xl md:text-3xl font-semibold text-white/92">15</p>
-                </div>
-
-                <div className="world-stat space-y-1">
-                  <p className={`text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>Continents</p>
-                  <p className="text-2xl md:text-3xl font-semibold text-white/92">04</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative flex justify-center mt-8 md:mt-10">
-              <div
-                className="
-                  world-globe-shell overflow-hidden
-                  w-full h-full max-w-[560px] sm:max-w-[640px] md:max-w-[760px]
-                  aspect-square
-                  rounded-[28px] sm:rounded-[32px]
-                  border border-white/10 bg-white/[0.02] backdrop-blur-xl
-                  shadow-[0_30px_110px_rgba(0,0,0,0.78)]
-                "
-              >
-                <World globeConfig={globeConfig} data={globeArcs} />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section ref={ctaSectionRef} className="relative py-24 md:py-32 overflow-hidden">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute inset-0 opacity-70" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/65" />
-          </div>
-
-          <div className={`relative ${CONTAINER}`}>
-            <div
-              data-cta-card
-              className={[
-                "relative overflow-hidden rounded-3xl transition-colors",
-                UI.glass,
-                UI.border,
-                "shadow-[0_18px_70px_rgba(0,0,0,0.78)]",
-              ].join(" ")}
-            >
-              <div data-cta-glow className="pointer-events-none absolute inset-0 opacity-0">
-                <div className={`absolute inset-0 ${UI.glowA}`} />
-                <div className={`absolute inset-0 ${UI.glowB}`} />
-              </div>
-
-              <div
-                data-cta-sheen
-                className="pointer-events-none absolute -inset-y-10 -left-1/2 w-1/2 rotate-12 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent)] blur-sm opacity-0"
-              />
-
-              <div className="relative p-7 sm:p-8 md:p-12">
-                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-10">
-                  <div className="max-w-2xl">
-                    <div data-cta-kicker className={`inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>
-                      <span className="h-1.5 w-1.5 rounded-full bg-white/45" />
-                      Secure · Ship · Scale
-                    </div>
-
-                    <h3 data-cta-title className={`mt-4 text-3xl md:text-4xl font-semibold ${UI.textStrong}`}>
-                      Ready to ship something <span className={UI.accentText}>premium</span>?
-                    </h3>
-
-                    <p data-cta-subtitle className={`mt-3 text-sm md:text-base ${UI.textSub}`}>
-                      Book a quick call and we’ll map your roadmap, stack, and risk surface — then propose a clean execution plan.
-                    </p>
-                  </div>
-
-                  <div data-cta-actions className="flex flex-col sm:flex-row gap-3 sm:items-center">
-                    <a
-                      href="https://meet.brevo.com/algorim-consultation"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="
-                        inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium
-                        bg-white text-black hover:bg-white/90
-                        shadow-[0_18px_60px_rgba(0,0,0,0.45)]
-                        transition
-                      "
-                    >
-                      Book a Call
-                    </a>
-
-                    <a
-                      href="#services"
-                      className="
-                        inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium
-                        border border-white/12
-                        bg-white/[0.05]
-                        text-white/90
-                        hover:border-white/20
-                        transition
-                      "
-                    >
-                      See Services
-                    </a>
-                  </div>
-                </div>
-
-                <div className={`mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs ${UI.textMuted}`}>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-                    Response in <span className="text-white/90">24h</span>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-                    Fixed-scope or <span className="text-white/90">retainer</span>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-                    Reports built for <span className="text-white/90">execs</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/16 to-transparent" />
-            </div>
-          </div>
-        </section>
-
-        {/* Services */}
-        <section id="services" ref={servicesHorizontalSectionRef} className="relative min-h-[80svh] md:min-h-[100svh] overflow-hidden">
-          <div className={`relative h-full ${CONTAINER} flex flex-col z-10 overflow-r-hidden mt-10 md:mt-12`}>
-            <div id="services-heading" className="shrink-0 space-y-3 pt-2 md:pt-4">
-              <div className="flex flex-wrap gap-2 mb-1">
-                <span className={`services-pill text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>Services</span>
-                <span className={`services-pill text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>
-                  Branding · Product · AI · Cloud · Security
-                </span>
-              </div>
-
-              <h2 className={`text-3xl md:text-4xl font-semibold max-w-xl ${UI.textStrong}`}>
-                A horizontal deck of capabilities. Scroll to move sideways.
-              </h2>
-
-              <p className={`text-sm md:text-base ${UI.textSub} max-w-md`}>
-                Every card is a fully managed unit you can plug into your company: brand, engineering, AI, security and cloud.
-              </p>
-            </div>
-
-            <div className="relative flex-1 mt-10 md:mt-12 flex items-center">
-              <div
-                ref={servicesTrackRef}
-                className="
-                  flex items-stretch gap-4 sm:gap-5 md:gap-6
-                  overflow-x-auto md:overflow-visible
-                  snap-x snap-mandatory md:snap-none
-                  scroll-pl-4 sm:scroll-pl-6 pr-4 sm:pr-6 pb-3
-                  [-webkit-overflow-scrolling:touch]
-                "
-              >
-                {services.map((service: any) => {
-                  const Icon = service.icon;
-                  return (
-                    <Card
-                      key={service.id}
-                      className={[
-                        "service-card-h relative flex-shrink-0",
-                        "w-[min(88vw,520px)] sm:w-[min(70vw,520px)] md:w-[460px] lg:w-[520px]",
-                        "rounded-2xl p-5 sm:p-6 md:p-7 snap-start overflow-hidden transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-[1.02]",
-                        UI.glassSoft,
-                        UI.border,
-                        "shadow-[0_18px_70px_rgba(0,0,0,0.78)] hover:border-white/20",
-                      ].join(" ")}
-                    >
-                      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/18 to-transparent" />
-                      <div className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-emerald-300/8 blur-3xl opacity-70" />
-                      <div className="pointer-events-none absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-violet-300/8 blur-3xl opacity-60" />
-
-                      <div className="relative flex h-full flex-col justify-between gap-4 z-10">
-                        <div>
-                          <div className="flex items-center justify-between gap-3 mb-4">
-                            <span className={`text-[11px] uppercase tracking-[0.22em] ${UI.textMuted}`}>{service.tag}</span>
-
-                            <div className="service-icon flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] shadow-[0_0_22px_rgba(255,255,255,0.10)]">
-                              <Icon className="h-5 w-5 text-white/90 drop-shadow-[0_0_12px_rgba(255,255,255,0.10)]" />
-                            </div>
-                          </div>
-
-                          <h3 className={`text-xl md:text-2xl font-semibold ${UI.accentText}`}>{service.label}</h3>
-                          <p className={`text-sm ${UI.textSub} mt-2`}>{service.description}</p>
-                        </div>
-
-                        <ul className={`space-y-1.5 text-xs md:text-sm ${UI.textSub} mt-4`}>
-                          {service.bullets.map((item: string, idx: number) => (
-                            <li key={idx} className="flex gap-2 items-start">
-                              <span className="mt-1 h-[4px] w-[14px] rounded-full bg-white/20" />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </Card>
-                  );
-                })}
-
-                <div className="w-[min(88vw,520px)] sm:w-[min(70vw,520px)] md:w-[460px] lg:w-[520px]" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Portfolio */}
-        <section id="portfolio" ref={portfolioSectionRef} className="relative min-h-[100svh] overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-white/8 blur-[190px]" />
-            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-white/6 blur-[210px]" />
-            <div
-              className="absolute inset-0 opacity-[0.22]
-              [background-image:
-                linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),
-                linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)]
-              [background-size:40px_40px]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/75" />
-          </div>
-
-          <div className={`relative ${CONTAINER} pt-20 pb-16 md:pt-24 md:pb-20 z-10`}>
-            <div className="space-y-3 max-w-2xl">
-              <p className={`portfolio-kicker text-[11px] uppercase tracking-[0.28em] ${UI.textMuted}`}>Portfolio / Case Files</p>
-
-              <h2 className={`portfolio-title text-4xl md:text-5xl font-semibold leading-tight ${UI.textStrong}`}>
-                Proof of work — <span className={UI.accentText}>built to ship</span>.
-              </h2>
-
-              <p className={`portfolio-sub text-sm md:text-base ${UI.textSub}`}>
-                Scroll to browse each case file. The panel updates like a command console—clean, fast, and intentional.
-              </p>
-            </div>
-
-            {/* MOBILE: list (prevents overlap) */}
-            <div className="md:hidden mt-8 space-y-4">
-              {PORTFOLIO.map((p) => (
-                <Card
-                  key={p.id}
-                  className={[
-                    "rounded-2xl p-5",
-                    UI.glassSoft,
-                    UI.border,
-                    "shadow-[0_18px_60px_rgba(0,0,0,0.65)]",
-                  ].join(" ")}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className={`text-[10px] uppercase tracking-[0.26em] ${UI.textMuted}`}>
-                        {p.id} · {p.year} · {p.status}
-                      </p>
-                      <h3 className="mt-2 text-xl font-semibold">
-                        <span className={UI.accentText}>{p.title}</span>
-                      </h3>
-                      <p className={`mt-2 text-sm ${UI.textSub}`}>{p.subtitle}</p>
-                    </div>
-
-                    {p.href ? (
-                      <a
-                        href={p.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="shrink-0 inline-flex items-center justify-center rounded-xl px-3 py-2 text-xs font-semibold bg-white text-black"
-                      >
-                        Visit ↗
-                      </a>
-                    ) : null}
-                  </div>
-
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {p.tags.map((t) => (
-                      <span key={t} className="text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full border border-white/12 bg-white/[0.05] text-white/80">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {p.results.map((r, idx) => (
-                      <div key={idx} className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3">
-                        <p className={`text-sm ${UI.textSub}`}>{r}</p>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              ))}
-            </div>
-
-            {/* DESKTOP: pinned console */}
-            <div className="hidden md:grid mt-10 md:mt-12 grid-cols-1 md:grid-cols-[0.44fr_0.56fr] gap-6 md:gap-8 items-stretch">
-              {/* LEFT: index */}
-              <div
-                className={[
-                  "relative overflow-hidden rounded-3xl transition-colors",
-                  UI.glassSoft,
-                  UI.border,
-                  "shadow-[0_18px_70px_rgba(0,0,0,0.78)]",
-                ].join(" ")}
-              >
-                <div className="portfolio-glow pointer-events-none absolute -inset-20 -z-10 rounded-full bg-white/8 blur-[140px]" />
-
-                <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.45]">
-                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
-                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/8" />
-                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[220px] w-[220px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/6" />
-                </div>
-
-                <div className="relative p-6 md:p-7">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className={`text-xs uppercase tracking-[0.22em] ${UI.textMuted}`}>Index</p>
-                    <span className={`text-[10px] uppercase tracking-[0.22em] ${UI.textMuted}`}>scroll-controlled</span>
-                  </div>
-
-                  <div className="mt-5 space-y-2">
-                    {PORTFOLIO.map((p: any, i: number) => (
-                      <div
-                        key={p.id}
-                        data-portfolio-item
-                        className="group relative rounded-2xl px-4 py-3 border border-white/10 bg-white/[0.04] backdrop-blur-md transition-colors"
-                      >
-                        <div
-                          className="
-                            pointer-events-none absolute inset-0 rounded-2xl opacity-0
-                            group-[&[data-active='true']]:opacity-100
-                            transition-opacity
-                            bg-gradient-to-r from-white/8 via-white/10 to-white/8
-                          "
-                        />
-
-                        <div className="relative flex items-start justify-between gap-4">
-                          <div>
-                            <p className={`text-[10px] uppercase tracking-[0.26em] ${UI.textMuted}`}>
-                              {p.id} · {p.year}
-                            </p>
-                            <p className="mt-1 text-sm font-semibold text-white/92">{p.title}</p>
-                            <p className={`mt-1 text-xs ${UI.textSub}`}>{p.subtitle}</p>
-                          </div>
-
-                          <div className="flex flex-col items-end gap-2 shrink-0">
-                            <span
-                              className={[
-                                "text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full border",
-                                p.status === "SOON"
-                                  ? "border-white/18 bg-white/[0.06] text-white/90"
-                                  : "border-white/12 bg-white/[0.05] text-white/80",
-                              ].join(" ")}
-                            >
-                              {p.status === "SOON" ? "SOON" : "LIVE"}
-                            </span>
-
-                            <span className={`text-[10px] ${UI.textMuted}`}>#{String(i + 1).padStart(2, "0")}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="pointer-events-none absolute right-4 top-6 bottom-6 w-[2px] rounded-full bg-white/10 overflow-hidden">
-                    <div className="portfolio-needle absolute inset-0 bg-gradient-to-b from-emerald-300/25 via-white/20 to-violet-300/20" />
-                  </div>
-                </div>
-              </div>
-
-              {/* RIGHT: active case file */}
-              <div
-                className={[
-                  "relative overflow-hidden rounded-3xl transition-colors",
-                  UI.glassSoft,
-                  UI.border,
-                  "shadow-[0_18px_70px_rgba(0,0,0,0.78)]",
-                ].join(" ")}
-              >
-                <div className="portfolio-scan pointer-events-none absolute left-0 right-0 top-[-60px] h-10 opacity-0 bg-gradient-to-r from-transparent via-white/18 to-transparent blur-md" />
-
-                <div className="pointer-events-none absolute -top-28 -right-28 h-72 w-72 rounded-full bg-emerald-300/8 blur-3xl" />
-                <div className="pointer-events-none absolute -bottom-28 -left-28 h-80 w-80 rounded-full bg-violet-300/8 blur-3xl" />
-
-                <div className="relative p-6 md:p-7 h-full">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className={`text-xs uppercase tracking-[0.22em] ${UI.textMuted}`}>Active Case File</p>
-                    <p className={`text-[10px] uppercase tracking-[0.22em] ${UI.textMuted}`}>verified output</p>
-                  </div>
-
-                  <div className="mt-5 relative min-h-[420px]">
-                    {PORTFOLIO.map((p: any) => (
-                      <div key={p.id} data-portfolio-panel className="absolute inset-0">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="space-y-2">
-                            <p className={`text-[10px] uppercase tracking-[0.26em] ${UI.textMuted}`}>
-                              {p.id} · {p.year}
-                            </p>
-
-                            <h3 className="text-3xl font-semibold leading-tight">
-                              <span className={UI.accentText}>{p.title}</span>
-                            </h3>
-
-                            <p className={`text-base ${UI.textSub} max-w-xl`}>{p.subtitle}</p>
-                          </div>
-
-                          {p.href ? (
-                            <a
-                              href={p.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="
-                                inline-flex items-center justify-center
-                                rounded-2xl px-4 py-2 text-xs font-semibold
-                                bg-white text-black hover:bg-white/90
-                                shadow-[0_18px_60px_rgba(0,0,0,0.45)]
-                                hover:scale-[1.02] active:scale-[0.98]
-                                transition-transform
-                              "
-                            >
-                              Visit ↗
-                            </a>
-                          ) : (
-                            <div className="text-[10px] uppercase tracking-[0.22em] px-3 py-2 rounded-2xl border border-white/12 bg-white/[0.06] text-white/85">
-                              Internal
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="mt-5 flex flex-wrap gap-2">
-                          {p.tags.map((t: string) => (
-                            <span key={t} className="text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full border border-white/12 bg-white/[0.05] text-white/80">
-                              {t}
-                            </span>
-                          ))}
-                        </div>
-
-                        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {p.results.map((r: string, idx: number) => (
-                            <div key={idx} className="rounded-2xl p-4 border border-white/10 bg-white/[0.04] backdrop-blur-md">
-                              <div className="flex items-start gap-3">
-                                <span className="mt-2 h-[4px] w-[14px] rounded-full bg-white/25 shadow-[0_0_16px_rgba(255,255,255,0.10)]" />
-                                <p className={`text-sm ${UI.textSub}`}>{r}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        {p.status === "SOON" && (
-                          <div className="mt-6 rounded-2xl border border-white/12 bg-white/[0.06] p-4">
-                            <p className="text-[11px] uppercase tracking-[0.26em] text-white/90">Launch notice</p>
-                            <p className={`mt-2 text-sm ${UI.textSub}`}>
-                              We’re launching our own product soon. If you want early access, hit the footer email and we’ll whitelist you.
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-6 pt-5 border-t border-white/10 flex items-center justify-between text-xs text-white/55">
-                    <span className="font-mono">SCROLL: NEXT_CASE</span>
-                    <span className="font-mono">STATUS: OK</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Brand circles */}
-        <section ref={brandCirclesSectionRef} className="relative min-h-[100svh] overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute -top-48 -left-48 h-[620px] w-[620px] rounded-full bg-emerald-300/8 blur-[220px]" />
-            <div className="absolute top-1/3 -right-52 h-[680px] w-[680px] rounded-full bg-violet-300/8 blur-[240px]" />
-            <div className="absolute -bottom-56 left-1/2 -translate-x-1/2 h-[720px] w-[720px] rounded-full bg-white/6 blur-[260px]" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/45 to-black/75" />
-            <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:44px_44px]" />
-          </div>
-
-          <div className={`${CONTAINER} py-24 flex flex-col items-center gap-12 relative z-10`}>
-            <div id="brand-circles-heading" className="text-center space-y-3 max-w-2xl">
-              <p className={`text-xs uppercase tracking-[0.25em] ${UI.textMuted}`}>Color System</p>
-
-              <h2 className={`text-3xl md:text-4xl font-semibold ${UI.accentText}`}>
-                Every great brand starts with disciplined color language.
-              </h2>
-
-              <p className={`text-sm md:text-base ${UI.textSub}`}>
-                Tap a tile to copy the HEX. On desktop, scroll reveals the system.
-              </p>
-            </div>
-
-            <div
-              className="
-                pointer-events-none absolute inset-0 flex items-center justify-center
-                text-[40vw] md:text-[28vw]
-                font-black leading-none
-                text-white/[0.04]
-                select-none -z-10
-              "
-            >
-              <span className="brand-aa">Aa</span>
-            </div>
-
-            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {brandColors.map((c: any) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  className={[
-                    "brand-circle-wrapper group relative overflow-hidden text-left rounded-3xl transition-transform duration-300 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20",
-                    UI.glassSoft,
-                    UI.border,
-                    "shadow-[0_18px_70px_rgba(0,0,0,0.78)]",
-                  ].join(" ")}
-                  aria-label={`Copy ${c.label} ${c.hex}`}
-                  onClick={() => navigator.clipboard?.writeText(c.hex)}
-                >
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/14 to-transparent" />
-                  <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-white/8 blur-3xl opacity-80" />
-                  <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-white/6 blur-3xl opacity-70" />
-
-                  <div className="relative z-10 p-5 md:p-6">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="space-y-1">
-                        <p className={`text-[10px] uppercase tracking-[0.28em] ${UI.textMuted}`}>{c.label}</p>
-                        <p className="font-mono text-sm text-white/92">{c.hex}</p>
-                      </div>
-
-                      <span className={`text-[10px] uppercase tracking-[0.22em] ${UI.textMuted}`}>copy ↗</span>
-                    </div>
-
-                    <div className="brand-circle relative mt-4 h-40 rounded-2xl overflow-hidden border border-white/10 shadow-[0_14px_60px_rgba(0,0,0,0.60)]">
-                      <div className={`absolute inset-0 bg-gradient-to-tr ${c.gradientClass}`} />
-                      <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:linear-gradient(to_bottom,rgba(0,0,0,0.12)_1px,transparent_1px)] [background-size:100%_12px]" />
-                    </div>
-
-                    <div className={`mt-4 flex items-center justify-between text-[10px] uppercase tracking-[0.26em] ${UI.textMuted}`}>
-                      <span className="inline-flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-white/45 shadow-[0_0_14px_rgba(255,255,255,0.10)]" />
-                        token
-                      </span>
-                      <span className="font-mono">{c.id}</span>
-                    </div>
-                  </div>
-
-                  <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ring-1 ring-white/15" />
-                </button>
-              ))}
-            </div>
-
-            <div id="brand-quote" className="max-w-2xl text-center text-base md:text-lg text-white/85">
-              “Branding isn&apos;t just how you look. It&apos;s a repeatable pattern of choices that makes you unmistakable — even when the logo is nowhere on screen.”
-            </div>
-          </div>
-        </section>
-
-        {/* Giant A */}
-        <section ref={giantASectionRef} className="relative min-h-[100svh] flex items-center justify-center overflow-hidden transition-colors">
-          <div ref={giantARef} className="font-black tracking-tight leading-none select-none relative z-10">
-            <span className={`block font-[family-name:var(--font-revamped)] text-[95vw] md:text-[18vw] lg:text-[16vw]`}>
-              A
-            </span>
-          </div>
-        </section>
-
-        {/* Outro */}
-        <section className="fade-section relative min-h-[100svh] flex items-center justify-center">
-          <div className="max-w-3xl px-4 sm:px-6 text-center space-y-4 relative z-10">
-            <h2 className={`text-4xl md:text-5xl font-semibold ${UI.textStrong}`}>
-              Elite Engineering, AI & Security on Subscription.
-            </h2>
-            <p className={`text-lg ${UI.textSub}`}>
-              Plug in a senior, cross-functional team that covers branding, product, AI automation, personal agents, security and cloud — instead of stitching five agencies together.
-            </p>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <section ref={footerSectionRef} className="relative min-h-[90svh] md:min-h-[100svh] overflow-hidden">
-          <div className={`relative ${CONTAINER} pt-20 pb-14 md:pt-24 md:pb-16 h-full flex flex-col justify-between`}>
-            <div className="footer-inner space-y-10">
-              <div className="footer-head space-y-3">
-                <p className={`text-[11px] uppercase tracking-[0.28em] ${UI.textMuted}`}>
-                  Let’s build something dangerous (in a good way)
-                </p>
-
-                <h2 className={`footer-title text-4xl md:text-5xl font-semibold leading-tight ${UI.textStrong}`}>
-                  Ready to ship a <span className={UI.accentText}>premium</span> product?
-                </h2>
-
-                <p className={`footer-sub text-sm md:text-base ${UI.textSub} max-w-2xl`}>
-                  Brand, engineering, AI, security and cloud — one team, one system, one delivery standard.
-                </p>
-              </div>
-
-              <div className="footer-cta flex flex-col sm:flex-row gap-3 sm:items-center">
-                <a
-                  href="https://meet.brevo.com/algorim-consultation"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="
-                    inline-flex items-center justify-center
-                    rounded-2xl px-5 py-3 text-sm font-semibold
-                    bg-white text-black hover:bg-white/90
-                    shadow-[0_18px_60px_rgba(0,0,0,0.45)]
-                    hover:scale-[1.02] active:scale-[0.98]
-                    transition
-                  "
-                >
-                  Book a call
-                </a>
-
-                <a
-                  href="mailto:business@algorimsoft.com"
-                  className="
-                    inline-flex items-center justify-center
-                    rounded-2xl px-5 py-3 text-sm font-semibold
-                    border border-white/12
-                    bg-white/[0.05]
-                    backdrop-blur-xl
-                    hover:border-white/20
-                    transition-colors
-                    text-white/90
-                  "
-                >
-                  business@algorimsoft.com
-                </a>
-              </div>
-
-              <div className="footer-contact space-y-4 pt-4">
-                <p className={`text-xs uppercase tracking-[0.22em] ${UI.textMuted}`}>Contact</p>
-
-                <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {FOOTER_CONTACTS.map((c: any) => (
-                    <li
-                      key={c.country}
-                      className="
-                        group flex items-center justify-between gap-3
-                        rounded-2xl
-                        border border-white/10
-                        bg-white/[0.04]
-                        backdrop-blur-xl
-                        px-4 py-3
-                        transition-all
-                        hover:border-white/20
-                        hover:-translate-y-[1px]
-                      "
-                    >
-                      <span className={`text-[11px] uppercase tracking-[0.22em] ${UI.textMuted}`}>{c.country}</span>
-
-                      <a
-                        href={`tel:${toTel(c.phone)}`}
-                        className="font-mono text-sm text-white/92 inline-flex items-center gap-2 opacity-90 group-hover:opacity-100 transition-opacity"
-                      >
-                        <span className="hidden sm:inline text-[10px] opacity-60">↗</span>
-                        {c.phone}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="footer-grid grid grid-cols-2 md:grid-cols-4 gap-8 pt-6">
-                {FOOTER_LINKS.map((col: any) => (
-                  <div key={col.title} className="footer-col space-y-3">
-                    <p className={`text-xs uppercase tracking-[0.22em] ${UI.textMuted}`}>{col.title}</p>
-
-                    <ul className="space-y-2 text-sm text-white/80">
-                      {col.links.map((link: any) => (
-                        <li key={link.label}>
-                          <a
-                            href={link.href}
-                            onClick={(e) => handleAnchorClick(e, link.href, link.external)}
-                            target={link.external ? "_blank" : undefined}
-                            rel={link.external ? "noopener noreferrer" : undefined}
-                            className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
-                          >
-                            {link.label}
-                            {link.external && <span className="text-[10px] opacity-60">↗</span>}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="footer-bottom mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-              <p className={`text-xs ${UI.textMuted}`}>© {new Date().getFullYear()} Algorim. All rights reserved.</p>
-
-              <div className={`flex items-center gap-3 text-xs ${UI.textMuted}`}>
-                <span className="footer-dot inline-block h-2 w-2 rounded-full bg-white/45 shadow-[0_0_16px_rgba(255,255,255,0.10)]" />
-                <span>Build fast · Ship safe · Look premium</span>
-              </div>
-            </div>
-
-            <div className="footer-glow pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[520px] w-[520px] rounded-full bg-white/8 blur-[190px] -z-10" />
-          </div>
-        </section>
+        <IntroSection UI={UI} />
+
+        <ProcessSection
+          pinnedSectionRef={pinnedSectionRef}
+          UI={UI}
+          CONTAINER={CONTAINER}
+        />
+        <AboutSection
+          whoSectionRef={whoSectionRef}
+          UI={UI}
+          CONTAINER={CONTAINER}
+        />
+        <CreativitySection
+          UI={UI}
+          creativityTechSectionRef={creativityTechSectionRef}
+          CONTAINER={CONTAINER}
+        />
+        <GlobeSection
+          worldSectionRef={worldSectionRef}
+          UI={UI}
+          CONTAINER={CONTAINER}
+        />
+        <CTASection
+          ctaSectionRef={ctaSectionRef}
+          UI={UI}
+          CONTAINER={CONTAINER}
+        />
+        <ServicesSection
+          servicesTrackRef={servicesTrackRef}
+          servicesHorizontalSectionRef={servicesHorizontalSectionRef}
+          CONTAINER={CONTAINER}
+          UI={UI}
+        />
+        <PortfolioSection
+          portfolioSectionRef={portfolioSectionRef}
+          CONTAINER={CONTAINER}
+          UI={UI}
+        />
+        <BrandSections
+          brandCirclesSectionRef={brandCirclesSectionRef}
+          CONTAINER={CONTAINER}
+          UI={UI}
+        />
+        <ASection giantARef={giantARef} giantASectionRef={giantASectionRef} />
+        <OutroSection UI={UI} />
+        <Footer
+          footerSectionRef={footerSectionRef}
+          CONTAINER={CONTAINER}
+          UI={UI}
+          lenis={lenis}
+        />
       </main>
     </div>
   );

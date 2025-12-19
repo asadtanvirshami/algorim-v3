@@ -3,12 +3,12 @@ import React from "react";
 import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
 import Lottie from "lottie-react";
-import animationData from "../../../../../public/assets/hero/Scene.json";
-import { Button } from "../../button";
+import animationData from "../../../../../../public/assets/hero/Scene.json";
+import { Button } from "../../../button";
 
 const HeroSection = () => {
   return (
-    <section className="min-h-screen flex items-center justify-center">
+    <section  data-anim="hero" className="min-h-screen flex items-center justify-center">
       <div className="relative w-full h-[90vh] lg:h-screen overflow-hidden">
         {/* Background Lottie Animation */}
         <Lottie
