@@ -699,7 +699,7 @@ const DevLayout: React.FC = () => {
         lenis.scrollTo(target as any, { offset: -40 });
       }
     },
-    [lenis]
+    []
   );
 
   useLayoutEffect(() => {
@@ -1479,7 +1479,7 @@ const DevLayout: React.FC = () => {
     }, layoutRef);
 
     return () => ctx.revert();
-  }, [lenis]);
+  }, []);
 
   return (
     <div
