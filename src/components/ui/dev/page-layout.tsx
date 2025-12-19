@@ -1,6 +1,5 @@
 // DevLayout.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
 import React, { useLayoutEffect, useRef, useEffect, useCallback } from "react";
@@ -29,10 +28,40 @@ gsap.registerPlugin(ScrollTrigger);
 const World = dynamic(() => import("../../ui/globe").then((m) => m.World), {
   ssr: false,
   loading: () => (
-    <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-br from-neutral-200 via-neutral-100 to-neutral-300 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-700" />
+    <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-br from-white/10 via-white/5 to-white/10" />
   ),
 });
+
 type SvgIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
+
+/** =========================
+ *  RESPONSIVE LAYOUT HELPERS
+ *  ========================= */
+const CONTAINER =
+  "mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-10 lg:px-16 2xl:max-w-7xl";
+
+const SECTION_Y = "py-16 sm:py-20 md:py-24 lg:py-28";
+
+/** =========================
+ *  COLOR SYSTEM (dark, premium)
+ *  ========================= */
+const UI = {
+  pageBg: "bg-[#0A0B0E] text-neutral-100",
+  textMuted: "text-white/55",
+  textSub: "text-white/70",
+  textStrong: "text-white/92",
+  border: "border-white/10",
+  borderStrong: "border-white/14",
+  glass: "bg-white/[0.05] backdrop-blur-2xl",
+  glassSoft: "bg-white/[0.04] backdrop-blur-xl",
+  glowA:
+    "bg-[radial-gradient(900px_circle_at_30%_20%,rgba(255,255,255,0.10),transparent_45%)]",
+  glowB:
+    "bg-[radial-gradient(700px_circle_at_70%_65%,rgba(212,212,216,0.09),transparent_50%)]",
+  accentGrad: "bg-gradient-to-r from-cyan-300 via-cyan-200 to-cyan-300",
+  accentText:
+    "text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-cyan-200 to-cyan-300",
+};
 
 const cardsData = [
   {
@@ -49,8 +78,7 @@ const cardsData = [
   {
     id: 2,
     title: "Engineering",
-    description:
-      "Elite engineering teams shipping fast, stable and secure apps.",
+    description: "Elite engineering teams shipping fast, stable and secure apps.",
   },
 ];
 
@@ -545,7 +573,6 @@ const FOOTER_CONTACTS: ContactItem[] = [
   { country: "United States", phone: "+1 707-657-5347" },
 ];
 
-// Helper: keep tel: clean
 const toTel = (phone: string) => phone.replace(/[^\d+]/g, "");
 
 const FOOTER_LINKS: FooterColumn[] = [
@@ -579,28 +606,8 @@ const FOOTER_LINKS: FooterColumn[] = [
         href: "https://www.instagram.com/algorim.io",
         external: true,
       },
-      // {
-      //   label: "X / Twitter",
-      //   href: "https://twitter.com/algorim",
-      //   external: true,
-      // },
-      // { label: "GitHub", href: "https://github.com/algorim", external: true },
-      // {
-      //   label: "Dribbble",
-      //   href: "https://dribbble.com/algorim",
-      //   external: true,
-      // },
     ],
   },
-  // {
-  //   title: "Legal",
-  //   links: [
-  //     { label: "Privacy", href: "/privacy" },
-  //     { label: "Terms", href: "/terms" },
-  //     { label: "Security", href: "/security" },
-  //     { label: "Cookies", href: "/cookies" },
-  //   ],
-  // },
 ];
 
 type PortfolioProject = {
@@ -635,11 +642,7 @@ const PORTFOLIO: PortfolioProject[] = [
     subtitle: "Trading research + backtesting workflows and analytics.",
     year: "2024",
     tags: ["FinTech", "Backtesting", "Data", "Performance"],
-    results: [
-      "Faster strategy iteration",
-      "Better simulation UX",
-      "Built for signal + speed",
-    ],
+    results: ["Faster strategy iteration", "Better simulation UX", "Built for signal + speed"],
     href: "https://tradingbacktesting.com",
     status: "LIVE",
   },
@@ -649,11 +652,7 @@ const PORTFOLIO: PortfolioProject[] = [
     subtitle: "Agents + automation wired into real ops.",
     year: "2025",
     tags: ["Agents", "RAG", "Automation", "Evaluation"],
-    results: [
-      "Reduced manual ops",
-      "Reliable workflows",
-      "Production-safe agent loops",
-    ],
+    results: ["Reduced manual ops", "Reliable workflows", "Production-safe agent loops"],
     status: "LIVE",
   },
   {
@@ -662,11 +661,7 @@ const PORTFOLIO: PortfolioProject[] = [
     subtitle: "A new platform we’re shipping — built for scale & defense.",
     year: "2025",
     tags: ["Product", "SaaS", "Security-first", "Stealth"],
-    results: [
-      "Built from first principles",
-      "Hardening baked into architecture",
-      "Designed to scale globally",
-    ],
+    results: ["Built from first principles", "Hardening baked into architecture", "Designed to scale globally"],
     status: "SOON",
   },
 ];
@@ -687,7 +682,6 @@ const DevLayout: React.FC = () => {
   const worldSectionRef = useRef<HTMLElement | null>(null);
   const footerSectionRef = useRef<HTMLElement | null>(null);
   const portfolioSectionRef = useRef<HTMLElement | null>(null);
-
   const ctaSectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -695,11 +689,7 @@ const DevLayout: React.FC = () => {
   }, []);
 
   const handleAnchorClick = useCallback(
-    (
-      e: React.MouseEvent<HTMLAnchorElement>,
-      href: string,
-      external?: boolean
-    ) => {
+    (e: React.MouseEvent<HTMLAnchorElement>, href: string, external?: boolean) => {
       if (external) return;
       if (!href.startsWith("#")) return;
 
@@ -714,7 +704,6 @@ const DevLayout: React.FC = () => {
 
   useLayoutEffect(() => {
     if (!layoutRef.current) return;
-    if (typeof window === "undefined") return;
 
     const ctx = gsap.context(() => {
       const mm: any = gsap.matchMedia();
@@ -769,12 +758,10 @@ const DevLayout: React.FC = () => {
             );
         }
 
-        // OUR PROCESS pinned
+        // OUR PROCESS pinned (desktop only)
         if (pinnedSectionRef.current) {
           const section = pinnedSectionRef.current;
-          const lineFill = section.querySelector(
-            ".process-line-fill"
-          ) as HTMLElement | null;
+          const lineFill = section.querySelector(".process-line-fill") as HTMLElement | null;
 
           const labels = gsap.utils.toArray<HTMLElement>(".process-step-label");
           const cards = gsap.utils.toArray<HTMLElement>(".process-card-inner");
@@ -794,25 +781,17 @@ const DevLayout: React.FC = () => {
               gsap.set(lineFill, { scaleY: 0, transformOrigin: "top center" });
             }
 
-            gsap.set(labels, { opacity: 0.4 });
+            gsap.set(labels, { opacity: 0.45 });
             if (labels[0]) gsap.set(labels[0], { opacity: 1 });
 
-            gsap.from(
-              [
-                "#process-kicker",
-                "#process-title",
-                "#process-sub",
-                ".process-cards-window",
-              ],
-              {
-                opacity: 0,
-                y: 24,
-                duration: 0.8,
-                ease: "power3.out",
-                stagger: 0.08,
-                scrollTrigger: { trigger: section, start: "top 80%" },
-              }
-            );
+            gsap.from(["#process-kicker", "#process-title", "#process-sub", ".process-cards-window"], {
+              opacity: 0,
+              y: 24,
+              duration: 0.8,
+              ease: "power3.out",
+              stagger: 0.08,
+              scrollTrigger: { trigger: section, start: "top 80%" },
+            });
 
             ScrollTrigger.create({
               trigger: section,
@@ -858,7 +837,7 @@ const DevLayout: React.FC = () => {
 
                 labels.forEach((label, index) => {
                   gsap.to(label, {
-                    opacity: index === activeIndex ? 1 : 0.4,
+                    opacity: index === activeIndex ? 1 : 0.45,
                     duration: 0.2,
                     ease: "power2.out",
                     overwrite: "auto",
@@ -884,7 +863,7 @@ const DevLayout: React.FC = () => {
           });
         });
 
-        // WHO WE ARE stack
+        // WHO WE ARE stack (desktop only)
         if (whoSectionRef.current) {
           const cards = gsap.utils.toArray<HTMLElement>(".who-card");
 
@@ -920,9 +899,7 @@ const DevLayout: React.FC = () => {
 
           cards.forEach((card, index) => {
             const offset = index * 32;
-            const iconEl = card.querySelector(
-              ".who-icon"
-            ) as HTMLElement | null;
+            const iconEl = card.querySelector(".who-icon") as HTMLElement | null;
 
             tlWho.to(
               card,
@@ -956,7 +933,7 @@ const DevLayout: React.FC = () => {
           });
         }
 
-        // CREATIVITY vs TECHNICALITY (ORANGE — pinned cinematic)
+        // CREATIVITY vs TECHNICALITY
         if (creativityTechSectionRef.current) {
           const section = creativityTechSectionRef.current;
 
@@ -971,7 +948,6 @@ const DevLayout: React.FC = () => {
             },
           });
 
-          // initial states
           gsap.set(".ct-card", {
             opacity: 0,
             y: 40,
@@ -1006,7 +982,6 @@ const DevLayout: React.FC = () => {
           gsap.set(".ct-glow-b", { x: 60, y: 40, scale: 0.9, opacity: 0.55 });
 
           tlCT
-            // bring in the glass card
             .to(".ct-card", {
               opacity: 1,
               y: 0,
@@ -1015,7 +990,6 @@ const DevLayout: React.FC = () => {
               duration: 1.0,
               ease: "power3.out",
             })
-            // icons pop
             .to(
               [".ct-icon-left", ".ct-icon-right"],
               {
@@ -1029,14 +1003,8 @@ const DevLayout: React.FC = () => {
               },
               "-=0.55"
             )
-            // left content
             .to(
-              [
-                ".ct-kicker-left",
-                ".ct-title-left",
-                ".ct-copy-left",
-                ".ct-chip-left",
-              ],
+              [".ct-kicker-left", ".ct-title-left", ".ct-copy-left", ".ct-chip-left"],
               {
                 opacity: 1,
                 y: 0,
@@ -1046,20 +1014,9 @@ const DevLayout: React.FC = () => {
               },
               "-=0.45"
             )
-            // divider reveal
+            .to(".ct-divider", { scaleY: 1, duration: 0.7, ease: "power2.out" }, "-=0.55")
             .to(
-              ".ct-divider",
-              { scaleY: 1, duration: 0.7, ease: "power2.out" },
-              "-=0.55"
-            )
-            // right content
-            .to(
-              [
-                ".ct-kicker-right",
-                ".ct-title-right",
-                ".ct-copy-right",
-                ".ct-chip-right",
-              ],
+              [".ct-kicker-right", ".ct-title-right", ".ct-copy-right", ".ct-chip-right"],
               {
                 opacity: 1,
                 y: 0,
@@ -1069,50 +1026,24 @@ const DevLayout: React.FC = () => {
               },
               "-=0.5"
             )
-            // cinematic “living” motion through the pinned scroll
             .to(
               ".ct-glow-a",
-              {
-                x: 30,
-                y: 10,
-                scale: 1.08,
-                opacity: 0.85,
-                duration: 1.4,
-                ease: "sine.inOut",
-              },
+              { x: 30, y: 10, scale: 1.08, opacity: 0.85, duration: 1.4, ease: "sine.inOut" },
               0.2
             )
             .to(
               ".ct-glow-b",
-              {
-                x: -30,
-                y: -10,
-                scale: 1.1,
-                opacity: 0.8,
-                duration: 1.4,
-                ease: "sine.inOut",
-              },
+              { x: -30, y: -10, scale: 1.1, opacity: 0.8, duration: 1.4, ease: "sine.inOut" },
               0.2
             )
-            // micro parallax of icons
-            .to(
-              ".ct-icon-left",
-              { y: -6, duration: 1.2, ease: "sine.inOut" },
-              0.4
-            )
-            .to(
-              ".ct-icon-right",
-              { y: 6, duration: 1.2, ease: "sine.inOut" },
-              0.4
-            );
+            .to(".ct-icon-left", { y: -6, duration: 1.2, ease: "sine.inOut" }, 0.4)
+            .to(".ct-icon-right", { y: 6, duration: 1.2, ease: "sine.inOut" }, 0.4);
         }
 
         // WORLD section
         if (worldSectionRef.current) {
           const section = worldSectionRef.current;
-          const globeShell = section.querySelector(
-            ".world-globe-shell"
-          ) as HTMLElement | null;
+          const globeShell = section.querySelector(".world-globe-shell") as HTMLElement | null;
 
           gsap.set(["#world-kicker", "#world-title", "#world-copy"], {
             opacity: 0,
@@ -1144,51 +1075,25 @@ const DevLayout: React.FC = () => {
           });
 
           tlWorld
-            .to(
-              "#world-kicker",
-              { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-              0
-            )
-            .to(
-              "#world-title",
-              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-              0.05
-            )
-            .to(
-              "#world-copy",
-              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-              0.1
-            )
+            .to("#world-kicker", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0)
+            .to("#world-title", { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.05)
+            .to("#world-copy", { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.1)
             .to(
               ".world-stat",
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.6,
-                ease: "power3.out",
-                stagger: 0.12,
-              },
+              { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.12 },
               0.25
             );
 
           if (globeShell) {
             tlWorld.to(
               globeShell,
-              {
-                opacity: 1,
-                y: 0,
-                scale: 1,
-                rotateX: 0,
-                rotateY: 0,
-                duration: 1.2,
-                ease: "power3.out",
-              },
+              { opacity: 1, y: 0, scale: 1, rotateX: 0, rotateY: 0, duration: 1.2, ease: "power3.out" },
               0.2
             );
           }
         }
 
-        // SERVICES horizontal
+        // SERVICES horizontal (desktop only)
         const servicesSection = servicesHorizontalSectionRef.current;
         const servicesTrack = servicesTrackRef.current;
 
@@ -1224,9 +1129,7 @@ const DevLayout: React.FC = () => {
 
           cards.forEach((card, index) => {
             const direction = index % 2 === 0 ? -1 : 1;
-            const iconEl = card.querySelector(
-              ".service-icon"
-            ) as HTMLElement | null;
+            const iconEl = card.querySelector(".service-icon") as HTMLElement | null;
 
             gsap.set(card, {
               opacity: 0,
@@ -1280,18 +1183,14 @@ const DevLayout: React.FC = () => {
             });
           });
         }
-        // ======== CTA section (scroll reveal + sheen) ========
+
+        // CTA section
         if (ctaSectionRef.current) {
           const section = ctaSectionRef.current;
 
           gsap.set("[data-cta-card]", { y: 40, autoAlpha: 0, scale: 0.985 });
           gsap.set(
-            [
-              "[data-cta-kicker]",
-              "[data-cta-title]",
-              "[data-cta-subtitle]",
-              "[data-cta-actions]",
-            ],
+            ["[data-cta-kicker]", "[data-cta-title]", "[data-cta-subtitle]", "[data-cta-actions]"],
             { y: 18, autoAlpha: 0 }
           );
           gsap.set("[data-cta-sheen]", { xPercent: -120, autoAlpha: 0 });
@@ -1317,104 +1216,45 @@ const DevLayout: React.FC = () => {
             })
             .to(
               ["[data-cta-kicker]", "[data-cta-title]", "[data-cta-subtitle]"],
-              {
-                y: 0,
-                autoAlpha: 1,
-                duration: 0.8,
-                ease: "power3.out",
-                stagger: 0.08,
-              },
+              { y: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out", stagger: 0.08 },
               0.08
             )
-            .to(
-              "[data-cta-actions]",
-              {
-                y: 0,
-                autoAlpha: 1,
-                duration: 0.8,
-                ease: "power3.out",
-              },
-              0.18
-            )
-            // sheen / scanner sweep while entering
-            .to(
-              "[data-cta-sheen]",
-              {
-                xPercent: 120,
-                autoAlpha: 1,
-                duration: 1.2,
-                ease: "none",
-              },
-              0.1
-            );
+            .to("[data-cta-actions]", { y: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, 0.18)
+            .to("[data-cta-sheen]", { xPercent: 120, autoAlpha: 1, duration: 1.2, ease: "none" }, 0.1);
 
-          // glow appears when in view (clean, premium)
           ScrollTrigger.create({
             trigger: section,
             start: "top 55%",
-            onEnter: () =>
-              gsap.to("[data-cta-glow]", {
-                autoAlpha: 1,
-                duration: 0.7,
-                ease: "power2.out",
-              }),
-            onLeaveBack: () =>
-              gsap.to("[data-cta-glow]", {
-                autoAlpha: 0,
-                duration: 0.25,
-                ease: "power2.out",
-              }),
+            onEnter: () => gsap.to("[data-cta-glow]", { autoAlpha: 1, duration: 0.7, ease: "power2.out" }),
+            onLeaveBack: () => gsap.to("[data-cta-glow]", { autoAlpha: 0, duration: 0.25, ease: "power2.out" }),
           });
         }
 
-        // ======== PORTFOLIO — Cyber Command Center (pinned) ========
+        // PORTFOLIO pinned (desktop only)
         if (portfolioSectionRef.current) {
           const section = portfolioSectionRef.current;
 
-          const items = gsap.utils.toArray<HTMLElement>(
-            "[data-portfolio-item]"
-          );
-          const panels = gsap.utils.toArray<HTMLElement>(
-            "[data-portfolio-panel]"
-          );
+          const items = gsap.utils.toArray<HTMLElement>("[data-portfolio-item]");
+          const panels = gsap.utils.toArray<HTMLElement>("[data-portfolio-panel]");
 
-          const scan = section.querySelector(
-            ".portfolio-scan"
-          ) as HTMLElement | null;
-          const glow = section.querySelector(
-            ".portfolio-glow"
-          ) as HTMLElement | null;
-          const needle = section.querySelector(
-            ".portfolio-needle"
-          ) as HTMLElement | null;
+          const scan = section.querySelector(".portfolio-scan") as HTMLElement | null;
+          const glow = section.querySelector(".portfolio-glow") as HTMLElement | null;
+          const needle = section.querySelector(".portfolio-needle") as HTMLElement | null;
 
-          // init
           gsap.set([items, panels], { willChange: "transform,opacity,filter" });
           gsap.set(panels, { autoAlpha: 0, y: 18, filter: "blur(6px)" });
           gsap.set(items, { autoAlpha: 0, x: -16 });
 
           if (scan) gsap.set(scan, { y: -80, autoAlpha: 0 });
           if (glow) gsap.set(glow, { autoAlpha: 0, scale: 0.92 });
-          if (needle)
-            gsap.set(needle, { scaleY: 0.1, transformOrigin: "top center" });
+          if (needle) gsap.set(needle, { scaleY: 0.1, transformOrigin: "top center" });
 
           const total = Math.max(1, panels.length);
 
-          // helper: activate one case
           const activate = (activeIndex: number) => {
             items.forEach((el, i) => {
-              el.setAttribute(
-                "data-active",
-                i === activeIndex ? "true" : "false"
-              );
-              gsap.to(el, {
-                autoAlpha: 1,
-                x: 0,
-                duration: 0.25,
-                ease: "power2.out",
-                overwrite: "auto",
-              });
-
+              el.setAttribute("data-active", i === activeIndex ? "true" : "false");
+              gsap.to(el, { autoAlpha: 1, x: 0, duration: 0.25, ease: "power2.out", overwrite: "auto" });
               gsap.to(el, {
                 opacity: i === activeIndex ? 1 : 0.55,
                 duration: 0.2,
@@ -1436,14 +1276,10 @@ const DevLayout: React.FC = () => {
             });
           };
 
-          // first active
           activate(0);
 
-          // entrance
           gsap.fromTo(
-            section.querySelectorAll(
-              ".portfolio-kicker, .portfolio-title, .portfolio-sub"
-            ),
+            section.querySelectorAll(".portfolio-kicker, .portfolio-title, .portfolio-sub"),
             { autoAlpha: 0, y: 18 },
             {
               autoAlpha: 1,
@@ -1455,7 +1291,7 @@ const DevLayout: React.FC = () => {
             }
           );
 
-          const tl = gsap.timeline({
+          gsap.timeline({
             scrollTrigger: {
               trigger: section,
               start: "top top",
@@ -1478,7 +1314,6 @@ const DevLayout: React.FC = () => {
                 const idx = Math.round(self.progress * (total - 1));
                 activate(idx);
 
-                // needle moves down with progress
                 if (needle) {
                   gsap.to(needle, {
                     scaleY: 0.12 + self.progress * 0.88,
@@ -1488,7 +1323,6 @@ const DevLayout: React.FC = () => {
                   });
                 }
 
-                // scanline pulses
                 if (scan) {
                   gsap.to(scan, {
                     autoAlpha: 1,
@@ -1503,14 +1337,9 @@ const DevLayout: React.FC = () => {
           });
 
           if (glow) {
-            tl.to(
-              glow,
-              { autoAlpha: 1, scale: 1, duration: 0.8, ease: "power3.out" },
-              0
-            );
+            gsap.to(glow, { autoAlpha: 1, scale: 1, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: section, start: "top 60%" } });
           }
 
-          // subtle radar rotation (independent)
           gsap.to(section.querySelectorAll(".portfolio-radar"), {
             rotate: 360,
             duration: 26,
@@ -1521,9 +1350,7 @@ const DevLayout: React.FC = () => {
 
         // Brand circles (desktop only)
         if (brandCirclesSectionRef.current) {
-          const circles = gsap.utils.toArray<HTMLElement>(
-            ".brand-circle-wrapper"
-          );
+          const circles = gsap.utils.toArray<HTMLElement>(".brand-circle-wrapper");
 
           const tlBrand = gsap.timeline({
             scrollTrigger: {
@@ -1535,7 +1362,6 @@ const DevLayout: React.FC = () => {
             },
           });
 
-          // Aa — soft cinematic entrance
           tlBrand.from(".brand-aa", {
             opacity: 0,
             y: 24,
@@ -1545,7 +1371,6 @@ const DevLayout: React.FC = () => {
             ease: "power3.out",
           });
 
-          // Heading
           tlBrand.from(
             "#brand-circles-heading > :not(.brand-aa)",
             {
@@ -1558,7 +1383,6 @@ const DevLayout: React.FC = () => {
             "-=0.4"
           );
 
-          // Cards
           circles.forEach((circle, index) => {
             tlBrand.from(
               circle,
@@ -1574,19 +1398,8 @@ const DevLayout: React.FC = () => {
             );
           });
 
-          // Quote
-          tlBrand.from(
-            "#brand-quote",
-            {
-              opacity: 0,
-              y: 30,
-              duration: 0.9,
-              ease: "power3.out",
-            },
-            "+=0.2"
-          );
+          tlBrand.from("#brand-quote", { opacity: 0, y: 30, duration: 0.9, ease: "power3.out" }, "+=0.2");
 
-          // Subtle living system pulse (kept light)
           gsap.to(".brand-circle", {
             scale: 1.03,
             repeat: -1,
@@ -1632,10 +1445,7 @@ const DevLayout: React.FC = () => {
         if (footerSectionRef.current) {
           const section = footerSectionRef.current;
 
-          gsap.set(
-            [".footer-head", ".footer-cta", ".footer-grid", ".footer-bottom"],
-            { opacity: 0, y: 26 }
-          );
+          gsap.set([".footer-head", ".footer-cta", ".footer-grid", ".footer-bottom"], { opacity: 0, y: 26 });
           gsap.set(".footer-glow", { opacity: 0, scale: 0.9, y: 40 });
 
           const tlFooter = gsap.timeline({
@@ -1650,46 +1460,14 @@ const DevLayout: React.FC = () => {
           });
 
           tlFooter
-            .to(".footer-glow", {
-              opacity: 1,
-              scale: 1,
-              y: 0,
-              duration: 1,
-              ease: "power3.out",
-            })
-            .to(
-              ".footer-head",
-              { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
-              0.05
-            )
-            .to(
-              ".footer-cta",
-              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-              0.18
-            )
-            .to(
-              ".footer-grid",
-              { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
-              0.28
-            )
-            .to(
-              ".footer-bottom",
-              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-              0.45
-            )
-            .to(
-              ".footer-glow",
-              { y: -60, duration: 1.2, ease: "sine.inOut" },
-              0.2
-            );
+            .to(".footer-glow", { opacity: 1, scale: 1, y: 0, duration: 1, ease: "power3.out" })
+            .to(".footer-head", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.05)
+            .to(".footer-cta", { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.18)
+            .to(".footer-grid", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.28)
+            .to(".footer-bottom", { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.45)
+            .to(".footer-glow", { y: -60, duration: 1.2, ease: "sine.inOut" }, 0.2);
 
-          gsap.to(".footer-dot", {
-            scale: 1.25,
-            repeat: -1,
-            yoyo: true,
-            duration: 1.2,
-            ease: "sine.inOut",
-          });
+          gsap.to(".footer-dot", { scale: 1.25, repeat: -1, yoyo: true, duration: 1.2, ease: "sine.inOut" });
         }
 
         ScrollTrigger.refresh();
@@ -1705,141 +1483,123 @@ const DevLayout: React.FC = () => {
 
   return (
     <div
-      className="
-      relative min-h-screen
-      bg-white text-neutral-950
-      dark:bg-[#05070f] dark:text-white
-      transition-colors duration-300
-    "
+      className={[
+        "relative min-h-screen selection:bg-white/20 selection:text-white transition-colors duration-300",
+        UI.pageBg,
+      ].join(" ")}
     >
       {/* GLOBAL ATMOSPHERE */}
       <div className="pointer-events-none fixed inset-0 z-0">
-        {/* light-mode glows */}
-        <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-blue-500/18 blur-[150px] dark:hidden" />
-        <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-sky-300/18 blur-[170px] dark:hidden" />
-
-        {/* dark-mode glows */}
-        <div className="absolute -top-44 -left-44 h-[560px] w-[560px] rounded-full bg-blue-500/14 blur-[170px] hidden dark:block" />
-        <div className="absolute -bottom-60 -right-60 h-[720px] w-[720px] rounded-full bg-sky-400/10 blur-[190px] hidden dark:block" />
-
-        {/* unified vignette */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/[0.06] dark:to-black/55" />
-
-        {/* subtle noise-ish grid (works both) */}
+        <div className="absolute -top-56 -left-56 h-[760px] w-[760px] rounded-full bg-white/[0.06] blur-[220px]" />
+        <div className="absolute -bottom-72 -right-72 h-[900px] w-[900px] rounded-full bg-neutral-300/[0.05] blur-[260px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_50%_35%,rgba(255,255,255,0.06),transparent_58%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(1400px_circle_at_50%_120%,rgba(0,0,0,0.92),transparent_55%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/55 to-black/80" />
         <div
           className="
-          absolute inset-0 opacity-[0.22] dark:opacity-[0.18]
-          [background-image:
-            linear-gradient(to_right,rgba(59,130,246,0.10)_1px,transparent_1px),
-            linear-gradient(to_bottom,rgba(14,165,233,0.08)_1px,transparent_1px)]
-          [background-size:64px_64px]
-        "
+            absolute inset-0 opacity-[0.16]
+            [background-image:
+              linear-gradient(to_right,rgba(255,255,255,0.055)_1px,transparent_1px),
+              linear-gradient(to_bottom,rgba(255,255,255,0.035)_1px,transparent_1px)]
+            [background-size:64px_64px]
+          "
         />
       </div>
 
-      <main
-        ref={layoutRef}
-        className="relative font-[family-name:var(--font-redhat)]"
-      >
+      <main ref={layoutRef} className="relative font-[family-name:var(--font-redhat)]">
         <HeroOverlay heroScrollRef={heroScrollRef} />
 
         {/* Intro */}
-        <section className="fade-section relative min-h-[60vh] flex items-center justify-center">
-          <div className="max-w-2xl px-6 text-center space-y-4 relative z-10">
-            <p className="text-sm uppercase tracking-[0.2em] text-neutral-600 dark:text-white/60">
+        <section className="fade-section z-10 relative min-h-[60svh] flex items-center justify-center">
+          <div className="max-w-2xl px-4 sm:px-6 text-center space-y-4 relative z-10">
+            <p className={`text-sm uppercase tracking-[0.2em] ${UI.textMuted}`}>
               Studio · Engineering · AI
             </p>
-            <h2 className="text-3xl md:text-4xl font-semibold text-neutral-950 dark:text-white">
-              We build brands, products and AI-powered platforms that feel
-              premium end-to-end.
+            <h2 className={`text-3xl md:text-4xl font-semibold ${UI.textStrong}`}>
+              We build brands, products and AI-powered platforms that feel premium end-to-end.
             </h2>
           </div>
         </section>
 
         {/* Process */}
-        <section
-          ref={pinnedSectionRef}
-          className="relative min-h-screen flex items-center justify-center overflow-hidden"
-        >
-          <div className="relative w-full max-w-5xl px-6 py-16 grid grid-cols-1 md:grid-cols-[0.55fr_0.65fr] gap-10 md:gap-16 items-center">
+        <section ref={pinnedSectionRef} className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
+          <div className={`relative w-full ${CONTAINER} ${SECTION_Y} grid grid-cols-1 md:grid-cols-[0.55fr_0.65fr] gap-10 md:gap-16 items-center`}>
             <div className="space-y-8">
               <div className="space-y-3">
-                <p
-                  id="process-kicker"
-                  className="text-[11px] uppercase tracking-[0.28em] text-neutral-600 dark:text-white/60"
-                >
+                <p id="process-kicker" className={`text-[11px] uppercase tracking-[0.28em] ${UI.textMuted}`}>
                   Our process
                 </p>
-                <h2
-                  id="process-title"
-                  className="text-3xl md:text-4xl font-semibold leading-tight text-neutral-950 dark:text-white"
-                >
-                  A clear, engineered path from{" "}
-                  <span className="text-neutral-900/90 dark:text-white/90">
-                    idea
-                  </span>{" "}
-                  to{" "}
-                  <span className="text-neutral-900/90 dark:text-white/90">
-                    impact
-                  </span>
-                  .
+                <h2 id="process-title" className={`text-3xl md:text-4xl font-semibold leading-tight ${UI.textStrong}`}>
+                  A clear, engineered path from <span className={UI.accentText}>idea</span> to{" "}
+                  <span className={UI.accentText}>impact</span>.
                 </h2>
-                <p
-                  id="process-sub"
-                  className="text-sm md:text-base text-neutral-700 dark:text-white/70 max-w-md"
-                >
-                  No chaos, no black box. Just a repeatable system that keeps
-                  your team, stakeholders and roadmap aligned.
+                <p id="process-sub" className={`text-sm md:text-base ${UI.textSub} max-w-md`}>
+                  No chaos, no black box. Just a repeatable system that keeps your team, stakeholders and roadmap aligned.
                 </p>
               </div>
 
               <div className="hidden md:flex items-stretch gap-4">
-                <div className="relative w-[3px] rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
-                  <div className="process-line-fill absolute inset-0 bg-gradient-to-b from-blue-950 via-blue-700 to-sky-400" />
+                <div className="relative w-[3px] rounded-full bg-white/10 overflow-hidden">
+                  <div className="process-line-fill absolute inset-0 bg-gradient-to-b from-emerald-300/30 via-white/20 to-violet-300/25" />
                 </div>
                 <div className="flex flex-col justify-between py-1 text-xs space-y-4">
-                  <span className="process-step-label text-neutral-600 dark:text-white/55">
-                    01 · Discover
-                  </span>
-                  <span className="process-step-label text-neutral-600 dark:text-white/55">
-                    02 · Design & Brand
-                  </span>
-                  <span className="process-step-label text-neutral-600 dark:text-white/55">
-                    03 · Ship & Evolve
-                  </span>
+                  <span className={`process-step-label ${UI.textMuted}`}>01 · Discover</span>
+                  <span className={`process-step-label ${UI.textMuted}`}>02 · Design & Brand</span>
+                  <span className={`process-step-label ${UI.textMuted}`}>03 · Ship & Evolve</span>
                 </div>
               </div>
             </div>
 
-            <div className="process-cards-window relative h-[420px] md:h-[360px] overflow-hidden">
+            {/* MOBILE: stacked list (prevents overlap) */}
+            <div className="md:hidden space-y-4">
+              {cardsData.map((step: any, index: number) => (
+                <Card
+                  key={step.id}
+                  className={[
+                    "rounded-2xl px-5 py-5 overflow-hidden",
+                    UI.glass,
+                    UI.border,
+                    "shadow-[0_18px_60px_rgba(0,0,0,0.65)]",
+                  ].join(" ")}
+                >
+                  <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-white/85 mb-3">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/85 text-black text-[10px] font-semibold">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    {index === 0 && "Discover"}
+                    {index === 1 && "Design & Brand"}
+                    {index === 2 && "Ship & Iterate"}
+                  </div>
+
+                  <h3 className={`text-lg font-semibold ${UI.textStrong}`}>{step.title}</h3>
+                  <p className={`text-sm ${UI.textSub} mt-2`}>{step.description}</p>
+                </Card>
+              ))}
+            </div>
+
+            {/* DESKTOP: pinned window (GSAP targets .process-card-inner) */}
+            <div className="hidden md:block process-cards-window relative h-[360px] overflow-hidden">
               <div className="relative h-full">
-                {cardsData.map((step, index) => (
-                  <div
-                    key={step.id}
-                    className="absolute inset-0 flex items-center justify-center"
-                  >
+                {cardsData.map((step: any, index: number) => (
+                  <div key={step.id} className="absolute inset-0 flex items-center justify-center">
                     <Card
-                      className="
-                      process-card-inner w-full relative rounded-2xl
-                      border border-black/10 dark:border-white/12
-                      bg-white/70 dark:bg-white/[0.04]
-                      backdrop-blur-lg
-                      px-5 py-5 md:px-6 md:py-6
-                      shadow-[0_22px_70px_rgba(0,0,0,0.14)]
-                      dark:shadow-[0_22px_70px_rgba(0,0,0,0.70)]
-                      overflow-hidden
-                      transition-colors
-                    "
+                      className={[
+                        "process-card-inner w-full relative rounded-2xl px-6 py-6 overflow-hidden transition-colors",
+                        UI.glass,
+                        UI.border,
+                        "shadow-[0_22px_70px_rgba(0,0,0,0.75)]",
+                      ].join(" ")}
                     >
                       <div className="pointer-events-none absolute inset-0 -z-10">
-                        <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-blue-500/20 blur-3xl" />
-                        <div className="absolute -bottom-20 -right-16 h-48 w-48 rounded-full bg-sky-400/16 blur-3xl" />
+                        <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
+                        <div className="absolute -bottom-20 -right-16 h-48 w-48 rounded-full bg-white/8 blur-3xl" />
+                        <div className="absolute inset-0 opacity-[0.10] [background-image:linear-gradient(to_right,rgba(255,255,255,0.10)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.07)_1px,transparent_1px)] [background-size:44px_44px]" />
                       </div>
 
-                      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/20 to-transparent dark:via-white/35 opacity-60" />
+                      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/18 to-transparent opacity-70" />
 
-                      <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-blue-700 dark:text-sky-200 mb-3 shadow-[0_0_18px_rgba(59,130,246,0.22)]">
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white text-[10px] font-semibold shadow-[0_0_12px_rgba(59,130,246,0.6)]">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-white/85 mb-3 shadow-[0_0_18px_rgba(255,255,255,0.08)]">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/85 text-black text-[10px] font-semibold shadow-[0_0_12px_rgba(255,255,255,0.14)]">
                           {String(index + 1).padStart(2, "0")}
                         </span>
                         {index === 0 && "Discover"}
@@ -1847,41 +1607,36 @@ const DevLayout: React.FC = () => {
                         {index === 2 && "Ship & Iterate"}
                       </div>
 
-                      <h3 className="text-lg md:text-xl font-semibold text-blue-800 dark:text-sky-200 drop-shadow-[0_0_14px_rgba(59,130,246,0.22)]">
-                        {step.title}
-                      </h3>
+                      <h3 className={`text-xl font-semibold ${UI.textStrong}`}>{step.title}</h3>
+                      <p className={`text-sm ${UI.textSub} mt-2`}>{step.description}</p>
 
-                      <p className="text-sm text-neutral-700 dark:text-white/80 mt-2">
-                        {step.description}
-                      </p>
-
-                      <div className="mt-4 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.18em] text-neutral-600 dark:text-white/60">
+                      <div className={`mt-4 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.18em] ${UI.textMuted}`}>
                         {index === 0 && (
                           <>
-                            <span className="px-2 py-1 rounded-full border border-blue-500/30 bg-blue-500/10">
+                            <span className="px-2 py-1 rounded-full border border-white/10 bg-white/[0.04] text-white/75">
                               Audit
                             </span>
-                            <span className="px-2 py-1 rounded-full border border-blue-500/30 bg-blue-500/10">
+                            <span className="px-2 py-1 rounded-full border border-white/10 bg-white/[0.04] text-white/75">
                               Strategy
                             </span>
                           </>
                         )}
                         {index === 1 && (
                           <>
-                            <span className="px-2 py-1 rounded-full border border-blue-500/30 bg-blue-500/10">
+                            <span className="px-2 py-1 rounded-full border border-white/10 bg-white/[0.04] text-white/75">
                               Systems
                             </span>
-                            <span className="px-2 py-1 rounded-full border border-blue-500/30 bg-blue-500/10">
+                            <span className="px-2 py-1 rounded-full border border-white/10 bg-white/[0.04] text-white/75">
                               Prototypes
                             </span>
                           </>
                         )}
                         {index === 2 && (
                           <>
-                            <span className="px-2 py-1 rounded-full border border-blue-500/30 bg-blue-500/10">
+                            <span className="px-2 py-1 rounded-full border border-white/10 bg-white/[0.04] text-white/75">
                               Launch
                             </span>
-                            <span className="px-2 py-1 rounded-full border border-blue-500/30 bg-blue-500/10">
+                            <span className="px-2 py-1 rounded-full border border-white/10 bg-white/[0.04] text-white/75">
                               Feedback loop
                             </span>
                           </>
@@ -1896,118 +1651,41 @@ const DevLayout: React.FC = () => {
         </section>
 
         {/* WHO WE ARE */}
-        <section
-          ref={whoSectionRef}
-          className="relative min-h-screen overflow-hidden py-16 md:py-24"
-        >
-          <div className="relative max-w-6xl mx-auto px-6 h-full flex flex-col md:flex-row itemscenter gap-10">
-            <div className="relative w-full md:w-1/2 h-[60vh] md:h-[70vh]">
-              {whoCards.map((card, index) => {
+        <section ref={whoSectionRef} className="relative min-h-[100svh] overflow-hidden py-16 md:py-24">
+          <div className={`relative ${CONTAINER} h-full flex flex-col md:flex-row items-center gap-10`}>
+            {/* MOBILE: normal flow cards */}
+            <div className="md:hidden w-full space-y-4">
+              {whoCards.map((card: any) => {
                 const Icon = card.icon;
-                const number = String(index + 1).padStart(2, "0");
-
                 return (
                   <Card
                     key={card.id}
-                    className="
-                    who-card group absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                    w-[88vw] sm:w-[70vw] md:w-[460px]
-                    h-[60vh] md:h-[65vh]
-                    overflow-hidden flex flex-col justify-between
-                    will-change-transform
-
-                    bg-white/70 text-neutral-950 backdrop-blur-xl
-                    dark:bg-white/[0.04] dark:text-white
-
-                    border border-black/10 dark:border-white/10
-                    shadow-[0_22px_60px_rgba(0,0,0,0.16)]
-                    dark:shadow-[0_22px_60px_rgba(0,0,0,0.75)]
-
-                    rounded-none
-                    transition-colors
-                  "
+                    className={[
+                      "rounded-2xl overflow-hidden",
+                      UI.glass,
+                      UI.border,
+                      "shadow-[0_18px_60px_rgba(0,0,0,0.65)]",
+                    ].join(" ")}
                   >
-                    {/* ===== atmosphere + subtle grid ===== */}
-                    <div className="pointer-events-none absolute inset-0 -z-10">
-                      <div
-                        className="absolute inset-0 opacity-[0.16] dark:opacity-[0.12]"
-                        style={{
-                          backgroundImage: `
-                          linear-gradient(to right, rgba(59,130,246,0.12) 1px, transparent 1px),
-                          linear-gradient(to bottom, rgba(14,165,233,0.10) 1px, transparent 1px)
-                        `,
-                          backgroundSize: "34px 34px",
-                          maskImage:
-                            "radial-gradient(circle at 30% 20%, black 0%, black 45%, transparent 75%)",
-                          WebkitMaskImage:
-                            "radial-gradient(circle at 30% 20%, black 0%, black 45%, transparent 75%)",
-                        }}
-                      />
-                      <div className="absolute -top-28 -left-28 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl" />
-                      <div className="absolute -bottom-32 -right-32 h-80 w-80 rounded-full bg-sky-300/10 blur-3xl" />
-                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/[0.04] dark:to-black/45" />
-                    </div>
-
-                    {/* ===== sharp frame ===== */}
-                    <div className="pointer-events-none absolute inset-0">
-                      <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
-                      <div className="absolute left-8 right-8 bottom-0 h-px bg-gradient-to-r from-transparent via-sky-400/25 to-transparent" />
-                      <div className="absolute top-8 bottom-8 left-0 w-px bg-gradient-to-b from-transparent via-blue-500/20 to-transparent" />
-                      <div className="absolute top-8 bottom-8 right-0 w-px bg-gradient-to-b from-transparent via-sky-400/20 to-transparent" />
-
-                      <span className="absolute left-3 top-3 h-6 w-6 border-l border-t border-blue-500/40" />
-                      <span className="absolute right-3 top-3 h-6 w-6 border-r border-t border-blue-500/35" />
-                      <span className="absolute left-3 bottom-3 h-6 w-6 border-l border-b border-sky-400/30" />
-                      <span className="absolute right-3 bottom-3 h-6 w-6 border-r border-b border-sky-400/30" />
-
-                      <span className="absolute left-0 top-10 h-0 w-0 border-y-[10px] border-y-transparent border-r-[12px] border-r-blue-500/20" />
-                      <span className="absolute right-0 bottom-10 h-0 w-0 border-y-[10px] border-y-transparent border-l-[12px] border-l-sky-400/18" />
-                    </div>
-
-                    {/* ===== LARGE NUMBER ===== */}
-                    <div className="pointer-events-none absolute top-5 left-6 select-none">
-                      <span className="text-[52px] sm:text-[64px] md:text-[72px] font-extrabold tracking-tight text-neutral-300/70 dark:text-white/10">
-                        {number}
-                      </span>
-                    </div>
-
-                    {/* ===== HEADER ===== */}
-                    <div className="relative z-10 flex items-start justify-between px-6 pt-6">
-                      <div className="mt-2">
-                        <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60">
-                          {card.title}
-                        </p>
-                        {card.subtitle && (
-                          <h3 className="text-lg md:text-xl font-semibold mt-1 text-neutral-950 dark:text-white">
-                            {card.subtitle}
-                          </h3>
-                        )}
-
-                        <div className="mt-3 inline-flex items-center gap-2 rounded-none border border-blue-500/25 bg-blue-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-blue-800 dark:text-sky-200">
-                          <span className="h-1.5 w-1.5 rounded-full bg-sky-400 shadow-[0_0_14px_rgba(14,165,233,0.55)]" />
-                          classified brief
+                    <div className="p-6">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <p className={`text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>{card.title}</p>
+                          {card.subtitle && (
+                            <h3 className={`text-lg font-semibold mt-1 ${UI.textStrong}`}>{card.subtitle}</h3>
+                          )}
+                        </div>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06]">
+                          <Icon className="h-5 w-5 text-white/90" />
                         </div>
                       </div>
 
-                      <div className="who-icon flex h-10 w-10 items-center justify-center rounded-none border border-blue-500/25 bg-blue-500/10 shadow-[0_0_22px_rgba(59,130,246,0.18)] transition-transform duration-300 group-hover:scale-[1.06]">
-                        <Icon className="h-5 w-5 text-blue-600 dark:text-sky-200 drop-shadow-[0_0_10px_rgba(59,130,246,0.35)]" />
-                      </div>
-                    </div>
-
-                    {/* ===== BODY ===== */}
-                    <div className="relative z-10 px-6 pb-6 space-y-3 text-sm md:text-base text-neutral-800 dark:text-white/80 mt-4">
-                      {card.body.map((paragraph, idx) => (
-                        <p key={idx} className="leading-relaxed">
-                          {paragraph}
-                        </p>
-                      ))}
-                    </div>
-
-                    {/* ===== bottom hint ===== */}
-                    <div className="pointer-events-none absolute bottom-0 left-0 right-0">
-                      <div className="mx-6 mb-5 flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-neutral-600 dark:text-white/55">
-                        <span>scroll to decrypt</span>
-                        <span className="text-sky-500/70">⟶</span>
+                      <div className={`mt-4 space-y-3 text-sm ${UI.textSub}`}>
+                        {card.body.map((p: string, idx: number) => (
+                          <p key={idx} className="leading-relaxed">
+                            {p}
+                          </p>
+                        ))}
                       </div>
                     </div>
                   </Card>
@@ -2015,121 +1693,176 @@ const DevLayout: React.FC = () => {
               })}
             </div>
 
-            <div
-              id="who-heading"
-              className="w-full md:w-1/2 space-y-4 text-left md:text-right relative z-10"
-            >
-              <p className="text-xs uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60">
-                Who We Are
-              </p>
-              <h2 className="text-3xl md:text-4xl font-semibold md:leading-tight max-w-xl md:ml-auto text-neutral-950 dark:text-white">
+            {/* DESKTOP: pinned stacked cards */}
+            <div className="hidden md:block relative w-full md:w-1/2 h-[70vh]">
+              {whoCards.map((card: any, index: number) => {
+                const Icon = card.icon;
+                const number = String(index + 1).padStart(2, "0");
+
+                return (
+                  <Card
+                    key={card.id}
+                    className={[
+                      "who-card group absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[460px] h-[65vh] overflow-hidden flex flex-col justify-between will-change-transform rounded-none transition-colors",
+                      UI.glass,
+                      UI.border,
+                      "shadow-[0_22px_60px_rgba(0,0,0,0.78)]",
+                    ].join(" ")}
+                  >
+                    <div className="pointer-events-none absolute inset-0 -z-10">
+                      <div
+                        className="absolute inset-0 opacity-[0.10]"
+                        style={{
+                          backgroundImage: `
+                            linear-gradient(to right, rgba(255,255,255,0.10) 1px, transparent 1px),
+                            linear-gradient(to bottom, rgba(255,255,255,0.07) 1px, transparent 1px)
+                          `,
+                          backgroundSize: "34px 34px",
+                          maskImage:
+                            "radial-gradient(circle at 30% 20%, black 0%, black 45%, transparent 75%)",
+                          WebkitMaskImage:
+                            "radial-gradient(circle at 30% 20%, black 0%, black 45%, transparent 75%)",
+                        }}
+                      />
+                      <div className="absolute -top-28 -left-28 h-72 w-72 rounded-full bg-white/8 blur-3xl" />
+                      <div className="absolute -bottom-32 -right-32 h-80 w-80 rounded-full bg-white/6 blur-3xl" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/55" />
+                    </div>
+
+                    <div className="pointer-events-none absolute inset-0">
+                      <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-white/14 to-transparent" />
+                      <div className="absolute left-8 right-8 bottom-0 h-px bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+                      <div className="absolute top-8 bottom-8 left-0 w-px bg-gradient-to-b from-transparent via-white/12 to-transparent" />
+                      <div className="absolute top-8 bottom-8 right-0 w-px bg-gradient-to-b from-transparent via-white/12 to-transparent" />
+
+                      <span className="absolute left-3 top-3 h-6 w-6 border-l border-t border-white/18" />
+                      <span className="absolute right-3 top-3 h-6 w-6 border-r border-t border-white/16" />
+                      <span className="absolute left-3 bottom-3 h-6 w-6 border-l border-b border-white/14" />
+                      <span className="absolute right-3 bottom-3 h-6 w-6 border-r border-b border-white/14" />
+
+                      <span className="absolute left-0 top-10 h-0 w-0 border-y-[10px] border-y-transparent border-r-[12px] border-r-white/10" />
+                      <span className="absolute right-0 bottom-10 h-0 w-0 border-y-[10px] border-y-transparent border-l-[12px] border-l-white/8" />
+                    </div>
+
+                    <div className="pointer-events-none absolute top-5 left-6 select-none">
+                      <span className="text-[72px] font-extrabold tracking-tight text-white/10">{number}</span>
+                    </div>
+
+                    <div className="relative z-10 flex items-start justify-between px-6 pt-6">
+                      <div className="mt-2">
+                        <p className={`text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>{card.title}</p>
+                        {card.subtitle && (
+                          <h3 className={`text-xl font-semibold mt-1 ${UI.textStrong}`}>{card.subtitle}</h3>
+                        )}
+
+                        <div className="mt-3 inline-flex items-center gap-2 rounded-none border border-white/10 bg-white/[0.06] px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-white/85">
+                          <span className="h-1.5 w-1.5 rounded-full bg-white/60 shadow-[0_0_14px_rgba(255,255,255,0.12)]" />
+                          classified brief
+                        </div>
+                      </div>
+
+                      <div className="who-icon flex h-10 w-10 items-center justify-center rounded-none border border-white/10 bg-white/[0.06] shadow-[0_0_22px_rgba(255,255,255,0.10)] transition-transform duration-300 group-hover:scale-[1.06]">
+                        <Icon className="h-5 w-5 text-white/90 drop-shadow-[0_0_10px_rgba(255,255,255,0.10)]" />
+                      </div>
+                    </div>
+
+                    <div className={`relative z-10 px-6 pb-6 space-y-3 text-base ${UI.textSub} mt-4`}>
+                      {card.body.map((paragraph: string, idx: number) => (
+                        <p key={idx} className="leading-relaxed">
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
+
+                    <div className="pointer-events-none absolute bottom-0 left-0 right-0">
+                      <div className={`mx-6 mb-5 flex items-center justify-between text-[10px] uppercase tracking-[0.28em] ${UI.textMuted}`}>
+                        <span>scroll to decrypt</span>
+                        <span className="text-white/45">⟶</span>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+
+            <div id="who-heading" className="w-full md:w-1/2 space-y-4 text-left md:text-right relative z-10">
+              <p className={`text-xs uppercase tracking-[0.25em] ${UI.textMuted}`}>Who We Are</p>
+              <h2 className={`text-3xl md:text-4xl font-semibold md:leading-tight max-w-xl md:ml-auto ${UI.textStrong}`}>
                 Architects of the digital future.
               </h2>
-              <p className="text-sm md:text-base text-neutral-700 dark:text-white/70 max-w-md md:ml-auto">
-                Scroll to watch each card slide from bottom-right to top-left,
-                layering the story of Algorim step by step.
+              <p className={`text-sm md:text-base ${UI.textSub} max-w-md md:ml-auto`}>
+                Scroll to watch each card slide from bottom-right to top-left, layering the story of Algorim step by step.
               </p>
             </div>
           </div>
         </section>
 
-        {/* Creativity & Technicality (BLUE/SKY) */}
-        <section
-          ref={creativityTechSectionRef}
-          className="relative min-h-screen overflow-hidden"
-        >
+        {/* Creativity & Technicality */}
+        <section ref={creativityTechSectionRef} className="relative min-h-[100svh] overflow-hidden">
           <div className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-blue-500/18 blur-[150px] dark:bg-blue-500/12 dark:blur-[170px]" />
-            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-sky-300/14 blur-[170px] dark:bg-sky-400/10 dark:blur-[190px]" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/[0.08] dark:to-black/70" />
+            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-white/8 blur-[210px]" />
+            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-white/6 blur-[240px]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/75" />
           </div>
 
-          <div className="max-w-6xl mx-auto px-6 h-full flex items-center justify-center relative z-10">
-            <div className="ct-shell relative w-full h-[72vh] md:h-[80vh]">
+          <div className={`${CONTAINER} h-full flex items-center justify-center relative z-10`}>
+            <div className="ct-shell relative w-full h-[72svh] md:h-[80svh]">
               <div
-                className="
-                ct-card relative w-full h-full
-                rounded-[36px]
-                border border-black/10 dark:border-white/10
-                bg-white/60 dark:bg-white/[0.04]
-                backdrop-blur-2xl
-                shadow-[0_30px_110px_rgba(0,0,0,0.20)]
-                dark:shadow-[0_30px_110px_rgba(0,0,0,0.75)]
-                overflow-hidden
-                flex flex-col md:flex-row
-                transition-colors
-              "
+                className={[
+                  "ct-card relative w-full h-full rounded-[28px] sm:rounded-[36px] overflow-hidden flex flex-col md:flex-row transition-colors",
+                  UI.glass,
+                  UI.border,
+                  "shadow-[0_30px_110px_rgba(0,0,0,0.78)]",
+                ].join(" ")}
               >
-                <div
-                  className="
-                  pointer-events-none absolute inset-0 opacity-[0.10] dark:opacity-[0.14]
-                  [background-image:
-                    linear-gradient(to_right,rgba(59,130,246,0.18)_1px,transparent_1px),
-                    linear-gradient(to_bottom,rgba(14,165,233,0.14)_1px,transparent_1px)]
-                  [background-size:46px_46px]
-                "
-                />
+                <div className="pointer-events-none absolute inset-0 opacity-[0.12] [background-image:linear-gradient(to_right,rgba(255,255,255,0.10)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:46px_46px]" />
 
-                <div className="ct-glow-a pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-blue-500/16 blur-[140px]" />
-                <div className="ct-glow-b pointer-events-none absolute -right-48 -bottom-48 h-[620px] w-[620px] rounded-full bg-sky-300/14 blur-[170px]" />
+                <div className="ct-glow-a pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-emerald-300/10 blur-[190px]" />
+                <div className="ct-glow-b pointer-events-none absolute -right-48 -bottom-48 h-[620px] w-[620px] rounded-full bg-violet-300/10 blur-[220px]" />
 
-                <div className="ct-divider pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-black/10 dark:bg-white/10 md:top-0 md:bottom-0 md:left-1/2 md:right-auto md:h-auto md:w-px" />
+                <div className="ct-divider pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-white/10 md:top-0 md:bottom-0 md:left-1/2 md:right-auto md:h-auto md:w-px" />
 
-                <div className="ct-left relative w-full md:w-1/2 p-7 sm:p-9 md:p-12 flex flex-col justify-center">
-                  <div className="ct-icon-left absolute top-6 left-6 sm:top-8 sm:left-8 h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-white/70 dark:bg-black/35 border border-blue-400/25 backdrop-blur-xl shadow-[0_0_18px_rgba(59,130,246,0.22),0_0_42px_rgba(59,130,246,0.10)] flex items-center justify-center">
-                    <Palette className="h-6 w-6 sm:h-7 sm:w-7 text-blue-600 dark:text-sky-200 drop-shadow-[0_0_12px_rgba(14,165,233,0.35)]" />
+                <div className="ct-left relative w-full md:w-1/2 p-6 sm:p-8 md:p-12 flex flex-col justify-center">
+                  <div className="ct-icon-left absolute top-5 left-5 sm:top-7 sm:left-7 h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-white/[0.06] border border-white/10 backdrop-blur-xl shadow-[0_0_18px_rgba(255,255,255,0.10)] flex items-center justify-center">
+                    <Palette className="h-6 w-6 sm:h-7 sm:w-7 text-white/90 drop-shadow-[0_0_12px_rgba(255,255,255,0.10)]" />
                   </div>
 
-                  <p className="ct-kicker-left text-[11px] uppercase tracking-[0.35em] text-neutral-600 dark:text-white/60">
-                    Creativity
-                  </p>
+                  <p className={`ct-kicker-left text-[11px] uppercase tracking-[0.35em] ${UI.textMuted}`}>Creativity</p>
 
-                  <h2 className="ct-title-left mt-3 text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_24px_rgba(59,130,246,0.18)]">
+                  <h2 className={`ct-title-left mt-3 text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight ${UI.accentText}`}>
                     Creativity
                   </h2>
 
-                  <p className="ct-copy-left mt-4 sm:mt-5 max-w-md text-sm md:text-base text-neutral-700 dark:text-white/70 leading-relaxed">
-                    The palette, motion and story that make Algorim feel like a
-                    brand — not just a stack of features.
+                  <p className={`ct-copy-left mt-4 sm:mt-5 max-w-md text-sm md:text-base ${UI.textSub} leading-relaxed`}>
+                    The palette, motion and story that make Algorim feel like a brand — not just a stack of features.
                   </p>
 
-                  <div className="ct-chip-left mt-6 sm:mt-7 inline-flex w-fit items-center gap-2 rounded-full border border-blue-400/25 bg-blue-500/10 px-4 py-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-sky-400 shadow-[0_0_14px_rgba(14,165,233,0.55)]" />
-                    <span className="text-[10px] uppercase tracking-[0.3em] text-blue-700 dark:text-sky-200/90">
-                      Craft / Motion / Voice
-                    </span>
+                  <div className="ct-chip-left mt-6 sm:mt-7 inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/60 shadow-[0_0_14px_rgba(255,255,255,0.12)]" />
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-white/85">Craft / Motion / Voice</span>
                   </div>
                 </div>
 
-                <div className="ct-right relative w-full md:w-1/2 p-7 sm:p-9 md:p-12 flex flex-col justify-center md:text-right">
-                  <div className="ct-icon-right absolute bottom-6 right-6 sm:bottom-8 sm:right-8 h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-white/70 dark:bg-black/35 border border-blue-400/25 backdrop-blur-xl shadow-[0_0_18px_rgba(59,130,246,0.22),0_0_42px_rgba(59,130,246,0.10)] flex items-center justify-center">
-                    <Code2 className="h-6 w-6 sm:h-7 sm:w-7 text-blue-600 dark:text-sky-200 drop-shadow-[0_0_12px_rgba(14,165,233,0.35)]" />
+                <div className="ct-right relative w-full md:w-1/2 p-6 sm:p-8 md:p-12 flex flex-col justify-center md:text-right">
+                  <div className="ct-icon-right absolute bottom-5 right-5 sm:bottom-7 sm:right-7 h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-white/[0.06] border border-white/10 backdrop-blur-xl shadow-[0_0_18px_rgba(255,255,255,0.10)] flex items-center justify-center">
+                    <Code2 className="h-6 w-6 sm:h-7 sm:w-7 text-white/90 drop-shadow-[0_0_12px_rgba(255,255,255,0.10)]" />
                   </div>
 
-                  <p className="ct-kicker-right text-[11px] uppercase tracking-[0.35em] text-neutral-600 dark:text-white/60">
-                    Technicality
-                  </p>
+                  <p className={`ct-kicker-right text-[11px] uppercase tracking-[0.35em] ${UI.textMuted}`}>Technicality</p>
 
-                  <h2 className="ct-title-right mt-3 text-3xl sm:text-4xl md:text-5xl font-mono font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_22px_rgba(59,130,246,0.18)]">
-                    <span className="text-sky-500 dark:text-sky-200">&lt;</span>
-                    <span className="mx-1 text-blue-700 dark:text-sky-100">
-                      Technicality
-                    </span>
-                    <span className="text-sky-500 dark:text-sky-200">
-                      /&gt;
-                    </span>
+                  <h2 className="ct-title-right mt-3 text-3xl sm:text-4xl md:text-5xl font-mono font-semibold tracking-tight text-white/92">
+                    <span className="text-white/55">&lt;</span>
+                    <span className="mx-1">Technicality</span>
+                    <span className="text-white/55">/&gt;</span>
                   </h2>
 
-                  <p className="ct-copy-right mt-4 sm:mt-5 md:ml-auto max-w-md text-sm md:text-base text-neutral-700 dark:text-white/70 leading-relaxed">
-                    The engineering, architecture and security that keep every
-                    interaction fast, correct and safe.
+                  <p className={`ct-copy-right mt-4 sm:mt-5 md:ml-auto max-w-md text-sm md:text-base ${UI.textSub} leading-relaxed`}>
+                    The engineering, architecture and security that keep every interaction fast, correct and safe.
                   </p>
 
-                  <div className="ct-chip-right mt-6 sm:mt-7 md:ml-auto inline-flex w-fit items-center gap-2 rounded-full border border-blue-400/25 bg-blue-500/10 px-4 py-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-sky-300 shadow-[0_0_14px_rgba(14,165,233,0.55)]" />
-                    <span className="text-[10px] uppercase tracking-[0.3em] text-blue-700 dark:text-sky-200/90">
-                      Perf / Security / Scale
-                    </span>
+                  <div className="ct-chip-right mt-6 sm:mt-7 md:ml-auto inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/60 shadow-[0_0_14px_rgba(255,255,255,0.12)]" />
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-white/85">Perf / Security / Scale</span>
                   </div>
                 </div>
               </div>
@@ -2138,74 +1871,53 @@ const DevLayout: React.FC = () => {
         </section>
 
         {/* Globe */}
-        <section
-          ref={worldSectionRef}
-          className="relative min-h-screen overflow-hidden"
-        >
-          <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-24 flex flex-col gap-12 z-10">
+        <section ref={worldSectionRef} className="relative min-h-[100svh] overflow-hidden">
+          <div className={`relative ${CONTAINER} pt-20 pb-24 md:pt-24 md:pb-28 flex flex-col gap-12 z-10`}>
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
               <div className="space-y-3 max-w-xl">
-                <p
-                  id="world-kicker"
-                  className="text-[11px] uppercase tracking-[0.28em] text-blue-700/80 dark:text-sky-300/80 drop-shadow-[0_0_10px_rgba(59,130,246,0.18)]"
-                >
+                <p id="world-kicker" className={`text-[11px] uppercase tracking-[0.28em] ${UI.textMuted}`}>
                   Global footprint
                 </p>
 
-                <h2
-                  id="world-title"
-                  className="text-4xl md:text-5xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_22px_rgba(59,130,246,0.18)]"
-                >
-                  We work internationally with{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_28px_rgba(59,130,246,0.22)]">
-                    distributed teams
-                  </span>
-                  .
+                <h2 id="world-title" className={`text-4xl md:text-5xl font-semibold ${UI.textStrong}`}>
+                  We work internationally with <span className={UI.accentText}>distributed teams</span>.
                 </h2>
 
-                <p
-                  id="world-copy"
-                  className="text-sm md:text-base text-neutral-700 dark:text-white/70"
-                >
-                  From Europe to the Middle East, North America and
-                  Asia–Pacific, we plug directly into your stack and ship on
-                  your timezone while keeping security, performance and brand
-                  experience aligned.
+                <p id="world-copy" className={`text-sm md:text-base ${UI.textSub}`}>
+                  From Europe to the Middle East, North America and Asia–Pacific, we plug directly into your stack and ship
+                  on your timezone while keeping security, performance and brand experience aligned.
                 </p>
               </div>
 
-              <div className="grid grid-cols-3 gap-6 text-right text-xs md:text-sm">
+              <div className="grid grid-cols-3 gap-4 sm:gap-6 text-right text-xs md:text-sm">
                 <div className="world-stat space-y-1">
-                  <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60">
-                    Time zones
-                  </p>
-                  <p className="text-2xl md:text-3xl font-semibold text-blue-600 dark:text-sky-200 drop-shadow-[0_0_16px_rgba(59,130,246,0.18)]">
-                    08+
-                  </p>
+                  <p className={`text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>Time zones</p>
+                  <p className="text-2xl md:text-3xl font-semibold text-white/92">08+</p>
                 </div>
 
                 <div className="world-stat space-y-1">
-                  <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60">
-                    Countries
-                  </p>
-                  <p className="text-2xl md:text-3xl font-semibold text-blue-500 dark:text-sky-100 drop-shadow-[0_0_14px_rgba(59,130,246,0.18)]">
-                    15
-                  </p>
+                  <p className={`text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>Countries</p>
+                  <p className="text-2xl md:text-3xl font-semibold text-white/92">15</p>
                 </div>
 
                 <div className="world-stat space-y-1">
-                  <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60">
-                    Continents
-                  </p>
-                  <p className="text-2xl md:text-3xl font-semibold text-sky-500 dark:text-sky-200 drop-shadow-[0_0_12px_rgba(14,165,233,0.18)]">
-                    04
-                  </p>
+                  <p className={`text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>Continents</p>
+                  <p className="text-2xl md:text-3xl font-semibold text-white/92">04</p>
                 </div>
               </div>
             </div>
 
-            <div className="relative flex justify-center mt-10">
-              <div className="world-globe-shell overflow-hidden">
+            <div className="relative flex justify-center mt-8 md:mt-10">
+              <div
+                className="
+                  world-globe-shell overflow-hidden
+                  w-full h-full max-w-[560px] sm:max-w-[640px] md:max-w-[760px]
+                  aspect-square
+                  rounded-[28px] sm:rounded-[32px]
+                  border border-white/10 bg-white/[0.02] backdrop-blur-xl
+                  shadow-[0_30px_110px_rgba(0,0,0,0.78)]
+                "
+              >
                 <World globeConfig={globeConfig} data={globeArcs} />
               </div>
             </div>
@@ -2213,83 +1925,60 @@ const DevLayout: React.FC = () => {
         </section>
 
         {/* CTA */}
-        <section
-          ref={ctaSectionRef}
-          className="relative py-24 md:py-32 overflow-hidden bg-white dark:bg-black"
-        >
+        <section ref={ctaSectionRef} className="relative py-24 md:py-32 overflow-hidden">
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute -top-24 left-1/2 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.12),transparent_55%)] blur-2xl" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(14,165,233,0.10),transparent_40%)]" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/[0.06] dark:to-black/55" />
+            <div className="absolute inset-0 opacity-70" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/65" />
           </div>
 
-          <div className="relative max-w-6xl mx-auto px-6">
+          <div className={`relative ${CONTAINER}`}>
             <div
               data-cta-card
-              className="
-              relative overflow-hidden rounded-3xl
-              border border-black/10 dark:border-white/10
-              bg-white/70 dark:bg-white/[0.04]
-              backdrop-blur-xl
-              shadow-[0_18px_70px_rgba(0,0,0,0.16)]
-              dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
-              transition-colors
-            "
+              className={[
+                "relative overflow-hidden rounded-3xl transition-colors",
+                UI.glass,
+                UI.border,
+                "shadow-[0_18px_70px_rgba(0,0,0,0.78)]",
+              ].join(" ")}
             >
-              <div
-                data-cta-glow
-                className="pointer-events-none absolute inset-0 opacity-0"
-              >
-                <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_30%_20%,rgba(59,130,246,0.16),transparent_40%)]" />
-                <div className="absolute inset-0 bg-[radial-gradient(700px_circle_at_70%_60%,rgba(14,165,233,0.10),transparent_45%)]" />
+              <div data-cta-glow className="pointer-events-none absolute inset-0 opacity-0">
+                <div className={`absolute inset-0 ${UI.glowA}`} />
+                <div className={`absolute inset-0 ${UI.glowB}`} />
               </div>
 
               <div
                 data-cta-sheen
-                className="pointer-events-none absolute -inset-y-10 -left-1/2 w-1/2 rotate-12 bg-[linear-gradient(90deg,transparent,rgba(56,189,248,0.14),transparent)] blur-sm opacity-0"
+                className="pointer-events-none absolute -inset-y-10 -left-1/2 w-1/2 rotate-12 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent)] blur-sm opacity-0"
               />
 
-              <div className="relative p-8 md:p-12">
+              <div className="relative p-7 sm:p-8 md:p-12">
                 <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-10">
                   <div className="max-w-2xl">
-                    <div
-                      data-cta-kicker
-                      className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60"
-                    >
-                      <span className="h-1.5 w-1.5 rounded-full bg-sky-400/70" />
+                    <div data-cta-kicker className={`inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>
+                      <span className="h-1.5 w-1.5 rounded-full bg-white/45" />
                       Secure · Ship · Scale
                     </div>
 
-                    <h3
-                      data-cta-title
-                      className="mt-4 text-3xl md:text-4xl font-semibold text-neutral-950 dark:text-white"
-                    >
-                      Ready to ship something premium?
+                    <h3 data-cta-title className={`mt-4 text-3xl md:text-4xl font-semibold ${UI.textStrong}`}>
+                      Ready to ship something <span className={UI.accentText}>premium</span>?
                     </h3>
 
-                    <p
-                      data-cta-subtitle
-                      className="mt-3 text-sm md:text-base text-neutral-700 dark:text-white/70"
-                    >
-                      Book a quick call and we’ll map your roadmap, stack, and
-                      risk surface — then propose a clean execution plan.
+                    <p data-cta-subtitle className={`mt-3 text-sm md:text-base ${UI.textSub}`}>
+                      Book a quick call and we’ll map your roadmap, stack, and risk surface — then propose a clean execution plan.
                     </p>
                   </div>
 
-                  <div
-                    data-cta-actions
-                    className="flex flex-col sm:flex-row gap-3 sm:items-center"
-                  >
+                  <div data-cta-actions className="flex flex-col sm:flex-row gap-3 sm:items-center">
                     <a
                       href="https://meet.brevo.com/algorim-consultation"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="
-                      inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium
-                      bg-blue-600 text-white hover:bg-blue-700
-                      shadow-[0_18px_60px_rgba(59,130,246,0.18)]
-                      transition
-                    "
+                        inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium
+                        bg-white text-black hover:bg-white/90
+                        shadow-[0_18px_60px_rgba(0,0,0,0.45)]
+                        transition
+                      "
                     >
                       Book a Call
                     </a>
@@ -2297,131 +1986,104 @@ const DevLayout: React.FC = () => {
                     <a
                       href="#services"
                       className="
-                      inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium
-                      border border-black/10 dark:border-white/12
-                      bg-white/60 dark:bg-white/[0.04]
-                      text-neutral-950 dark:text-white
-                      hover:border-blue-500/30
-                      transition
-                    "
+                        inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium
+                        border border-white/12
+                        bg-white/[0.05]
+                        text-white/90
+                        hover:border-white/20
+                        transition
+                      "
                     >
                       See Services
                     </a>
                   </div>
                 </div>
 
-                <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-neutral-600 dark:text-white/60">
-                  <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/[0.04] px-4 py-3">
-                    Response in{" "}
-                    <span className="text-neutral-950 dark:text-white">
-                      24h
-                    </span>
+                <div className={`mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs ${UI.textMuted}`}>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+                    Response in <span className="text-white/90">24h</span>
                   </div>
-                  <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/[0.04] px-4 py-3">
-                    Fixed-scope or{" "}
-                    <span className="text-neutral-950 dark:text-white">
-                      retainer
-                    </span>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+                    Fixed-scope or <span className="text-white/90">retainer</span>
                   </div>
-                  <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/[0.04] px-4 py-3">
-                    Reports built for{" "}
-                    <span className="text-neutral-950 dark:text-white">
-                      execs
-                    </span>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+                    Reports built for <span className="text-white/90">execs</span>
                   </div>
                 </div>
               </div>
 
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-sky-400/25 to-transparent" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/16 to-transparent" />
             </div>
           </div>
         </section>
 
         {/* Services */}
-        <section
-          id="services"
-          ref={servicesHorizontalSectionRef}
-          className="relative min-h-[80vh] md:h-screen overflow-hidden"
-        >
-          <div className="relative h-full max-w-6xl mx-auto px-6 flex flex-col z-10 overflow-r-hidden mt-12">
-            <div
-              id="services-heading"
-              className="shrink-0 space-y-3 pt-2 md:pt-4"
-            >
+        <section id="services" ref={servicesHorizontalSectionRef} className="relative min-h-[80svh] md:min-h-[100svh] overflow-hidden">
+          <div className={`relative h-full ${CONTAINER} flex flex-col z-10 overflow-r-hidden mt-10 md:mt-12`}>
+            <div id="services-heading" className="shrink-0 space-y-3 pt-2 md:pt-4">
               <div className="flex flex-wrap gap-2 mb-1">
-                <span className="services-pill text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/60">
-                  Services
-                </span>
-                <span className="services-pill text-[11px] uppercase tracking-[0.25em] text-neutral-600 dark:text-white/45">
+                <span className={`services-pill text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>Services</span>
+                <span className={`services-pill text-[11px] uppercase tracking-[0.25em] ${UI.textMuted}`}>
                   Branding · Product · AI · Cloud · Security
                 </span>
               </div>
 
-              <h2 className="text-3xl md:text-4xl font-semibold max-w-xl text-neutral-950 dark:text-white">
+              <h2 className={`text-3xl md:text-4xl font-semibold max-w-xl ${UI.textStrong}`}>
                 A horizontal deck of capabilities. Scroll to move sideways.
               </h2>
 
-              <p className="text-sm md:text-base text-neutral-700 dark:text-white/70 max-w-md">
-                Every card is a fully managed unit you can plug into your
-                company: brand, engineering, AI, security and cloud.
+              <p className={`text-sm md:text-base ${UI.textSub} max-w-md`}>
+                Every card is a fully managed unit you can plug into your company: brand, engineering, AI, security and cloud.
               </p>
             </div>
 
             <div className="relative flex-1 mt-10 md:mt-12 flex items-center">
               <div
                 ref={servicesTrackRef}
-                className="flex items-stretch gap-4 md:gap-6 h-auto md:h-[420px] overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none scroll-pl-6 pr-6 pb-2"
+                className="
+                  flex items-stretch gap-4 sm:gap-5 md:gap-6
+                  overflow-x-auto md:overflow-visible
+                  snap-x snap-mandatory md:snap-none
+                  scroll-pl-4 sm:scroll-pl-6 pr-4 sm:pr-6 pb-3
+                  [-webkit-overflow-scrolling:touch]
+                "
               >
-                {services.map((service) => {
+                {services.map((service: any) => {
                   const Icon = service.icon;
                   return (
                     <Card
                       key={service.id}
-                      className="
-                      service-card-h relative flex-shrink-0
-                      w-[80vw] sm:w-[65vw] md:w-[440px]
-                      mr-2 md:mr-6
-                      rounded-xl p-6 md:p-7
-                      snap-start overflow-hidden
-                      border border-black/10 dark:border-white/10
-                      bg-white/70 dark:bg-white/[0.04]
-                      backdrop-blur-xl
-                      shadow-[0_18px_60px_rgba(0,0,0,0.12)]
-                      dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
-                      transition-all duration-300 ease-out
-                      hover:-translate-y-2 hover:scale-[1.02]
-                      hover:border-black/20 dark:hover:border-white/20
-                    "
+                      className={[
+                        "service-card-h relative flex-shrink-0",
+                        "w-[min(88vw,520px)] sm:w-[min(70vw,520px)] md:w-[460px] lg:w-[520px]",
+                        "rounded-2xl p-5 sm:p-6 md:p-7 snap-start overflow-hidden transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-[1.02]",
+                        UI.glassSoft,
+                        UI.border,
+                        "shadow-[0_18px_70px_rgba(0,0,0,0.78)] hover:border-white/20",
+                      ].join(" ")}
                     >
-                      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/10 to-transparent dark:via-white/20" />
-                      <div className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-blue-400/10 blur-3xl opacity-70" />
-                      <div className="pointer-events-none absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-sky-300/10 blur-3xl opacity-60" />
+                      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/18 to-transparent" />
+                      <div className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-emerald-300/8 blur-3xl opacity-70" />
+                      <div className="pointer-events-none absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-violet-300/8 blur-3xl opacity-60" />
 
                       <div className="relative flex h-full flex-col justify-between gap-4 z-10">
                         <div>
                           <div className="flex items-center justify-between gap-3 mb-4">
-                            <span className="text-[11px] uppercase tracking-[0.22em] text-neutral-600 dark:text-white/60">
-                              {service.tag}
-                            </span>
+                            <span className={`text-[11px] uppercase tracking-[0.22em] ${UI.textMuted}`}>{service.tag}</span>
 
-                            <div className="service-icon flex h-10 w-10 items-center justify-center rounded-2xl border border-blue-500/25 bg-blue-500/10 shadow-[0_0_22px_rgba(59,130,246,0.18)] dark:shadow-[0_0_26px_rgba(59,130,246,0.30)]">
-                              <Icon className="h-5 w-5 text-blue-600 dark:text-sky-200 drop-shadow-[0_0_12px_rgba(59,130,246,0.35)]" />
+                            <div className="service-icon flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] shadow-[0_0_22px_rgba(255,255,255,0.10)]">
+                              <Icon className="h-5 w-5 text-white/90 drop-shadow-[0_0_12px_rgba(255,255,255,0.10)]" />
                             </div>
                           </div>
 
-                          <h3 className="text-xl md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_16px_rgba(59,130,246,0.18)]">
-                            {service.label}
-                          </h3>
-
-                          <p className="text-sm text-neutral-700 dark:text-white/75 mt-2">
-                            {service.description}
-                          </p>
+                          <h3 className={`text-xl md:text-2xl font-semibold ${UI.accentText}`}>{service.label}</h3>
+                          <p className={`text-sm ${UI.textSub} mt-2`}>{service.description}</p>
                         </div>
 
-                        <ul className="space-y-1.5 text-xs md:text-sm text-neutral-700 dark:text-white/75 mt-4">
-                          {service.bullets.map((item, idx) => (
+                        <ul className={`space-y-1.5 text-xs md:text-sm ${UI.textSub} mt-4`}>
+                          {service.bullets.map((item: string, idx: number) => (
                             <li key={idx} className="flex gap-2 items-start">
-                              <span className="mt-1 h-[4px] w-[14px] rounded-full bg-black/15 dark:bg-white/20" />
+                              <span className="mt-1 h-[4px] w-[14px] rounded-full bg-white/20" />
                               <span>{item}</span>
                             </li>
                           ))}
@@ -2431,197 +2093,203 @@ const DevLayout: React.FC = () => {
                   );
                 })}
 
-                <div className="w-[80vw] sm:w-[65vw] md:w-[440px]" />
+                <div className="w-[min(88vw,520px)] sm:w-[min(70vw,520px)] md:w-[460px] lg:w-[520px]" />
               </div>
             </div>
           </div>
         </section>
 
-        {/* Portfolio — Cyber Command Center */}
-        <section
-          id="portfolio"
-          ref={portfolioSectionRef}
-          className="relative min-h-screen overflow-hidden"
-        >
+        {/* Portfolio */}
+        <section id="portfolio" ref={portfolioSectionRef} className="relative min-h-[100svh] overflow-hidden">
           <div className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-blue-500/16 blur-[160px]" />
-            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-sky-300/14 blur-[170px]" />
-
+            <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-white/8 blur-[190px]" />
+            <div className="absolute -bottom-52 -right-52 h-[620px] w-[620px] rounded-full bg-white/6 blur-[210px]" />
             <div
-              className="absolute inset-0 opacity-[0.30] dark:opacity-[0.35]
+              className="absolute inset-0 opacity-[0.22]
               [background-image:
-                linear-gradient(to_right,rgba(59,130,246,0.12)_1px,transparent_1px),
-                linear-gradient(to_bottom,rgba(14,165,233,0.12)_1px,transparent_1px)]
+                linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),
+                linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)]
               [background-size:40px_40px]"
             />
-
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/[0.06] dark:to-black/65" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/0 to-black/75" />
           </div>
 
-          <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-16 md:pt-24 md:pb-20 z-10">
+          <div className={`relative ${CONTAINER} pt-20 pb-16 md:pt-24 md:pb-20 z-10`}>
             <div className="space-y-3 max-w-2xl">
-              <p className="portfolio-kicker text-[11px] uppercase tracking-[0.28em] text-blue-700/80 dark:text-sky-300/80 drop-shadow-[0_0_12px_rgba(59,130,246,0.18)]">
-                Portfolio / Case Files
-              </p>
+              <p className={`portfolio-kicker text-[11px] uppercase tracking-[0.28em] ${UI.textMuted}`}>Portfolio / Case Files</p>
 
-              <h2 className="portfolio-title text-4xl md:text-5xl font-semibold leading-tight text-neutral-950 dark:text-white">
-                Proof of work —{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_22px_rgba(59,130,246,0.18)]">
-                  built to ship
-                </span>
-                .
+              <h2 className={`portfolio-title text-4xl md:text-5xl font-semibold leading-tight ${UI.textStrong}`}>
+                Proof of work — <span className={UI.accentText}>built to ship</span>.
               </h2>
 
-              <p className="portfolio-sub text-sm md:text-base text-neutral-700 dark:text-white/70">
-                Scroll to browse each case file. The panel updates like a
-                command console—clean, fast, and intentional.
+              <p className={`portfolio-sub text-sm md:text-base ${UI.textSub}`}>
+                Scroll to browse each case file. The panel updates like a command console—clean, fast, and intentional.
               </p>
             </div>
 
-            <div className="mt-10 md:mt-12 grid grid-cols-1 md:grid-cols-[0.44fr_0.56fr] gap-6 md:gap-8 items-stretch">
+            {/* MOBILE: list (prevents overlap) */}
+            <div className="md:hidden mt-8 space-y-4">
+              {PORTFOLIO.map((p) => (
+                <Card
+                  key={p.id}
+                  className={[
+                    "rounded-2xl p-5",
+                    UI.glassSoft,
+                    UI.border,
+                    "shadow-[0_18px_60px_rgba(0,0,0,0.65)]",
+                  ].join(" ")}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className={`text-[10px] uppercase tracking-[0.26em] ${UI.textMuted}`}>
+                        {p.id} · {p.year} · {p.status}
+                      </p>
+                      <h3 className="mt-2 text-xl font-semibold">
+                        <span className={UI.accentText}>{p.title}</span>
+                      </h3>
+                      <p className={`mt-2 text-sm ${UI.textSub}`}>{p.subtitle}</p>
+                    </div>
+
+                    {p.href ? (
+                      <a
+                        href={p.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 inline-flex items-center justify-center rounded-xl px-3 py-2 text-xs font-semibold bg-white text-black"
+                      >
+                        Visit ↗
+                      </a>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {p.tags.map((t) => (
+                      <span key={t} className="text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full border border-white/12 bg-white/[0.05] text-white/80">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {p.results.map((r, idx) => (
+                      <div key={idx} className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3">
+                        <p className={`text-sm ${UI.textSub}`}>{r}</p>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* DESKTOP: pinned console */}
+            <div className="hidden md:grid mt-10 md:mt-12 grid-cols-1 md:grid-cols-[0.44fr_0.56fr] gap-6 md:gap-8 items-stretch">
               {/* LEFT: index */}
               <div
-                className="
-                relative overflow-hidden rounded-3xl
-                border border-black/10 dark:border-white/10
-                bg-white/70 dark:bg-white/[0.04]
-                backdrop-blur-xl
-                shadow-[0_18px_60px_rgba(0,0,0,0.12)]
-                dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
-                transition-colors
-              "
+                className={[
+                  "relative overflow-hidden rounded-3xl transition-colors",
+                  UI.glassSoft,
+                  UI.border,
+                  "shadow-[0_18px_70px_rgba(0,0,0,0.78)]",
+                ].join(" ")}
               >
-                <div className="portfolio-glow pointer-events-none absolute -inset-20 -z-10 rounded-full bg-blue-500/10 blur-[120px]" />
+                <div className="portfolio-glow pointer-events-none absolute -inset-20 -z-10 rounded-full bg-white/8 blur-[140px]" />
 
-                <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.55]">
-                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-blue-400/12" />
-                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-300/10" />
-                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[220px] w-[220px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-300/8" />
+                <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.45]">
+                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
+                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/8" />
+                  <div className="portfolio-radar absolute left-1/2 top-1/2 h-[220px] w-[220px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/6" />
                 </div>
 
                 <div className="relative p-6 md:p-7">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-600 dark:text-white/60">
-                      Index
-                    </p>
-                    <span className="text-[10px] uppercase tracking-[0.22em] text-sky-500/90 dark:text-sky-300/90">
-                      scroll-controlled
-                    </span>
+                    <p className={`text-xs uppercase tracking-[0.22em] ${UI.textMuted}`}>Index</p>
+                    <span className={`text-[10px] uppercase tracking-[0.22em] ${UI.textMuted}`}>scroll-controlled</span>
                   </div>
 
                   <div className="mt-5 space-y-2">
-                    {PORTFOLIO.map((p, i) => (
+                    {PORTFOLIO.map((p: any, i: number) => (
                       <div
                         key={p.id}
                         data-portfolio-item
-                        className="
-                        group relative rounded-2xl px-4 py-3
-                        border border-black/10 dark:border-white/10
-                        bg-white/55 dark:bg-white/[0.03]
-                        backdrop-blur-md
-                        transition-colors
-                      "
+                        className="group relative rounded-2xl px-4 py-3 border border-white/10 bg-white/[0.04] backdrop-blur-md transition-colors"
                       >
                         <div
                           className="
-                          pointer-events-none absolute inset-0 rounded-2xl opacity-0
-                          group-[&[data-active='true']]:opacity-100
-                          transition-opacity
-                          bg-gradient-to-r from-blue-500/10 via-sky-400/10 to-blue-500/10
-                        "
+                            pointer-events-none absolute inset-0 rounded-2xl opacity-0
+                            group-[&[data-active='true']]:opacity-100
+                            transition-opacity
+                            bg-gradient-to-r from-white/8 via-white/10 to-white/8
+                          "
                         />
 
                         <div className="relative flex items-start justify-between gap-4">
                           <div>
-                            <p className="text-[10px] uppercase tracking-[0.26em] text-neutral-600 dark:text-white/60">
+                            <p className={`text-[10px] uppercase tracking-[0.26em] ${UI.textMuted}`}>
                               {p.id} · {p.year}
                             </p>
-                            <p className="mt-1 text-sm font-semibold text-neutral-950 dark:text-white">
-                              {p.title}
-                            </p>
-                            <p className="mt-1 text-xs text-neutral-700 dark:text-white/70">
-                              {p.subtitle}
-                            </p>
+                            <p className="mt-1 text-sm font-semibold text-white/92">{p.title}</p>
+                            <p className={`mt-1 text-xs ${UI.textSub}`}>{p.subtitle}</p>
                           </div>
 
                           <div className="flex flex-col items-end gap-2 shrink-0">
                             <span
-                              className={`
-                              text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full border
-                              ${
+                              className={[
+                                "text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full border",
                                 p.status === "SOON"
-                                  ? "border-blue-500/35 bg-blue-500/10 text-blue-700 dark:text-sky-200 shadow-[0_0_18px_rgba(59,130,246,0.16)]"
-                                  : "border-sky-400/30 bg-sky-400/10 text-sky-700 dark:text-sky-200"
-                              }
-                            `}
+                                  ? "border-white/18 bg-white/[0.06] text-white/90"
+                                  : "border-white/12 bg-white/[0.05] text-white/80",
+                              ].join(" ")}
                             >
                               {p.status === "SOON" ? "SOON" : "LIVE"}
                             </span>
 
-                            <span className="text-[10px] text-neutral-600 dark:text-white/55">
-                              #{String(i + 1).padStart(2, "0")}
-                            </span>
+                            <span className={`text-[10px] ${UI.textMuted}`}>#{String(i + 1).padStart(2, "0")}</span>
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  <div className="pointer-events-none absolute right-4 top-6 bottom-6 w-[2px] rounded-full bg-blue-400/15 overflow-hidden">
-                    <div className="portfolio-needle absolute inset-0 bg-gradient-to-b from-blue-500 via-sky-300 to-blue-600" />
+                  <div className="pointer-events-none absolute right-4 top-6 bottom-6 w-[2px] rounded-full bg-white/10 overflow-hidden">
+                    <div className="portfolio-needle absolute inset-0 bg-gradient-to-b from-emerald-300/25 via-white/20 to-violet-300/20" />
                   </div>
                 </div>
               </div>
 
               {/* RIGHT: active case file */}
               <div
-                className="
-                relative overflow-hidden rounded-3xl
-                border border-black/10 dark:border-white/10
-                bg-white/70 dark:bg-white/[0.04]
-                backdrop-blur-xl
-                shadow-[0_18px_60px_rgba(0,0,0,0.12)]
-                dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
-                transition-colors
-              "
+                className={[
+                  "relative overflow-hidden rounded-3xl transition-colors",
+                  UI.glassSoft,
+                  UI.border,
+                  "shadow-[0_18px_70px_rgba(0,0,0,0.78)]",
+                ].join(" ")}
               >
-                <div className="portfolio-scan pointer-events-none absolute left-0 right-0 top-[-60px] h-10 opacity-0 bg-gradient-to-r from-transparent via-blue-400/35 to-transparent blur-md" />
+                <div className="portfolio-scan pointer-events-none absolute left-0 right-0 top-[-60px] h-10 opacity-0 bg-gradient-to-r from-transparent via-white/18 to-transparent blur-md" />
 
-                <div className="pointer-events-none absolute -top-28 -right-28 h-72 w-72 rounded-full bg-blue-400/12 blur-3xl" />
-                <div className="pointer-events-none absolute -bottom-28 -left-28 h-80 w-80 rounded-full bg-sky-300/12 blur-3xl" />
+                <div className="pointer-events-none absolute -top-28 -right-28 h-72 w-72 rounded-full bg-emerald-300/8 blur-3xl" />
+                <div className="pointer-events-none absolute -bottom-28 -left-28 h-80 w-80 rounded-full bg-violet-300/8 blur-3xl" />
 
                 <div className="relative p-6 md:p-7 h-full">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-600 dark:text-white/60">
-                      Active Case File
-                    </p>
-                    <p className="text-[10px] uppercase tracking-[0.22em] text-blue-700/80 dark:text-sky-300/80">
-                      verified output
-                    </p>
+                    <p className={`text-xs uppercase tracking-[0.22em] ${UI.textMuted}`}>Active Case File</p>
+                    <p className={`text-[10px] uppercase tracking-[0.22em] ${UI.textMuted}`}>verified output</p>
                   </div>
 
-                  <div className="mt-5 relative min-h-[360px] md:min-h-[420px]">
-                    {PORTFOLIO.map((p) => (
-                      <div
-                        key={p.id}
-                        data-portfolio-panel
-                        className="absolute inset-0"
-                      >
+                  <div className="mt-5 relative min-h-[420px]">
+                    {PORTFOLIO.map((p: any) => (
+                      <div key={p.id} data-portfolio-panel className="absolute inset-0">
                         <div className="flex items-start justify-between gap-4">
                           <div className="space-y-2">
-                            <p className="text-[10px] uppercase tracking-[0.26em] text-neutral-600 dark:text-white/60">
+                            <p className={`text-[10px] uppercase tracking-[0.26em] ${UI.textMuted}`}>
                               {p.id} · {p.year}
                             </p>
 
-                            <h3 className="text-2xl md:text-3xl font-semibold leading-tight">
-                              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_18px_rgba(59,130,246,0.18)]">
-                                {p.title}
-                              </span>
+                            <h3 className="text-3xl font-semibold leading-tight">
+                              <span className={UI.accentText}>{p.title}</span>
                             </h3>
 
-                            <p className="text-sm md:text-base text-neutral-700 dark:text-white/75 max-w-xl">
-                              {p.subtitle}
-                            </p>
+                            <p className={`text-base ${UI.textSub} max-w-xl`}>{p.subtitle}</p>
                           </div>
 
                           {p.href ? (
@@ -2630,65 +2298,47 @@ const DevLayout: React.FC = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               className="
-                              inline-flex items-center justify-center
-                              rounded-2xl px-4 py-2 text-xs font-semibold
-                              bg-blue-600 text-white hover:bg-blue-700
-                              shadow-[0_18px_60px_rgba(59,130,246,0.18)]
-                              hover:scale-[1.02] active:scale-[0.98]
-                              transition-transform
-                            "
+                                inline-flex items-center justify-center
+                                rounded-2xl px-4 py-2 text-xs font-semibold
+                                bg-white text-black hover:bg-white/90
+                                shadow-[0_18px_60px_rgba(0,0,0,0.45)]
+                                hover:scale-[1.02] active:scale-[0.98]
+                                transition-transform
+                              "
                             >
                               Visit ↗
                             </a>
                           ) : (
-                            <div className="text-[10px] uppercase tracking-[0.22em] px-3 py-2 rounded-2xl border border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-sky-200">
+                            <div className="text-[10px] uppercase tracking-[0.22em] px-3 py-2 rounded-2xl border border-white/12 bg-white/[0.06] text-white/85">
                               Internal
                             </div>
                           )}
                         </div>
 
                         <div className="mt-5 flex flex-wrap gap-2">
-                          {p.tags.map((t) => (
-                            <span
-                              key={t}
-                              className="text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full border border-blue-500/20 bg-blue-500/10 text-neutral-800 dark:text-white/80"
-                            >
+                          {p.tags.map((t: string) => (
+                            <span key={t} className="text-[10px] uppercase tracking-[0.22em] px-2 py-1 rounded-full border border-white/12 bg-white/[0.05] text-white/80">
                               {t}
                             </span>
                           ))}
                         </div>
 
                         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {p.results.map((r, idx) => (
-                            <div
-                              key={idx}
-                              className="
-                              rounded-2xl p-4
-                              border border-black/10 dark:border-white/10
-                              bg-white/55 dark:bg-white/[0.03]
-                              backdrop-blur-md
-                              transition-colors
-                            "
-                            >
+                          {p.results.map((r: string, idx: number) => (
+                            <div key={idx} className="rounded-2xl p-4 border border-white/10 bg-white/[0.04] backdrop-blur-md">
                               <div className="flex items-start gap-3">
-                                <span className="mt-2 h-[4px] w-[14px] rounded-full bg-sky-400/75 shadow-[0_0_16px_rgba(14,165,233,0.25)]" />
-                                <p className="text-sm text-neutral-700 dark:text-white/75">
-                                  {r}
-                                </p>
+                                <span className="mt-2 h-[4px] w-[14px] rounded-full bg-white/25 shadow-[0_0_16px_rgba(255,255,255,0.10)]" />
+                                <p className={`text-sm ${UI.textSub}`}>{r}</p>
                               </div>
                             </div>
                           ))}
                         </div>
 
                         {p.status === "SOON" && (
-                          <div className="mt-6 rounded-2xl border border-blue-500/25 bg-blue-500/10 p-4">
-                            <p className="text-[11px] uppercase tracking-[0.26em] text-blue-700 dark:text-sky-200">
-                              Launch notice
-                            </p>
-                            <p className="mt-2 text-sm text-neutral-700 dark:text-white/75">
-                              We’re launching our own product soon. If you want
-                              early access, hit the footer email and we’ll
-                              whitelist you.
+                          <div className="mt-6 rounded-2xl border border-white/12 bg-white/[0.06] p-4">
+                            <p className="text-[11px] uppercase tracking-[0.26em] text-white/90">Launch notice</p>
+                            <p className={`mt-2 text-sm ${UI.textSub}`}>
+                              We’re launching our own product soon. If you want early access, hit the footer email and we’ll whitelist you.
                             </p>
                           </div>
                         )}
@@ -2696,7 +2346,7 @@ const DevLayout: React.FC = () => {
                     ))}
                   </div>
 
-                  <div className="mt-6 pt-5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs text-neutral-600 dark:text-white/55">
+                  <div className="mt-6 pt-5 border-t border-white/10 flex items-center justify-between text-xs text-white/55">
                     <span className="font-mono">SCROLL: NEXT_CASE</span>
                     <span className="font-mono">STATUS: OK</span>
                   </div>
@@ -2707,188 +2357,129 @@ const DevLayout: React.FC = () => {
         </section>
 
         {/* Brand circles */}
-        <section
-          ref={brandCirclesSectionRef}
-          className="relative min-h-screen overflow-hidden"
-        >
+        <section ref={brandCirclesSectionRef} className="relative min-h-[100svh] overflow-hidden">
           <div className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute -top-48 -left-48 h-[620px] w-[620px] rounded-full bg-blue-500/16 blur-[160px]" />
-            <div className="absolute top-1/3 -right-52 h-[680px] w-[680px] rounded-full bg-sky-300/14 blur-[180px]" />
-            <div className="absolute -bottom-56 left-1/2 -translate-x-1/2 h-[720px] w-[720px] rounded-full bg-blue-500/10 blur-[190px]" />
-
-            <div className="absolute inset-0 bg-gradient-to-b from-white/85 via-white/65 to-white/85 dark:from-black/55 dark:via-black/35 dark:to-black/65" />
-            <div
-              className="
-              absolute inset-0 opacity-[0.16] dark:opacity-[0.12]
-              [background-image:
-                linear-gradient(to_right,rgba(59,130,246,0.16)_1px,transparent_1px),
-                linear-gradient(to_bottom,rgba(14,165,233,0.14)_1px,transparent_1px)]
-              [background-size:44px_44px]
-            "
-            />
+            <div className="absolute -top-48 -left-48 h-[620px] w-[620px] rounded-full bg-emerald-300/8 blur-[220px]" />
+            <div className="absolute top-1/3 -right-52 h-[680px] w-[680px] rounded-full bg-violet-300/8 blur-[240px]" />
+            <div className="absolute -bottom-56 left-1/2 -translate-x-1/2 h-[720px] w-[720px] rounded-full bg-white/6 blur-[260px]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/45 to-black/75" />
+            <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:44px_44px]" />
           </div>
 
-          <div className="max-w-6xl mx-auto px-6 py-24 flex flex-col items-center gap-12 relative z-10">
-            <div
-              id="brand-circles-heading"
-              className="text-center space-y-3 max-w-2xl"
-            >
-              <p className="text-xs uppercase tracking-[0.25em] text-neutral-700 dark:text-white/60">
-                Color System
-              </p>
+          <div className={`${CONTAINER} py-24 flex flex-col items-center gap-12 relative z-10`}>
+            <div id="brand-circles-heading" className="text-center space-y-3 max-w-2xl">
+              <p className={`text-xs uppercase tracking-[0.25em] ${UI.textMuted}`}>Color System</p>
 
-              <h2 className="text-3xl md:text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_20px_rgba(59,130,246,0.18)]">
+              <h2 className={`text-3xl md:text-4xl font-semibold ${UI.accentText}`}>
                 Every great brand starts with disciplined color language.
               </h2>
 
-              <p className="text-sm md:text-base text-neutral-700 dark:text-white/70">
-                Tap a tile to copy the HEX. On desktop, scroll reveals the
-                system.
+              <p className={`text-sm md:text-base ${UI.textSub}`}>
+                Tap a tile to copy the HEX. On desktop, scroll reveals the system.
               </p>
             </div>
 
             <div
               className="
-              pointer-events-none absolute inset-0 flex items-center justify-center
-              text-[40vw] md:text-[28vw]
-              font-black leading-none
-              text-blue-500/[0.05] dark:text-white/[0.06]
-              select-none -z-10
-            "
+                pointer-events-none absolute inset-0 flex items-center justify-center
+                text-[40vw] md:text-[28vw]
+                font-black leading-none
+                text-white/[0.04]
+                select-none -z-10
+              "
             >
-              Aa
+              <span className="brand-aa">Aa</span>
             </div>
 
-            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl">
-              {brandColors.map((c) => (
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {brandColors.map((c: any) => (
                 <button
                   key={c.id}
                   type="button"
-                  className="
-                  brand-circle-wrapper group relative overflow-hidden text-left
-                  rounded-3xl
-                  border border-black/10 dark:border-white/10
-                  bg-white/65 dark:bg-white/[0.04]
-                  backdrop-blur-xl
-                  shadow-[0_18px_70px_rgba(0,0,0,0.14)]
-                  dark:shadow-[0_18px_70px_rgba(0,0,0,0.70)]
-                  transition-transform duration-300
-                  hover:-translate-y-1
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/40
-                "
+                  className={[
+                    "brand-circle-wrapper group relative overflow-hidden text-left rounded-3xl transition-transform duration-300 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20",
+                    UI.glassSoft,
+                    UI.border,
+                    "shadow-[0_18px_70px_rgba(0,0,0,0.78)]",
+                  ].join(" ")}
                   aria-label={`Copy ${c.label} ${c.hex}`}
                   onClick={() => navigator.clipboard?.writeText(c.hex)}
                 >
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/25 to-transparent" />
-                  <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-blue-400/12 blur-3xl opacity-80" />
-                  <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-sky-300/10 blur-3xl opacity-70" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/14 to-transparent" />
+                  <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-white/8 blur-3xl opacity-80" />
+                  <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-white/6 blur-3xl opacity-70" />
 
                   <div className="relative z-10 p-5 md:p-6">
                     <div className="flex items-start justify-between gap-4">
                       <div className="space-y-1">
-                        <p className="text-[10px] uppercase tracking-[0.28em] text-neutral-700 dark:text-white/60">
-                          {c.label}
-                        </p>
-                        <p className="font-mono text-sm text-neutral-950 dark:text-white">
-                          {c.hex}
-                        </p>
+                        <p className={`text-[10px] uppercase tracking-[0.28em] ${UI.textMuted}`}>{c.label}</p>
+                        <p className="font-mono text-sm text-white/92">{c.hex}</p>
                       </div>
 
-                      <span className="text-[10px] uppercase tracking-[0.22em] text-blue-700/80 dark:text-sky-300/80">
-                        copy ↗
-                      </span>
+                      <span className={`text-[10px] uppercase tracking-[0.22em] ${UI.textMuted}`}>copy ↗</span>
                     </div>
 
-                    <div className="brand-circle relative mt-4 h-40 rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 shadow-[0_14px_50px_rgba(0,0,0,0.12)] dark:shadow-[0_14px_60px_rgba(0,0,0,0.55)]">
-                      <div
-                        className={`absolute inset-0 bg-gradient-to-tr ${c.gradientClass}`}
-                      />
-                      <div
-                        className="
-                        pointer-events-none absolute inset-0 opacity-30 dark:opacity-20
-                        [background-image:linear-gradient(to_bottom,rgba(0,0,0,0.12)_1px,transparent_1px)]
-                        [background-size:100%_12px]
-                      "
-                      />
+                    <div className="brand-circle relative mt-4 h-40 rounded-2xl overflow-hidden border border-white/10 shadow-[0_14px_60px_rgba(0,0,0,0.60)]">
+                      <div className={`absolute inset-0 bg-gradient-to-tr ${c.gradientClass}`} />
+                      <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:linear-gradient(to_bottom,rgba(0,0,0,0.12)_1px,transparent_1px)] [background-size:100%_12px]" />
                     </div>
 
-                    <div className="mt-4 flex items-center justify-between text-[10px] uppercase tracking-[0.26em] text-neutral-700 dark:text-white/60">
+                    <div className={`mt-4 flex items-center justify-between text-[10px] uppercase tracking-[0.26em] ${UI.textMuted}`}>
                       <span className="inline-flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-sky-400/80 shadow-[0_0_14px_rgba(14,165,233,0.35)]" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-white/45 shadow-[0_0_14px_rgba(255,255,255,0.10)]" />
                         token
                       </span>
                       <span className="font-mono">{c.id}</span>
                     </div>
                   </div>
 
-                  <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ring-1 ring-sky-400/20" />
+                  <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ring-1 ring-white/15" />
                 </button>
               ))}
             </div>
 
-            <div
-              id="brand-quote"
-              className="max-w-2xl text-center text-base md:text-lg text-neutral-800 dark:text-white/85"
-            >
-              “Branding isn&apos;t just how you look. It&apos;s a repeatable
-              pattern of choices that makes you unmistakable — even when the
-              logo is nowhere on screen.”
+            <div id="brand-quote" className="max-w-2xl text-center text-base md:text-lg text-white/85">
+              “Branding isn&apos;t just how you look. It&apos;s a repeatable pattern of choices that makes you unmistakable — even when the logo is nowhere on screen.”
             </div>
           </div>
         </section>
 
         {/* Giant A */}
-        <section
-          ref={giantASectionRef}
-          className="relative min-h-screen flex bg-white dark:bg-black items-center justify-center overflow-hidden transition-colors"
-        >
-          <div
-            ref={giantARef}
-            className="font-black tracking-tight leading-none select-none relative z-10"
-          >
-            <span className="block font-[family-name:var(--font-revamped)] text-[22vw] md:text-[18vw] lg:text-[16vw] text-transparent bg-clip-text bg-gradient-to-b from-black via-nuetral-800 to-black dark:from-white dark:via-nuetral-200 dark:to-white">
+        <section ref={giantASectionRef} className="relative min-h-[100svh] flex items-center justify-center overflow-hidden transition-colors">
+          <div ref={giantARef} className="font-black tracking-tight leading-none select-none relative z-10">
+            <span className={`block font-[family-name:var(--font-revamped)] text-[95vw] md:text-[18vw] lg:text-[16vw]`}>
               A
             </span>
           </div>
         </section>
 
         {/* Outro */}
-        <section className="fade-section relative min-h-screen flex items-center justify-center">
-          <div className="max-w-3xl px-6 text-center space-y-4 relative z-10">
-            <h2 className="text-4xl md:text-5xl font-semibold text-neutral-950 dark:text-white">
+        <section className="fade-section relative min-h-[100svh] flex items-center justify-center">
+          <div className="max-w-3xl px-4 sm:px-6 text-center space-y-4 relative z-10">
+            <h2 className={`text-4xl md:text-5xl font-semibold ${UI.textStrong}`}>
               Elite Engineering, AI & Security on Subscription.
             </h2>
-            <p className="text-lg text-neutral-700 dark:text-white/70">
-              Plug in a senior, cross-functional team that covers branding,
-              product, AI automation, personal agents, security and cloud —
-              instead of stitching five agencies together.
+            <p className={`text-lg ${UI.textSub}`}>
+              Plug in a senior, cross-functional team that covers branding, product, AI automation, personal agents, security and cloud — instead of stitching five agencies together.
             </p>
           </div>
         </section>
 
         {/* Footer */}
-        <section
-          ref={footerSectionRef}
-          className="relative min-h-[90vh] md:min-h-screen overflow-hidden"
-        >
-          <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-14 md:pt-24 md:pb-16 h-full flex flex-col justify-between">
+        <section ref={footerSectionRef} className="relative min-h-[90svh] md:min-h-[100svh] overflow-hidden">
+          <div className={`relative ${CONTAINER} pt-20 pb-14 md:pt-24 md:pb-16 h-full flex flex-col justify-between`}>
             <div className="footer-inner space-y-10">
               <div className="footer-head space-y-3">
-                <p className="text-[11px] uppercase tracking-[0.28em] text-neutral-600 dark:text-white/60">
+                <p className={`text-[11px] uppercase tracking-[0.28em] ${UI.textMuted}`}>
                   Let’s build something dangerous (in a good way)
                 </p>
 
-                <h2 className="footer-title text-4xl md:text-5xl font-semibold leading-tight text-neutral-950 dark:text-white">
-                  Ready to ship a{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 drop-shadow-[0_0_22px_rgba(59,130,246,0.18)]">
-                    premium
-                  </span>{" "}
-                  product?
+                <h2 className={`footer-title text-4xl md:text-5xl font-semibold leading-tight ${UI.textStrong}`}>
+                  Ready to ship a <span className={UI.accentText}>premium</span> product?
                 </h2>
 
-                <p className="footer-sub text-sm md:text-base text-neutral-700 dark:text-white/70 max-w-2xl">
-                  Brand, engineering, AI, security and cloud — one team, one
-                  system, one delivery standard.
+                <p className={`footer-sub text-sm md:text-base ${UI.textSub} max-w-2xl`}>
+                  Brand, engineering, AI, security and cloud — one team, one system, one delivery standard.
                 </p>
               </div>
 
@@ -2898,13 +2489,13 @@ const DevLayout: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="
-                  inline-flex items-center justify-center
-                  rounded-2xl px-5 py-3 text-sm font-semibold
-                  bg-blue-600 text-white hover:bg-blue-700
-                  shadow-[0_18px_60px_rgba(59,130,246,0.18)]
-                  hover:scale-[1.02] active:scale-[0.98]
-                  transition
-                "
+                    inline-flex items-center justify-center
+                    rounded-2xl px-5 py-3 text-sm font-semibold
+                    bg-white text-black hover:bg-white/90
+                    shadow-[0_18px_60px_rgba(0,0,0,0.45)]
+                    hover:scale-[1.02] active:scale-[0.98]
+                    transition
+                  "
                 >
                   Book a call
                 </a>
@@ -2912,58 +2503,46 @@ const DevLayout: React.FC = () => {
                 <a
                   href="mailto:business@algorimsoft.com"
                   className="
-                  inline-flex items-center justify-center
-                  rounded-2xl px-5 py-3 text-sm font-semibold
-                  border border-black/10 dark:border-white/12
-                  bg-white/70 dark:bg-white/[0.04]
-                  backdrop-blur-xl
-                  hover:border-blue-500/30
-                  transition-colors
-                  text-neutral-950 dark:text-white
-                "
+                    inline-flex items-center justify-center
+                    rounded-2xl px-5 py-3 text-sm font-semibold
+                    border border-white/12
+                    bg-white/[0.05]
+                    backdrop-blur-xl
+                    hover:border-white/20
+                    transition-colors
+                    text-white/90
+                  "
                 >
                   business@algorimsoft.com
                 </a>
               </div>
 
               <div className="footer-contact space-y-4 pt-4">
-                <p className="text-xs uppercase tracking-[0.22em] text-neutral-600 dark:text-white/60">
-                  Contact
-                </p>
+                <p className={`text-xs uppercase tracking-[0.22em] ${UI.textMuted}`}>Contact</p>
 
                 <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {FOOTER_CONTACTS.map((c) => (
+                  {FOOTER_CONTACTS.map((c: any) => (
                     <li
                       key={c.country}
                       className="
-                      group flex items-center justify-between gap-3
-                      rounded-2xl
-                      border border-black/10 dark:border-white/10
-                      bg-white/65 dark:bg-white/[0.04]
-                      backdrop-blur-xl
-                      px-4 py-3
-                      transition-all
-                      hover:border-blue-500/25
-                      hover:-translate-y-[1px]
-                    "
+                        group flex items-center justify-between gap-3
+                        rounded-2xl
+                        border border-white/10
+                        bg-white/[0.04]
+                        backdrop-blur-xl
+                        px-4 py-3
+                        transition-all
+                        hover:border-white/20
+                        hover:-translate-y-[1px]
+                      "
                     >
-                      <span className="text-[11px] uppercase tracking-[0.22em] text-neutral-600 dark:text-white/60">
-                        {c.country}
-                      </span>
+                      <span className={`text-[11px] uppercase tracking-[0.22em] ${UI.textMuted}`}>{c.country}</span>
 
                       <a
                         href={`tel:${toTel(c.phone)}`}
-                        className="
-                        font-mono text-sm
-                        text-neutral-950 dark:text-white
-                        inline-flex items-center gap-2
-                        opacity-90 group-hover:opacity-100
-                        transition-opacity
-                      "
+                        className="font-mono text-sm text-white/92 inline-flex items-center gap-2 opacity-90 group-hover:opacity-100 transition-opacity"
                       >
-                        <span className="hidden sm:inline text-[10px] opacity-60">
-                          ↗
-                        </span>
+                        <span className="hidden sm:inline text-[10px] opacity-60">↗</span>
                         {c.phone}
                       </a>
                     </li>
@@ -2972,30 +2551,22 @@ const DevLayout: React.FC = () => {
               </div>
 
               <div className="footer-grid grid grid-cols-2 md:grid-cols-4 gap-8 pt-6">
-                {FOOTER_LINKS.map((col) => (
+                {FOOTER_LINKS.map((col: any) => (
                   <div key={col.title} className="footer-col space-y-3">
-                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-600 dark:text-white/60">
-                      {col.title}
-                    </p>
+                    <p className={`text-xs uppercase tracking-[0.22em] ${UI.textMuted}`}>{col.title}</p>
 
-                    <ul className="space-y-2 text-sm text-neutral-800 dark:text-white/80">
-                      {col.links.map((link) => (
+                    <ul className="space-y-2 text-sm text-white/80">
+                      {col.links.map((link: any) => (
                         <li key={link.label}>
                           <a
                             href={link.href}
-                            onClick={(e) =>
-                              handleAnchorClick(e, link.href, link.external)
-                            }
+                            onClick={(e) => handleAnchorClick(e, link.href, link.external)}
                             target={link.external ? "_blank" : undefined}
-                            rel={
-                              link.external ? "noopener noreferrer" : undefined
-                            }
+                            rel={link.external ? "noopener noreferrer" : undefined}
                             className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
                           >
                             {link.label}
-                            {link.external && (
-                              <span className="text-[10px] opacity-60">↗</span>
-                            )}
+                            {link.external && <span className="text-[10px] opacity-60">↗</span>}
                           </a>
                         </li>
                       ))}
@@ -3005,18 +2576,16 @@ const DevLayout: React.FC = () => {
               </div>
             </div>
 
-            <div className="footer-bottom mt-14 pt-8 border-t border-black/10 dark:border-white/10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-              <p className="text-xs text-neutral-600 dark:text-white/60">
-                © {new Date().getFullYear()} Algorim. All rights reserved.
-              </p>
+            <div className="footer-bottom mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+              <p className={`text-xs ${UI.textMuted}`}>© {new Date().getFullYear()} Algorim. All rights reserved.</p>
 
-              <div className="flex items-center gap-3 text-xs text-neutral-600 dark:text-white/60">
-                <span className="footer-dot inline-block h-2 w-2 rounded-full bg-sky-400/80 shadow-[0_0_16px_rgba(14,165,233,0.35)]" />
+              <div className={`flex items-center gap-3 text-xs ${UI.textMuted}`}>
+                <span className="footer-dot inline-block h-2 w-2 rounded-full bg-white/45 shadow-[0_0_16px_rgba(255,255,255,0.10)]" />
                 <span>Build fast · Ship safe · Look premium</span>
               </div>
             </div>
 
-            <div className="footer-glow pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[520px] w-[520px] rounded-full bg-blue-500/10 blur-[140px] -z-10" />
+            <div className="footer-glow pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[520px] w-[520px] rounded-full bg-white/8 blur-[190px] -z-10" />
           </div>
         </section>
       </main>

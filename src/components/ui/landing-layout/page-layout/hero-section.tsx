@@ -8,7 +8,7 @@ import { Button } from "../../button";
 
 const HeroSection = () => {
   return (
-    <section className="min-h-screen flex items-center justify-center bg-black">
+    <section className="min-h-screen flex items-center justify-center">
       <div className="relative w-full h-[90vh] lg:h-screen overflow-hidden">
         {/* Background Lottie Animation */}
         <Lottie
