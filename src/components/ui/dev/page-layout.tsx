@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useLayoutEffect, useRef, useEffect, useCallback } from "react";
+import React, { useLayoutEffect, useRef, useCallback } from "react";
 import { useLenis } from "lenis/react";
 import { Card } from "../card";
 import dynamic from "next/dynamic";
@@ -683,10 +683,6 @@ const DevLayout: React.FC = () => {
   const footerSectionRef = useRef<HTMLElement | null>(null);
   const portfolioSectionRef = useRef<HTMLElement | null>(null);
   const ctaSectionRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    (World as any)?.preload?.();
-  }, []);
 
   const handleAnchorClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, href: string, external?: boolean) => {
