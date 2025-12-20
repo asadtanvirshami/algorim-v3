@@ -282,7 +282,7 @@ const globeArcs = [
 ];
 
 const World = dynamic(() => import("../../../globe").then((m) => m.World), {
-  ssr: false,
+  ssr: true,
   loading: () => (
     <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-br from-white/10 via-white/5 to-white/10" />
   ),

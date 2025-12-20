@@ -5,9 +5,6 @@
 import React, { useLayoutEffect, useRef } from "react";
 import { useLenis } from "lenis/react";
 
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
 import HeroOverlay from "../landing-layout/page-layout/sections/hero_overlay";
 import IntroSection from "../landing-layout/page-layout/sections/intro-section";
 import ProcessSection from "../landing-layout/page-layout/sections/process-section";
@@ -48,11 +45,13 @@ const UI = {
   accentText:
     "text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-cyan-200 to-cyan-300",
 };
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const DevLayout: React.FC = () => {
   const lenis = useLenis(); // must be provided by <ReactLenis root />
 
-  const layoutRef = useRef<HTMLElement | null>(null);
+  const layoutRef = useRef<HTMLDivElement | null>(null);
   const heroScrollRef = useRef<HTMLElement | null>(null);
   const pinnedSectionRef = useRef<HTMLDivElement | null>(null);
   const whoSectionRef = useRef<HTMLElement | null>(null);
@@ -1189,7 +1188,7 @@ const DevLayout: React.FC = () => {
         />
       </div>
 
-      <main
+      <div
         ref={layoutRef}
         className="relative font-[family-name:var(--font-redhat)]"
       >
@@ -1245,7 +1244,7 @@ const DevLayout: React.FC = () => {
           UI={UI}
           lenis={lenis}
         />
-      </main>
+      </div>
     </div>
   );
 };
