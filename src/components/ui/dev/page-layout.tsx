@@ -1161,7 +1161,7 @@ const DevLayout: React.FC = () => {
         gsap.ticker.remove(ticker);
       }
     };
-  }, [lenis]);
+  }, []);
 
   return (
     <div

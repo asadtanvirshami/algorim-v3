@@ -7,6 +7,7 @@ import SEO from "@/components/seo/seo-head";
 
 // ✅ Code-split DevLayout for faster first paint
 const DevLayout = dynamic(() => import("@/components/ui/dev/page-layout"), {
+  ssr: false,
   loading: () => null, // we handle loader ourselves
 });
 
