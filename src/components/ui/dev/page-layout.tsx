@@ -7,7 +7,7 @@ import { useLenis } from "lenis/react";
 
 import HeroOverlay from "../landing-layout/page-layout/sections/hero_overlay";
 import IntroSection from "../landing-layout/page-layout/sections/intro-section";
-import ProcessSection from "../landing-layout/page-layout/sections/process-section";
+// import ProcessSection from "../landing-layout/page-layout/sections/process-section";
 import AboutSection from "../landing-layout/page-layout/sections/about-section";
 import ServicesSection from "../landing-layout/page-layout/sections/services-section";
 import CreativitySection from "../landing-layout/page-layout/sections/creativity-section";
@@ -1194,12 +1194,12 @@ const DevLayout: React.FC = () => {
       >
         <HeroOverlay heroScrollRef={heroScrollRef} />
         <IntroSection UI={UI} />
-
+        {/* 
         <ProcessSection
           pinnedSectionRef={pinnedSectionRef}
           UI={UI}
           CONTAINER={CONTAINER}
-        />
+        /> */}
         <AboutSection
           whoSectionRef={whoSectionRef}
           UI={UI}
