@@ -2,8 +2,7 @@
 import React from "react";
 import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
-import Lottie from "lottie-react";
-import animationData from "../../../../../../public/assets/hero/Scene.json";
+
 import { Button } from "../../../button";
 
 const HeroSection = () => {
@@ -11,12 +10,12 @@ const HeroSection = () => {
     <section  data-anim="hero" className="min-h-screen flex items-center justify-center">
       <div className="relative w-full h-[90vh] lg:h-screen overflow-hidden">
         {/* Background Lottie Animation */}
-        <Lottie
+        {/* <Lottie
           animationData={animationData}
           loop
           autoplay
           className="absolute inset-0 w-screen h-full object-contain z-0 opacity-30 pointer-events-none"
-        />
+        /> */}
 
         {/* Gradient Overlay (optional for contrast) */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/20 to-transparent z-0" />

@@ -7,8 +7,7 @@ import SEO from "@/components/seo/seo-head";
 
 // ✅ Code-split DevLayout for faster first paint
 const DevLayout = dynamic(() => import("@/components/ui/dev/page-layout"), {
-  ssr: false,
-  loading: () => null, // we handle loader ourselves
+
 });
 
 /** =========================
@@ -59,10 +58,10 @@ function PageLoader({
           <div className="flex items-center gap-3">
             {/* “A” mark */}
             <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white/[0.06] ring-1 ring-white/10 backdrop-blur-xl">
-              <span className="text-lg font-semibold tracking-tight">A</span>
+              <span className="text-lg font-semibold tracking-tight  font-[family-name:var(--font-revamped)] ">A</span>
             </div>
             <div className="leading-tight">
-              <div className="text-sm font-medium tracking-wide text-white/85">
+              <div className="text-sm  font-[family-name:var(--font-revamped)]  font-medium tracking-wide text-white/85">
                 Algorim
               </div>
               <div className="text-[11px] tracking-[0.22em] text-white/45 uppercase">
