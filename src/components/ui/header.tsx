@@ -14,9 +14,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Separator } from "./separator";
 import { Button } from "./button";
-import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -163,16 +161,13 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            <Button
-              variant={"outline"}
-              className="flex items-center cursor-pointer shimmer-btn !border dark:text-white dark:bg-black"
-            >
+            {/* <GlassSurface className="flex items-center cursor-pointer !h-10 shimmer-btn !border dark:text-white dark:bg-black">
               <Link href="https://calendly.com/algorim">
                 {"Let's connect"}{" "}
               </Link>
               <ArrowRight />
-            </Button>
-            <ModeToggle />
+            </GlassSurface>
+            <ModeToggle /> */}
           </div>
         </div>
 
